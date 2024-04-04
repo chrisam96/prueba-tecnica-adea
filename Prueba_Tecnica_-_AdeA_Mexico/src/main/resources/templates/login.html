@@ -9,119 +9,774 @@
 	<!-- Bootstrap - CSS - v5.3.3 -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	
+	<!-- Bootstrap - JS - v5.3.3 -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	
 	<!-- jQuery library -->
 	<!-- script src="jquery-3.7.1.js"></script> -->
 	<!-- <script src="./jquery-3.7.1.js"></script> -->
 	<!-- <script src="js/jquery-3.7.1.js"></script> -->
 	<!-- <script src="/Prueba_Tecnica_-_AdeA_Mexico/src/main/resources/templates/js/jquery-3.7.1.js"></script> -->
 	<!-- <script src="D:/ec1lipse-workspace/Prueba-Tecnica-AdeA-Mexico/Prueba_Tecnica_-_AdeA_Mexico/src/main/resources/templates/js/jquery-3.7.1.js"></script> -->	
-
 	
 	<!-- JQuery 3.7.1-->
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	
 </head>
 <body>
-	<h1>Bienvenido</h1>
-	<h2>Ingrese su usuario y contraseña</h2>
+	<h1>Bienvenido a la Prueba Técnica</h1>	
 
 	&nbsp;&nbsp;&nbsp; <!-- Ctrl + Alt + Shift + B, R -->
 	
-	<div>
-		<form id="formLogin" name="form_login" action=""  method="get">
-			<label for="loginLogin">Usuario:</label> &nbsp;
+	<div id="div-Msj-Login">
+		<p id="p-Msj-Login"></p>
+	</div>
+
+	&nbsp;
+	
+	<!-- NOTAS DE HTML CON FORMULARIOS
+		1. ## Diferencias entre "id" y "name"
+		Aunque pueda parecer que compartan alguna función similar no lo son, cumplen 
+		con própositos diferentes.
+		
+		### id
+		Es un IDENTIFICADOR UNICO en todo el documento elemento HTML independiente de 
+		su etiqueta (<tag>), clase (.class), atributo o tipo ("[type='text']") 
+		o pseudo-elemento.
+
+		### name
+		Es un atributo con el que identificamos a un elemento <tag> editable para el usuario
+		en los formularios y, a diferencia del "id", este va a ser serializado cuando 
+		se haga una acción "submit" (es decir, el envío de la información).
+
+		La serialización de un formulario, entendiendo que esto afecta a todos los elemnetos 
+		editables por el usuario del mismo formulario, se realiza del tomando el valor de 
+		"name" como el nombre de la propiedad y como valor de la misma propiedad lo que haya
+		ingresado el usuario dentro del <tag>, formando el formato claveS=valor;. 
+			
+		Toda la serialización del formulario se enviará con el formato:
+			clave1=valor1&clave2=valor2&...&claveN=valorN
+	-->
+	<!-- NOTAS DE BOOTSTRAP
+	
+		1. ## <div> y atributo "class" en los <tags>
+		Muchos cambios de Bootstrap para que sean aplicados al HTML se hacen a tráves del 
+		valor en el atributo class de cada <tag>. A si mísmo, para obtener cambios más 
+		generales que abarquen uno o varios elementos a la vez, se hace agregando el cambio en
+		la propiedad class del <div>.
+
+		2. Grid y columnas
+
+		El sistema de Grid de Bootstrap está construido con flexbox y permite hasta 12 columnas
+		en la página. Si no desea utilizar las 12 columnas individualmente, se pueden agrupar
+		para crear columnas más anchas.
+
+		### Suma total 12
+		El sistema de Grid es responsivo y las columnas se reorganizarán automáticamente según 
+		el tamaño de la pantalla. Asegúrese de que la suma sume 12 columnas o menos 
+		(aunque no es necesario que utilice las 12 columnas disponibles).
+
+		### Declarar un Grid
+		Basta con agregar a un <div> la propiedad class="row".
+
+		### Tamaños fijos
+		Para usar columnas del mimso tamaño dentro de los grid basta con declarar las columnas
+		a usar dentro del <div>. Ejemplo:
+			<div class="row">
+				<div class="col"></div>
+				<div class="col"></div>
+				<div class="col"></div>
+				<div class="col"></div>
+			</div>
+
+		### Tamaños fijos usando numeros
+		Para establecer el tamaño o número de columnas que usará una celda dentro del Grid se
+		hace añadiendo class="col-#"", donde # representa el núm de columnas a usar. Ejemplo:
+			<div class="row">
+				<div class="col-2"></div>
+				<div class="col-3"></div>
+				<div class="col-5"></div>
+				<div class="col-2"></div>
+			</div>
+
+		### Tamaños responsivos
+
+		El sistema de Grid tiene 6 clases:
+
+		.col- (extra small devices - screen width < 576px)
+		.col-sm- (small devices - screen width >= 576px)
+		.col-md- (medium devices - screen width >= 768px)
+		.col-lg- (large devices - screen width >= 992px)
+		.col-xl- (xlarge devices - screen width >= 1200px)
+		.col-xxl- (xxlarge devices - screen width >= 1400px)
+
+		Las clases de arriba se pueden combinar para crear layouts más dinamicos y flexibles.
+
+		El siguiente ejemplo dará como resultado una división del 25%|75% en dispositivos 
+		pequeños y una división del 50%|50% en dispositivos medium (y large, xlarge y xxlarge).
+		En dispositivos extra-small, se apilarán automáticamente uno sobre otro (ocupando el 
+		100% del ancho):
+	-->
+
+	<div class="row">
+		<h3>Ingrese su usuario y contraseña</h3>
+		<form id="formLogin" name="form_login" action=""  method="post">
+			<label for="loginLogin" class="form-label">Usuario:</label> &nbsp;
 			<input id="loginLogin" name="login" type="text" placeholder="Usuario" autocomplete="off" autofocus="on" 
-				title="Debe contener solo letras y numeros." width="25" required>
-				
+				title="Debe contener solo letras y numeros." width="25" class="form-control" required>
 			&nbsp;<br/>
 			
-			<label for="passLogin">Contraseña:</label> &nbsp;
+			<label for="passLogin" class="form-label">Contraseña:</label> &nbsp;
 			<input id="passLogin" name="pass" type="text" placeholder="Contraseña" autocomplete="off" autofocus="on" 
-				title="Debe contener solo letras y numeros." width="25" required>
+				title="Debe contener solo letras y numeros." width="25"class="form-control"  required>
 			
-			<br/><br>			 					
+			<br/>
 			
-			<input type="submit" value="Enviar (type input)" id="btn-1" > 
-			&nbsp;			
-			
-			<button type="button"  id="btn-2" >
-				Enviar (type button)
-			</button>
-			<!--
-			<button type="button" value="Enviar" id="btnLogin" >
-	                Log in
-			</button>
-			
-			<button type="submit" value="Enviar" id="btnLogin" > 
-
-			<input type="submit" value="Enviar (input)" id="btnLogin" > 
-			-->			
-			&nbsp;<br>
+			<input type="submit" value="Enviar (type input)" id="btn-1" class="btn btn-primary"> 			
 		</form>
 	</div>
 
-	<script type="text/javascript">
-		//console.log('Funcionando el script en <body>');
+	<!-- MENSAJE MODAL (VENTANA EMERGENTE) 
+		Ventana emergente para mensajes, similar al "alert()" de javascript per extendiendo
+		funcionales ya que puede contener un header y footer.
+
+		## Partes del Modal
+		El Modal esta compuesto de varios contenedores (dentro de distintos <div>), siendo el principal
+		"modal" , que contiene a "modal-dialog" (supongo sirve para que aparezca como "cuadro emergente")
+		y a su vez, este útlimo contiene a "modal-content" que contiene la escencia del Modal. 
+		Modal-content contiene al header, body y footer:
+		La Arquitectura del cuerpo es la siguiente:
+
+		modal
+			modal-dialog
+				modal-content
+					modal-header
+					modal-body
+					modal-footer
+
+		## Propiedades del Modal
+
+		Algunas propiedades son:
+		
+		- ### Scroll, scrolleable:
+		Para agregar un scroll al Modal se agrega en el "class" junto a la propiedad de "modal-dialog"
+		la siguiente propiedad:  "modal-dialog-scrollable" quedando así:
+
+			<div class="modal-dialog modal-dialog-scrollable">
+
+		- ### Modal Centrado Vertical y Horizantalmente
+
+		Para poner un modal en el centro exacto de la página se debe agregar "modal-dialog-centered".
+		Ejemplo:
+			
+			<div class="modal-dialog modal-dialog-centered">
+
+		- ### Efecto Fade o de desvanecimiento
+		
+		Para que un modal se desvanezca basta con agregar la class "fade" al contenedor <div> primario
+		Ejemplo:
+
+			<div class="modal fade"></div>
+
+		============================================================================================
+
+		NOTA: Este Modal es para lanzar el mensaje cuando el Login sea fallido
+	-->
+	<div id="modalLoginError" class="modal" >
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Header -->
+				<div class="modal-header">
+
+					<!-- "btn-close": Dibuja un botón de cierre en la esquina superior derecha
+						"data-bs-dismiss:  modal" habilita la función del botón cerrar al Modal 
+						"class=modal-title": Es el titulo del modal
+					-->
+					<h4 class="modal-title">Error al loggearse</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Body -->
+				<div class="modal-body">
+					Usuario no encontrado. Aseguresé de haber introducido bien las credenciales.
+				</div>
+
+				<!-- Footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- NOTAS DE JQUERY
+	## $().text() vs html() vs append()
+
+	### Selector
+	Dicesé todo elemento que esta dentro de $(). Estos elementos pueden ser:
+
+	- ID:			| $("#elemento")
+	- Clases		| $(".class")
+	- <Tags>		| $("p") //En esta caso el tag <p>
+	- Atributo		| $('input[type="date"]')
+	- SeudoElemento | $("p:first-of-type")
+
+	### text()
+	Reemplaza e inserta especificamente un string dentro del selector de JQuery.
+	Puedes insertar tanto HTML como tú quieras, pero este nunca será procesado 
+	por el navegador, siempre se quedará como una simple cadena de carateres.
+	*********************
+	Esto es un mejor resumen
+	
+	#### Con Parametro
+	Cuando se usa con parámetro, establece un string solo en el elemento seleccionado. Puedes insertar 
+	tanto HTML como tú quieras, pero este nunca será procesado por el navegador
+
+	#### Sin Parámetros
+	Cuando se usa sin parámetro, retorna el texto del elemento y también de sus descendientes. 
+	Es decir, si aplicas text en un elemento padre obtienes su texto y el texto de sus hijos.
+
+	*********************
+
+	> NOTA:
+	> #### text() sin parámetros
+	Cuando se usa sin parámetro, retorna el texto del elemento y también de sus descendientes. 
+	Es decir, si aplicas text en un elemento padre obtienes su texto y el texto de sus hijos.
+
+	### html()
+
+	*********************
+	Esto es un mejor resumen
+	
+	#### Con Parametro
+	Cuando se usa con parámetro, establece dentro del elemento seleccionado (el selector) 
+	un nuevo código HTML, sobreescribiendo así el contenido del elemento.
+
+	#### Sin Parámetros
+	Cuando se usa sin parámetro, retorna el texto del elemento y también de sus descendientes. 
+	Es decir, si aplicas text en un elemento padre obtienes su texto y el texto de sus hijos.
+
+	*********************
+
+	Cuando se usa con parámetro, establece dentro del elemento seleccionado (el selector) 
+	un nuevo código HTML, sobreescribiendo así el contenido del elemento.
+
+	Trata el texto pasado a su parámetro como formato HTML, sobreescribiendo el texto y ejecutando 
+	código HTML señalados en el parametro, haciendo esto en el selector indicado en $(). 
+
+	Puedes usarlo para insertar elementos de HTML, tu navegador lo interpretará y mostrará según 
+	el elemento que estés insertando. Esto incluye también dar estilos CSS a elementos que contengan 
+	ciertas clases y/o ids que correspondan a los que tengas definidos en tu archivo CSS, dando más 
+	dinamismo a la hora de que utilizar esta función.
+
+
+	> NOTA:
+	> #### html() sin parámetros
+	Cuando se usa sin parámetros, retorna el código HTML que compone dicho elemento; 
+	Esto incluye a sus descendientes.
+
+	### append()	
+	Nos permite agregar contenido a una etiqueta sin alterarlo.
+
+	Por ejemplo, si tuvieramos:
+	
+		<div class="container">
+			<div class="inner">Hello</div>
+			<div class="inner">Goodbye</div>
+		</div>
+	
+	Se puede crear contenido e insertarlo dentro de varios elementos a la vez:
+
+		$(".inner").append("<p>Test</p>");
+
+	Cada elemento de <div> interno obtiene este nuevo contenido, quedando como:
+
+		<div class="container">
+		  <div class="inner">
+		    Hello
+		    <p>Test</p>
+		  </div>
+		  <div class="inner">
+		    Goodbye
+		    <p>Test</p>
+		  </div>
+		</div>
+	
+	## Diferencia entre "append()" y "html()"
+	La diferencia es que "append()" nos permite agregar contenido a una etiqueta sin alterarlo, 
+	mientras que "html()" simplemente cambia el contenido del elemento por el valor nuevo.
+
+	## remove()
+	El método remove() nos permitirá eliminar elementos. Si tuviésemos algo como ésto:
+
+	<ul id="lista">
+		<li id="item1" class="item"> Item 1 </li>
+		<li id="item2" class="item"> Item 2 </li>
+		<li id="item3" class="item"> Item 3 </li>
+	</ul>
+	
+	Y quisiéramos eliminar uno de los item, podríamos hacerlo de la siguiente forma:
+
+		$("#item2").remove();
+	
+	## Evento "on()"
+	El método "on()" añade 1 o más eventos para el elemento Selector y sus elementos hijos.
+
+	Es recomendable que cuando se actualice el DOM (ya sea por un <script> o callback()), en vez de usar
+	el evento (por ejemplo, "click()") de JQuery, se use el evento "on()" que como parámetro 
+	recibe otro evento.	
+
+	El evento "on()" hace que se recorra de nuevo todo el HTML dentro de un objeto, y así,
+	podemos usar el HTML-dinámico que nos traemos después de renderizar por primera vez la pagina.
+
+	> NOTA: 
+	> Los manejadores de eventos usando el método "on()" funcionarán para elementos actuales y futuros 
+	(como un nuevo elemento creado por un script).
+
+	## Evento "off()" para borrar eventos
+	Para eliminar manejadores de eventos, use el método "off()".
+
+	## Evento "one()"
+	Para adjuntar un evento que solo se ejecuta una vez y luego se elimina, use el método "one()".
+
+	### Eventos Estaticos vs Dinamico "on()"
+	Los eventos estatícos (por ejemplo, "$(selectorHijo).click()") solo funcionan con HTML NO DINAMICO, 
+	es decir, los que son creados al crear el DOM y no sufren modificaciones.
+
+	Los eventos dinamicos (por ejemplo, "$(contenedorPadre).on('click', 'selectorHijo',function(){} )" 
+	funcionan con cualquier HTML DINAMICO creado o HTML NO DINAMICO.
+
+	### Sintaxis de "on()"
+	Los parámetros completos del método
+
+		$(selector).on(event, childSelector, data, function, map)
+	
+	En la siguiente tabla se explican:
+	
+	Parametro		Descripcion
+	===========================================================================0
+	event			ES REQUERIDO
+					-Especifica uno o más eventos o namespaces para agregarse a los elementos del Selector. 
+					-Multiples "event values" o valores de eventos son separados por un espacio. 
+					-Debe ser un evento válido
+
+	childSelector	OPCIONAL
+					Especifica que el "event handler" solo debe aplicarse a los elementos hijos especificados
+					(y no al selector en sí, como solía hacer el método obsoleto delegate())
+	
+	data			OPCIONAL
+					Especifica datos adicionales para pasar a la función.
+
+	function		REQUERIDO
+					Especifica la función que se ejecutará cuando ocurra el evento.
+
+	map				SUSTITUTO de event y function
+					Especifica un mapa de eventos ({event1: function, event2: function, ...}) que contiene 
+					uno o más eventos para añadir a los elementos del Selector y sus respecitvas funciones 
+					para ejecutar cuando ocurren los eventos.
+
+	### Ejemplo de Multiples event values
+	Con esto se pueden especificar varios "eventos" con el mismo comportamiento:
+
+	$(document).ready(function(){
+  		$("p").on("mouseover mouseout", function(){
+    		//Ejemplo 
+			$(this).toggleClass("intro");
+  		});
+	});
+	
+	### Ejemplo del Multiples Eventos usando de Map Events
+	Con esto se pueden especificar varios "eventos" con respectivos comportamientos:
+
+	$(document).ready(function(){
+		$("p").on({
+			mouseover: function(){
+			$("body").css("background-color", "lightgray");
+			},  
+			mouseout: function(){
+			$("body").css("background-color", "lightblue");
+			}, 
+			click: function(){
+			$("body").css("background-color", "yellow");
+			}  
+		});
+	});
+
+	### Ejemplo de ejecutar un Evento Personalizado
+	Podemos crear nuestros propios métodos personalizados y mandarlos a ejecutar. 
+	Para lanzar o ejecutar algún evento usamos el método "trigger()" del Selector. 
+
+	Para crear el método personalizao usamos al método "on()" pasando 2 elementos: 
+	el nombre del evento y la función a ejecutar. 
+	
+	La "función a ejecutar" obligatoriamente
+	requiere que su primer parámetro sea el objeto "event"; posterior a eso, se puede enviar
+	cualquier cosa.
+
+		$(document).ready(function(){
+
+			//Evento Personalizado
+ 			$("p").on("myOwnEvent", function(event, showName){
+    			$(this).text(showName + "! What a beautiful name!");
+  			});
+
+			//Elemento que lanzará al Evento Personalizado
+  			$("button").click(function(){
+    			$("p").trigger("myOwnEvent", ["Anja"]);
+  			});
+		});
+	
+	### Ejemplo de como pasar datos a una Función
+	Para pasar datos a una función debemos pasar 3 parametros:
+	- el nombre del evento
+	- el cuerpo de lo datos a enviar
+	- el nombre de la función
+
+	El método o Función que recibirá nuestros datos, se enviarán encapsulados a tráves del
+	objeto "event.data".
+
+	//FUNCION
+	function handlerName(event) {
+  		alert(event.data.msg);
+	}
+
+	//EVENTO
+	$(document).ready(function(){
+  		$("p").on("click", {msg: "You just clicked me!"}, handlerName)
+	});
+
+	### Ejemplo de Añadir event handlers para elementos futuros
+	El método on() también funciona para elementos aún no creados
+
+	$(document).ready(function(){
+		
+		//Oculta todos los elementos <p>
+		$("div").on("click", "p", function(){
+			
+			//Muestra u oculta los elementos con un movimiento deslizante.
+			$(this).slideToggle();
+		});
+
+		//Crea elementos <p> después del botón "button"
+		$("button").click(function(){
+			$("<p>This is a new paragraph.</p>").insertAfter("button");
+		});
+	});
+
+	### Ejemplo de Remover Eventos
+	Para borrar eventos utilizando "on()" se hace mediante el Selectot y con el método "off()".
+	Ejemplo:
+
+	<script>
+	$(document).ready(function(){
+		
+		//Parrafos que cambian de color bajo un evento "click"
+		$("p").on("click", function(){
+			$(this).css("background-color", "pink");
+		});
+
+		//Boton que ejecuta
+		$("button").click(function(){
+			
+			//Le quita el evento al párrafo
+			$("p").off("click");
+		});
+	});
+	</script>
+	-->
+	<script type="text/javascript">		
 		
 		//Declaracion de variables
-		var uc = {}, url = "/login1", urlFull = "http://localhost:9010/login1";
+		var usuarioCredenciales = {}; 
+		var url = "/login"; //url = "/login1"; 
+		var urlFull = "http://localhost:9010/login1";
+		var resultado = null;
 
 		$("#formLogin").submit(function(e){
 			e.preventDefault();				
-			console.log('Alcanzo form a traves del input(submit)');
+			//console.log('Alcanzo form a traves del input(submit)');
 			
 			//Obteniendo los valores del form y creando un objeto
-			uc.login = $("#loginLogin").val();
-			uc.pass = $("#passLogin").val();
+			usuarioCredenciales.login = $("#loginLogin").val();
+			usuarioCredenciales.pass = $("#passLogin").val();
 
-			console.log(uc);
+			console.log(usuarioCredenciales);
 
+			/*NOTAS DE AJAX
+			A. contentType: 'application/json'
+			
+			1. Los navegadores actuales por defecto soportan UTF-8, por lo que ya no requieren
+			usar el parametro adicional de 'charset=utf-8'
+			2. Los datos (objetos) se convierten a una cadena JSON 
+			usando JSON.stringify(objetos)
+			3. Cuando se intenta enviar un objeto directamente como data, jQuery intentará 
+			convertir el objeto (en este ejemplo: usuarioCredenciales) a una cadena de texto
+			(de tipo: cadena1=valor1&cadena2=valor2&...%cadenaN=valorN).
+			4. Si se eliminasé el 'contentType: application/json', jQuery no intentará convertir 
+			el objeto (en este caso: usuarioCredenciales) a una cadena JSON. 
+			En su lugar, jQuery enviará los datos como application/x-www-form-urlencoded, 
+			que es el tipo de contenido predeterminado para las solicitudes POST. 
+			
+			Esto significa que los datos se enviarán en el cuerpo de la solicitud en un formato de 
+			cadena de consulta , similar a cómo se envían los datos de un formulario HTML estándar.
+			Esto significa que, en lugar de enviar algo como 
+			{"login": "usuario", "pass": "contraseña"}, enviarás login=usuario&pass=contraseña.
+			
+			 CADENA DE CONSULTA == (tipo: cadena1=valor1&cadena2=valor2&...%cadenaN=valorN)
+			 
+			B. JSON.stringify(objeto)
+			
+			1. Con esta función se convierte el objeto a una cadena JSON. 
+			2. En el back, se espera que el cuerpo de solicitud en formato JSON se mapea 
+			al objeto p+arametro de un método usando la anotación @RequestBody.
+			
+			C. Headers en la respuesta HTTP (del BackEnd)
+			
+			1. Se puede utilizar la clase HttpHeaders para agregar encabezados a la respuesta 
+			y luego construir la respuesta utilizando ResponseEntity.
+			
+			D. Headers y xhr.getAllResponseHeaders() (del FrontEnd)
+			
+			1. Con este metódo se accede a todos los encabezados de la respuesta a tráves del
+			objeto XHR.
+			2. El objeto xhr es el objeto XMLHttpRequest que jQuery utiliza p/ realizar la solicitud,
+			y puedes usar xhr.getAllResponseHeaders() para acceder a todos los encabezados de la 
+			respuesta.
+			3. Para recuperar el HttpStatus en la respuesta de una solicitud AJAX realizada con jQuery, 
+			puedes utilizar el objeto xhr (XMLHttpRequest) que se pasa a las funciones de:
+				- sucess()
+				- error() 
+				- complete() 
+			de la solicitud.
+			
+			Ejemplo:
+		        success: function (data, textStatus, xhr) {		            
+		            console.log(data); // Accede al cuerpo de la respuesta
+		            console.log("HTTP Status: " + xhr.status); // Accede al estado HTTP de la respuesta
+		        },
+			
+			El objeto xhr contiene información sobre la solicitud, incluyendo el estado HTTP de la 
+			respuesta.
+			4. Parámetro "textStatus" o "status"
+				4.1 Este parámetro proporciona una cadena de texto que describe el estado de la 
+				solicitud. Aunque su nombre sugiere que podría contener un estado de texto más 
+				descriptivo, en la práctica, jQuery solo lo utiliza para proporcionar el valor 
+				"success" o "error", dependiendo de si la solicitud fue exitosa o no.
+				
+				4.2 En su lugar, se utiliza el objeto xhr (XMLHttpRequest) para obtener información 
+				más detallada sobre la solicitud, como el estado HTTP (xhr.status) y los encabezados 
+				de la respuesta (xhr.getAllResponseHeaders()).
+				
+				Objeto "xhr" es el objeto "XMLHttpRequest" de jQuery
+				
+			E. Codigo de Status de la respuesta en Ajax
+			
+			1. La función de éxito (success) se ejecutará para cualquier código de estado en la 
+			familia 2XX, y puedes usar xhr.status para determinar el código de estado específico y 
+			manejar la lógica correspondiente. 
+			
+			Ejemplo:
+				success: function (data, status, xhr) {
+			        console.log("HTTP Status: " + xhr.status); // Accede al estado HTTP de la respuesta
+			        // Aquí puedes manejar la lógica específica para diferentes códigos de estado
+			        if (xhr.status === 200) {
+			            console.log("La solicitud fue procesada con éxito.");
+			        } else if (xhr.status === 201) {
+			            console.log("Se creó un nuevo recurso.");
+			        } else if (xhr.status === 202) {
+			            console.log("La solicitud fue aceptada para procesarse, pero el procesamiento aún no ha comenzado.");
+			        }
+			        // Puedes agregar más condiciones para otros códigos de estado según sea necesario
+			    },
+			
+			2. La función de error (error) se ejecutará para códigos de estado en la familia 4XX y 5XX, 
+			que generalmente indican errores del cliente o del servidor, respectivamente.
+			
+			Ejemplo:
+			    error: function (jqXHR, textStatus, errorThrown) {
+			        console.log("error()");
+			        console.log("HTTP Status: " + xhr.status);
+			        // Aquí puedes manejar errores específicos basados en el código de estado
+			        if (xhr.status === 400) {
+			            console.log("Solicitud incorrecta.");
+			        } else if (xhr.status === 401) {
+			            console.log("No autorizado.");
+			        }
+			        // Puedes agregar más condiciones para otros códigos de estado según sea necesario
+			    },
+			
+			F. Respuesta vacía o inesperada del servidor
+			
+			1. Respuesta vacía o inesperada del servidor: 
+			Si el servidor no devuelve nada o devuelve una respuesta que no es un JSON válido, 
+			jQuery intentará analizarla como JSON y fallará, lanzando ub error generico.
+			
+			2. Manejo incorrecto de la solicitud en el servidor:  
+			Si el servidor no está configurado correctamente para manejar la solicitud 
+			(por ejemplo, si espera un JSON pero recibe datos en formato 
+					application/x-www-form-urlencoded),
+			podría devolver una respuesta inesperada o vacía.
+			
+			3. Error en el servidor: 
+			Si hay un error en el servidor al procesar la solicitud, podría devolver una 
+			respuesta vacía o un mensaje de error que no es un JSON válido.
+
+			G. AJAX Antes y Después de Promises
+			Aunque "success()" ha sido la forma tradicional de la devolución de llamada de éxito en JQuery, 
+			desde la implementación de $.Deferreds y callbacks más sofisticados, "done()" es la 
+			forma preferida de implementar callbacks de éxito.
+
+			Esto también aplica para otros métodos (los de antes ya son Deprecados desde JQuery 3.0):
+
+			ANTES		DESPUES
+			===============================
+			sucess()	done()
+			error()		fail()
+			complete()	always()
+
+			1. Diferencias entre sucess() y done()
+			"success()": Es la opción para obtener el resultado del ajax bajo el patrón de 
+			programación con "callbacks".
+
+			"done()": Es la opción para obtener el resultado del ajax bajo el patrón de 
+			programación con deferred (o promises).
+
+			Esto también aplica para otros métodos error() vs fail() y complete() vs always().
+
+			2. Similitudes entre sucess() y done()
+			Al final los 2 hacen lo mismo, obtener el resultado esperado, solo que usando distintos patrones.
+
+			Si te decides por usar "done()", entonces obtienes "los beneficios" que brindan las promises. 
+			Esto también aplica para otros métodos error() vs fail() y complete() vs always().
+
+			3. Paramétros de los métodos
+
+			Tanto "success()" como "done()"reciben los mismos párametros.
+
+			- data: Contiene los datos devueltos de la petición
+			- status o textStatus: Contiene una cadena de texto que describe el estado de la solicitud.
+			- xhrData o jqXHR: Contiene al objeto jqXHR (que es una extensión del objeto "xhr" o "XMLHttpRequest") 
+				que tiene información detallada sobre la solicitud, como el estado HTTP (xhr.status),
+				los Headers de la respuesta y otros metadatos.
+
+			Tanto "error()" como "fail()"reciben los mismos párametros.
+			
+			- xhrData o jqXHR: Contiene al objeto jqXHR (que es una extensión del objeto "xhr" o "XMLHttpRequest") 
+				que tiene información detallada sobre la solicitud, como el estado HTTP (xhr.status),
+				los Headers de la respuesta y otros metadatos.
+			- status o textStatus: Contiene una cadena de texto que describe el estado de la solicitud.
+			- error o errorThrown: Un objeto (opcional) de la excepción.
+			
+			A diferencia de que "complete()" es distinto a "always()". A pesar de que ambos se comportan
+			igual, es decir, después de la ejecución del método "exito" y "fallo" respectivos, sus parámetros
+			cambian drásticamente:
+
+				complete():
+					- xhrData: Contiene al objeto jqXHR (que es una extensión del objeto "xhr" o "XMLHttpRequest") 
+						que tiene información detallada sobre la solicitud, como el estado HTTP (xhr.status),
+						los Headers de la respuesta y otros metadatos.
+					- status: Contiene una cadena de texto que describe el estado de la solicitud.
+				
+				always():
+					-En una respuesta exitosa: los argumentos de la función son los mismos que los de .done(): 
+						"data", "status" y  "jqXHR".
+					-En una respuesta fallida: los argumentos son los mismos que los de .fail(): 
+						"jqXHR", "status" y "error".
+
+			4. Metódo "then()"
+			Su sintaxis es peculiar, pues acepta 2 objetos (y un tercero que solo es para notificaiones 
+			de progreso), siendo estos las funciones de "done()" y "fail()" con sus respectivos parámetros.
+
+			Sintaxis:
+			then(
+				function done( data, textStatus, jqXHR ) {}, 
+				function fail( jqXHR, textStatus, errorThrown ) {}
+			)
+
+			En este método se incorpora la funcionalidad de los métodos .done() y .fail(), 
+			permitiendo (a partir de jQuery 1.8) manipular las Promesas subyacentes.		
+			*/
+			
 			$.ajax({
-				type: "GET",
+				type: "POST",
 				//contentType: 'application/json; charset=utf-8',
-				contentType: 'application/json',
-				//url: "url/to/send/data",
+				contentType: 'application/json', // Especifica el tipo de contenido como JSON
+				dataType: "json",				
 				url: url,
-				//data: JSON.stringify(uc),
-				data: uc,
-				dataType: "json",
-				success: function (data) {
+				//data: JSON.parse(usuarioCredenciales),
+				//data: usuarioCredenciales, // jQuery convertirá este objeto a una cadena de consulta
+				data: JSON.stringify(usuarioCredenciales),  // Convierte el objeto a una cadena JSON
+				success: function (data, status, xhrData) {
 					console.log("success");
-					console.log(data);
+					console.log("data:\n", data); // Accede al cuerpo de la respuesta
+					console.log("status: " + status);
+					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
+					console.log("headers: \n" + xhrData.getAllResponseHeaders());
+					
+			        if (xhrData.status === 200) {
+			        	
+			        	/* ALMACEN DE DATOS ENTRE DIFERENTES PAGINAS
+						Para enviar datos entre diferentes páginas se puede utilizar 
+						"localStorage" o "sessionStorage" para almacenar la información.
+
+						Es importante tener en cuenta que: 
+						- localStorage: Es persistente entre sesiones del navegador, lo que significa que la 
+						información del usuario se mantendrá incluso después de cerrar y volver a abrir el navegador. 
+						
+						- sessionStorage: Se usa si se prefiere que la información del usuario se borre después 
+						de cerrar el navegador.
+
+						NOTA: localStorage.setItem('clave', valor);
+						*/
+			        	
+						// Almacena la información del usuario en localStorage
+						sessionStorage.setItem('usuario', JSON.stringify(data));
+			        	
+			            // Usuario encontrado, redirige a "/home"
+			            window.location.href = "/sitio/home";
+			        } else {
+			            // Usuario no encontrado, muestra mensaje de error
+			            //alert("Usuario no encontrado");
+						$("#modalLoginError").modal('show');
+
+						// Pone un texto en pantalla avisando al usuario del Usuario no encontrado
+						$("#div-Msj-Login").text("<div> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
+						$("#p-Msj-Login").text("<p> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
+			        }
 				},
-				error: function (xhr, ajaxOptions, thrownError) {
-					console.log("error()");
-					console.log(xhr);
-					console.log(ajaxOptions);
-					console.log(thrownError);
-					//alert(xhr.status + " " + thrownError);
+				error: function (xhrData, status, error) {
+					console.log("error()");					
+					console.log("status: " + status);
+					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
+					console.log("headers: \n" + xhrData.getAllResponseHeaders());
+
+					// Usuario no encontrado, muestra mensaje de error
+			        alert("Error al ejecutar petición");
+					$("#modalLoginError").modal('show');
+
+					// Pone un texto en pantalla avisando al usuario del Usuario no encontrado
+					$("#div-Msj-Login").text("<div> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
+					$("#p-Msj-Login").text("<p> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
 				},
-				complete: function(xhr, status){
+				complete: function(xhrData, status){
 					console.log("complete(): " + status);
+					console.log("HTTP Status: " + xhrData.status); // Accede al estado HTTP de la respuesta
 				}
 			});
-		});
-		
+			
+
+			console.log("SALIDA DEL AJAX: \n", resultado);
+		});		
 		/*
-		$('#formLogin').on('submit', function(e){
-			e.preventDefault();
-			alert('Bling Bang Bang Born');
-			var msj = "Bling Bang Bang Born";
-			console.log(msj);
-		});
-		*/
-
-		$("#btn-1").click(function(e){
-			//console.log("click btn-1 :: input(submit)");
-		});
-
 		$("#btn-2").click(function(e){
 			console.log("click btn-2 :: button");
 		});
-		
-	</script>
-	
-	<!-- Bootstrap - JS - v5.3.3 -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+		*/
 
+
+		
+	</script>	
 </body>
 </html>

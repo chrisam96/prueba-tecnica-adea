@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -63,7 +64,9 @@ public class UsuarioController {
 	
 	//ALT + SHIFT X, B
 	
-	@GetMapping(value = "/prb") // @GetMapping	(value) == @RequestMapping(path="/foo").
+	//PRUEBA DE QUE EL SERVICIO SIRVE CON DIFERENTES URL O RECURSOS
+	
+	@GetMapping(value = "/prb1") // @GetMapping	(value) == @RequestMapping(path="/foo").
 	public String prb() {
 		//return "login2";
 		return "Prueba - /prb";
@@ -80,6 +83,102 @@ public class UsuarioController {
 		//return "home";
 		return "Prueba - /prb3";
 	}
+	
+	// PRUEBAS PARA SABER QUE FRONT Y BACK SE COMUNICABAN CORRECTAMENTE
+	
+	@PostMapping(value = { "/login1", "/get-{login}-{pass}" },
+			consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE},
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
+		public ResponseEntity<Usuario> getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) {
+				//try {
+					System.out.println("Entro a /login1: " + uc.toString());
+					//return usuarioService.getUsuarioByCredenciales(uc);
+					Usuario user = usuarioService.getUsuarioByCredenciales(uc);
+					/*
+					ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>(user, HttpStatus.OK);				
+					return resp;
+					*/
+					ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>(user, HttpStatus.OK);
+					ResponseEntity<Usuario> resp2 = new ResponseEntity<Usuario>(null, null, HttpStatus.OK);
+					//resp2.of
+					
+					if (user != null) {
+			            return new ResponseEntity<>(user, HttpStatus.OK);
+			        } else {
+			            // Si el usuario no se encuentra, puedes devolver un error
+			            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			        }
+					
+				/*} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					// Crear un objeto JSON con un mensaje de error
+			        String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";
+			        HttpHeaders headers = new HttpHeaders();
+			        return new ResponseEntity<Usurio>(errorJson, HttpStatus.INTERNAL_SERVER_ERROR);
+				}*/
+		}
+		
+		@GetMapping(value = "/login2/{login}/{pass}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+		public Usuario findUsuarioByLoginAndPass(@PathVariable("login") String login, @PathVariable("pass") String pass) {
+			Usuario encontrado = usuarioService.findUsuarioByLoginAndPass(login, pass);
+			
+			//Si es diferente de NULL es porque lo encontro
+			if (encontrado != null) {
+				return encontrado;
+			}
+			return new Usuario();
+		}	
+		
+		@GetMapping(value = { "/login3/{login}/{pass}" }
+		, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
+		public ResponseEntity<Usuario> getUsuarioByCredenciales2(@PathVariable("login") String login, @PathVariable("pass") String pass) {
+			//try {	
+				ResponseEntity<Usuario> re;
+				HttpHeaders headers = new HttpHeaders();
+				
+				
+				System.out.println("VALUE(STRING): " + MediaType.APPLICATION_JSON_VALUE 
+						+ " VALUE(ENUM):" + MediaType.APPLICATION_JSON );
+				
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				
+				/*Creacion de una lista de MediaType (que son los formatos de entrega de la info),
+				 * siendo estos guardados en la propiedad "Accept" (HttpHeaders.setAccept())
+				 * que es en donde se indica que formatos son soportados en esta petición
+				 * tanto como para ser aceptados (REQUEST) 
+				 * como para ser devueltos (RESPONSE)
+				 */
+				List<MediaType> listaMT = new ArrayList<MediaType>();
+				listaMT.add(MediaType.APPLICATION_JSON);
+				listaMT.add(MediaType.TEXT_PLAIN);
+				listaMT.add(MediaType.APPLICATION_XML);
+				
+				headers.setAccept(listaMT);
+
+				//Usuario encontrado = usuarioService.getUsuarioByCredenciales(login, pass);
+				UsuarioCredenciales uc =  new UsuarioCredenciales(login, pass);
+				Usuario encontrado = usuarioService.getUsuarioByCredenciales(uc);
+				
+				//Si es diferente de NULL es porque lo encontro
+				if (encontrado != null) {
+					re = new ResponseEntity<Usuario>(encontrado, headers, HttpStatus.OK);
+					return re;
+					////return encontrado;
+				}
+				
+				//re = new ResponseEntity<Usuario>(null, null, HttpStatus.CONFLICT);
+				re = new ResponseEntity<Usuario>(null, headers, HttpStatus.CONFLICT);
+				return re;
+				////return new Usuario();
+			/*
+			 }catch(Throwable t) {
+				t.printStackTrace();
+				return new Usuario();
+			}
+			*/
+		}
+
 	
 	/*-----------------------------------------------------------------------------------*/
 	// METODOS DE APLICATIVO
@@ -127,78 +226,6 @@ public class UsuarioController {
 		}
 	}
 	
-	/*@GetMapping(value = { "/login1/{login}/{pass}", "/get-{login}-{pass}" }
-	, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
-	public Usuario getUsuarioByCredenciales(@PathVariable("login") String login, @PathVariable("pass") String pass) {*/
-	@GetMapping(value = { "/login1", "/get-{login}-{pass}" },
-		consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE },
-		produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
-	public Usuario getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) {
-		//try {										
-			System.out.println("ENTRO: " + uc.toString());
-			return usuarioService.getUsuarioByCredenciales(uc);
-		/*
-		 }catch(Throwable t) {
-			t.printStackTrace();
-			return new Usuario();
-		}
-		*/
-	}
-	
-	@GetMapping(value = "/login2/{login}/{pass}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public Usuario findUsuarioByLoginAndPass(@PathVariable("login") String login, @PathVariable("pass") String pass) {
-		Usuario encontrado = usuarioService.findUsuarioByLoginAndPass(login, pass);
-		
-		//Si es diferente de NULL es porque lo encontro
-		if (encontrado != null) {
-			return encontrado;
-		}
-		return new Usuario();
-	}	
-	
-	@GetMapping(value = { "/login3/{login}/{pass}" }
-	, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
-	public ResponseEntity<Usuario> getUsuarioByCredenciales2(@PathVariable("login") String login, @PathVariable("pass") String pass) {
-		//try {	
-			ResponseEntity<Usuario> re;
-			HttpHeaders headers = new HttpHeaders();
-			
-			
-			System.out.println("VALUE(STRING): " + MediaType.APPLICATION_JSON_VALUE 
-					+ " VALUE(ENUM):" + MediaType.APPLICATION_JSON );
-			
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			
-			
-			List<MediaType> listaMT = new ArrayList<MediaType>();
-			listaMT.add(MediaType.APPLICATION_JSON);
-			listaMT.add(MediaType.TEXT_PLAIN);
-			listaMT.add(MediaType.APPLICATION_XML);
-			
-			headers.setAccept(listaMT);
-
-			//Usuario encontrado = usuarioService.getUsuarioByCredenciales(login, pass);
-			UsuarioCredenciales uc =  new UsuarioCredenciales(login, pass);
-			Usuario encontrado = usuarioService.getUsuarioByCredenciales(uc);
-			
-			//Si es diferente de NULL es porque lo encontro
-			if (encontrado != null) {
-				re = new ResponseEntity<Usuario>(encontrado, headers, HttpStatus.OK);
-				return re;
-				////return encontrado;
-			}
-			
-			//re = new ResponseEntity<Usuario>(null, null, HttpStatus.CONFLICT);
-			re = new ResponseEntity<Usuario>(null, headers, HttpStatus.CONFLICT);
-			return re;
-			////return new Usuario();
-		/*
-		 }catch(Throwable t) {
-			t.printStackTrace();
-			return new Usuario();
-		}
-		*/
-	}
 	
 	@GetMapping(value = "filtro-estatus", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
 	public List<Usuario> getListOfUsuariosByEstatus(@RequestParam(name="estatus") String estatus) {		

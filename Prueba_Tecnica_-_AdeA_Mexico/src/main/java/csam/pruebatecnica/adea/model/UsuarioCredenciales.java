@@ -1,6 +1,8 @@
 package csam.pruebatecnica.adea.model;
 
-public class UsuarioCredenciales {
+import java.io.Serializable;
+
+public class UsuarioCredenciales implements Serializable{
 	//Propiedades
 	private String login;
 	private String pass;
@@ -26,4 +28,9 @@ public class UsuarioCredenciales {
 	public void setPass(String pass) {
 		this.pass = pass;
 	}	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 }
