@@ -30,53 +30,52 @@ public class Usuario implements Serializable {
 	
 	private String nombre;
 	
-	@Column(name="APELLIDO_PATERNO")
-	private String apellidoPaterno;
-	
-	@Column(name="APELLIDO_MATERNO")
-	private String apellidoMaterno;
-
-	private String estatus;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaalta;
-	
-	private BigDecimal area;
-
 	private float cliente;
 
 	private String email;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="FECHA_VIGENCIA")
-	private Date fechaVigencia;
-
+	private Date fechaalta;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechabaja;
+	
+	private String estatus;
+	
+	private float intentos;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fecharevocado;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="FECHA_VIGENCIA")
+	private Date fechaVigencia;
+
+	@Column(name="NO_ACCESO")
+	private int noAcceso;
+	
+	@Column(name="APELLIDO_PATERNO")
+	private String apellidoPaterno;
+	
+	@Column(name="APELLIDO_MATERNO")
+	private String apellidoMaterno;
+	
+	private BigDecimal area;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechamodificacion;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fecharevocado;
-
-	private float intentos;
-
-	@Column(name="NO_ACCESO")
-	private int noAcceso;
-
 	
-
-	
-
+	// CONSTRUCTORES
 	public Usuario() {
 	}
 	
 	public Usuario(String login) {
 		this.login = login;
 	}
-
+	
+	
+	//GETTERS AND SETTERS
 	public String getLogin() {
 		return this.login;
 	}

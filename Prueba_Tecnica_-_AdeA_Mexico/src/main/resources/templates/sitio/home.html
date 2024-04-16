@@ -77,14 +77,14 @@
 				<div class="col-1"></div>
 
 				<div class="col-5">
-					<button type="button"  id="btn-gestion" class="btn btn-success">
+					<button id="btn-gestion" type="button" class="btn btn-success">
 						Ir a Gestión de Usuarios
 					</button>
 					<br>
 				</div>
 
 				<div class="col-5">
-					<button type="button"  id="btn-tablero" class="btn btn-primary" >
+					<button id="btn-tablero" type="button" class="btn btn-primary" >
 						Ir al Tablero de Usuarios
 					</button>
 					<br>
@@ -105,6 +105,13 @@
 				$('#div-Msj-Home').text("Hola hola, " + usuario.nombre);
 			}			
 		});
+
+		$("#btn-gestion").click(function() {
+			//Se redirige a Gestion de Usuarios
+			window.location.href = "/sitio/gestion-usuarios"
+			
+		});
+
 	</script>
 </body>
 </html>

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import csam.pruebatecnica.adea.model.Usuario;
 import csam.pruebatecnica.adea.model.UsuarioCredenciales;
@@ -71,7 +72,7 @@ public class UsuarioWebController {
 		 * ruta: resources/templates/sitio
 		 * metodo: UsuarioWebController.gestion_usuarios()
 		 */
-		return "gestion-usuarios";
+		return "/sitio/gestion-usuarios";
 	}
 	
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
@@ -82,7 +83,7 @@ public class UsuarioWebController {
 		 * ruta: resources/templates/sitio
 		 * metodo: UsuarioWebController.tablero()
 		 */
-		return "tablero";
+		return "/sitio/tablero";
 	}
 	
 	// VISTAS DE PAGINAS WEB
@@ -91,6 +92,7 @@ public class UsuarioWebController {
 	@PostMapping(value = { "/login", "/"},
 			consumes = { MediaType.APPLICATION_JSON_VALUE},
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
+	@ResponseBody
 		public ResponseEntity<Usuario> getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) {
 					System.out.println("ENTRO: " + uc.toString());
 					
@@ -113,6 +115,24 @@ public class UsuarioWebController {
 					/*ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>
 					 * 					(Usuario body, MultiValueMap<String, String> headers, HttpStatusCode statusCode);
 					 * */
+					// Sirve para testear de cuando se activa el evento "error()" o "fail()" de Ajax de jQuery
+					if (uc.getLogin().equalsIgnoreCase("error") || uc.getPass().equalsIgnoreCase("error")) {
+						// Si el usuario no se encuentra, puedes devolver un error
+			        	
+						headers.add("encontrado","no");
+						headers.add("redireccion","/login");
+						headers.add("mensaje","Se ha encontrado a una excepción");
+						headers.add("mensaje","BAD_REQUEST 400");
+			            
+						//return new ResponseEntity<>(HttpStatus.OK); 						//200 ACEPTADO - CON CUERPO
+						//return new ResponseEntity<>(headers, HttpStatusCode.valueOf(201));//201
+			            //return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);		//202
+						//return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT;);		//204 ACEPTADO - SIN CUERPO
+			            //return new ResponseEntity<>(headers, HttpStatus.IM_USED);			//226
+						//return new ResponseEntity<>(headers, HttpStatus.NOT_MODIFIED);	//304 ACEPTADO - SIN CUERPO
+						return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);		//400
+						//return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);		//404
+					}
 					
 					Usuario user = usuarioService.getUsuarioByCredenciales(uc);
 					
@@ -120,8 +140,8 @@ public class UsuarioWebController {
 						//CODIGO PARA REDIRECCIONAR A LA VISTA "/Home"			
 						headers.add("encontrado","si");
 						headers.add("redireccion","/home");
-						headers.add("mensaje","prueba1");
-						headers.add("mensaje","prueba2");
+						headers.add("mensaje","USUARIO ENCONTRADO");
+						headers.add("mensaje","TEST-HEADER");
 						
 			            //return new ResponseEntity<>(user, HttpStatus.OK);
 			            return new ResponseEntity<>(user, headers, HttpStatus.OK);
@@ -130,15 +150,18 @@ public class UsuarioWebController {
 			        	
 						headers.add("encontrado","no");
 						headers.add("redireccion","/login");
-						headers.add("mensaje","Usuario no registrado");
-						headers.add("mensaje","Usuario desconocido");
+						headers.add("mensaje","USUARIO NO REGISTRADO");
+						headers.add("mensaje","NOT_MODIFIED 304");
 			            
 						//return new ResponseEntity<>(HttpStatus.OK); 						//200 ACEPTADO
-			            //return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);		//404
+						//return new ResponseEntity<>(headers, HttpStatusCode.valueOf(201));//201
+			            //return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);		//202
+						//return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT;);		//204 ACEPTADO - SIN CUERPO
 			            //return new ResponseEntity<>(headers, HttpStatus.IM_USED);			//226
-			            //return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);			//202
-						//return new ResponseEntity<>(headers, HttpStatus.NOT_MODIFIED);	//304 ACEPTADO
-						return new ResponseEntity<>(headers, HttpStatusCode.valueOf(201));//201
+						return new ResponseEntity<>(headers, HttpStatus.NOT_MODIFIED);		//304 ACEPTADO - SIN CUERPO
+						//return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);		//400
+						//return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);		//404	
+
 			        }
 		}
 

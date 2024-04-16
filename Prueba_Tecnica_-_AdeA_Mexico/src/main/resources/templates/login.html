@@ -24,12 +24,12 @@
 	
 </head>
 <body>
-	<h1>Bienvenido a la Prueba Técnica</h1>	
-
+	<div class="container text-center">
+		<h1>Bienvenido a la Prueba Técnica</h1>	
+	</div>
 	&nbsp;&nbsp;&nbsp; <!-- Ctrl + Alt + Shift + B, R -->
 	
-	<div id="div-Msj-Login">
-		<p id="p-Msj-Login"></p>
+	<div id="div-Msj-Login" class="container">		
 	</div>
 
 	&nbsp;
@@ -118,17 +118,19 @@
 		100% del ancho):
 	-->
 
-	<div class="row">
-		<h3>Ingrese su usuario y contraseña</h3>
+	<div class="container">		
+		<div class="text-center">
+			<h3>Ingrese su usuario y contraseña</h3>
+		</div>
 		<form id="formLogin" name="form_login" action=""  method="post">
 			<label for="loginLogin" class="form-label">Usuario:</label> &nbsp;
-			<input id="loginLogin" name="login" type="text" placeholder="Usuario" autocomplete="off" autofocus="on" 
-				title="Debe contener solo letras y numeros." width="25" class="form-control" required>
+			<input id="loginLogin" name="login" class="form-control" type="text" placeholder="Usuario" autocomplete="off" autofocus="on" 
+				title="Debe contener solo letras y numeros." width="25"  required>
 			&nbsp;<br/>
 			
 			<label for="passLogin" class="form-label">Contraseña:</label> &nbsp;
-			<input id="passLogin" name="pass" type="text" placeholder="Contraseña" autocomplete="off" autofocus="on" 
-				title="Debe contener solo letras y numeros." width="25"class="form-control"  required>
+			<input id="passLogin" name="pass" class="form-control" type="text" placeholder="Contraseña" autocomplete="off" autofocus="on" 
+				title="Debe contener solo letras y numeros." width="25"  required>
 			
 			<br/>
 			
@@ -490,7 +492,7 @@
 		
 		//Declaracion de variables
 		var usuarioCredenciales = {}; 
-		var url = "/login"; //url = "/login1"; 
+		var url = "/login", url1 = "/login1"; 
 		var urlFull = "http://localhost:9010/login1";
 		var resultado = null;
 
@@ -509,11 +511,14 @@
 			
 			1. Los navegadores actuales por defecto soportan UTF-8, por lo que ya no requieren
 			usar el parametro adicional de 'charset=utf-8'
+			
 			2. Los datos (objetos) se convierten a una cadena JSON 
 			usando JSON.stringify(objetos)
+			
 			3. Cuando se intenta enviar un objeto directamente como data, jQuery intentará 
 			convertir el objeto (en este ejemplo: usuarioCredenciales) a una cadena de texto
 			(de tipo: cadena1=valor1&cadena2=valor2&...%cadenaN=valorN).
+			
 			4. Si se eliminasé el 'contentType: application/json', jQuery no intentará convertir 
 			el objeto (en este caso: usuarioCredenciales) a una cadena JSON. 
 			En su lugar, jQuery enviará los datos como application/x-www-form-urlencoded, 
@@ -524,7 +529,7 @@
 			Esto significa que, en lugar de enviar algo como 
 			{"login": "usuario", "pass": "contraseña"}, enviarás login=usuario&pass=contraseña.
 			
-			 CADENA DE CONSULTA == (tipo: cadena1=valor1&cadena2=valor2&...%cadenaN=valorN)
+			 CADENA DE CONSULTA == (tipo: cadena1=valor1&cadena2=valor2&...&cadenaN=valorN)
 			 
 			B. JSON.stringify(objeto)
 			
@@ -696,14 +701,66 @@
 			)
 
 			En este método se incorpora la funcionalidad de los métodos .done() y .fail(), 
-			permitiendo (a partir de jQuery 1.8) manipular las Promesas subyacentes.		
+			permitiendo (a partir de jQuery 1.8) manipular las Promesas subyacentes.
+			
+			H. DataType Entre JSON-Objetos y String				
+
+			Ajax tiene la propiedad de "dataType" que permite cambiar el tipo de dato que se espera recibir por parte 
+			del BackEnd, no obstante, no es muy flexible y es sensible con la información devuelta del Backend.
+
+			Para Ajax o el Cliente Web, (y con justa razón,) las cadena de texto simple (String), no son un objeto JSON. 
+			Los String son planos y no hay forma de serializarlos a un objeto JSON ({ clave1=valor1, clave2=valor2, ...})
+			
+			Aún así, tanto a los objetos como a los String, se pueden devolver desde el Backend con o sin Wrappers
+
+			1. No usar Wrappers en BackEnd
+
+			Al no enviar la información en un envoltorio, JQuery ni Ajax es caapz de interpretar correctametne la
+			info proporcionada por el Back
+
+			1.1. Suponiendo que se tiene un método en el Controller que devuelve String...
+			
+			Si no se usa algún Wrapper (como ObjectMapper objectMapper [com.fasterxml.jackson.databind.ObjectMapper],
+			JsonObject o EntityResponse<>) siempre se devolverá un String, por lo que estamos obligados
+			a cambiar el dataType hacia "text". 
+
+				dataType: "text"
+
+			1.2. Suponiendo que se tiene un método en el Controller que devuelve un Objeto...
+
+			Spring Boot automaticamente lo convierte en un JSON siempre y cuando sea un Objeto de Clase,
+			excepto String y derviados. 
+
+			El problema viene cuando se regresa un null o excepcion porque generá un HttpStatus 404 y un "error
+			desconocido" para el Cliente. No se pueden manejar errores, para ello, se necesitaría envíar
+			un objeto vacio con alguna bandera. Aún así, si se decide este camino ES OBLIGATORIO
+			QUE EL "dataType" SEA "json" SINO SE PIERDE LA DATA DEL BACKEND.
+				
+				dataType: "json"
+
+			2. Usando un Wrapper
+
+			1.1. Suponiendo que se tiene un método en el Controller que devuelve String...
+
+			NO HAY FORMA. el contenido de una cadena de texto simple NO PUEDE SER SERIALIZADO a un objeto JSON.
+
+			2.2. Suponiendo que se tiene un método en el Controller que devuelve un Objeto...
+
+			Al usar un Wrapper en el BackEnd (como ObjectMapper[com.fasterxml.jackson.databind.ObjectMapper],
+			JsonObject o EntityResponse<>) la serialiazción de los objetos a JSON en el lado del cliente se
+			hace muy fácil en Javascript (incluyendo JQuery y Ajax) al interpretar la data en JSON.
+
+			En el caso de EntityResponse<>, se debe enviar un objeto en el body para serializarse,
+			a tráves de:
+				- Un objeto de una Clase Especifica				
+				- Un Map<K,V>
 			*/
 			
 			$.ajax({
 				type: "POST",
 				//contentType: 'application/json; charset=utf-8',
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
-				dataType: "json",				
+				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
 				url: url,
 				//data: JSON.parse(usuarioCredenciales),
 				//data: usuarioCredenciales, // jQuery convertirá este objeto a una cadena de consulta
@@ -742,8 +799,7 @@
 						$("#modalLoginError").modal('show');
 
 						// Pone un texto en pantalla avisando al usuario del Usuario no encontrado
-						$("#div-Msj-Login").text("<div> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
-						$("#p-Msj-Login").text("<p> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
+						$("#div-Msj-Login").text("Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
 			        }
 				},
 				error: function (xhrData, status, error) {
@@ -753,12 +809,13 @@
 					console.log("headers: \n" + xhrData.getAllResponseHeaders());
 
 					// Usuario no encontrado, muestra mensaje de error
-			        alert("Error al ejecutar petición");
+			        alert("Error al ejecutar petición", error);
+					//$("#modalLoginError .modal-body").html("No es posible el acceso<br>" + error.toString());
+					$("#modalLoginError .modal-body").html("No es posible el acceso<br>" + error.toString());
 					$("#modalLoginError").modal('show');
 
 					// Pone un texto en pantalla avisando al usuario del Usuario no encontrado
-					$("#div-Msj-Login").text("<div> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
-					$("#p-Msj-Login").text("<p> Usuario desconocido. Aseguresé de escribir las credenciales correctamente.");
+					$("#div-Msj-Login").html("Error desconocido. Aseguresé de escribir bien las credenciales.<br><br>Error:"+xhrData.getAllResponseHeaders());
 				},
 				complete: function(xhrData, status){
 					console.log("complete(): " + status);

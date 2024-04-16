@@ -76,7 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if (u.getLogin() == null || u.getLogin().isBlank()) {			
 			//System.out.println("No hay Login -> se recibio un NULL");
 			//return null;
-			return "No hay Login -> se recibio un NULL";
+			return "No hay Login ingresado -> Se recibio un valor NULL";
 		}
 		
 		Usuario encontrado = this.getUsuarioByLogin(u.getLogin());
@@ -87,13 +87,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 			//Encryptamos la contraseña antes de guardar al objeto
 			u.setPass(this.cifrar_y_encryptar( u.getPass()) );
 			
+			//FechaModificaion es igual a la FechaAlta
+			if (u.getFechaalta() == null) {
+				u.setFechaalta(new Date());
+			}
+			if (u.getFechamodificacion() == null) {
+				u.setFechamodificacion(new Date());
+			}
+			
 			Usuario nuevo = usuarioDAO.saveUsuario(u);
 			
 			//Si devuelve un null es que no se pudo guardar
 			if(nuevo != null) {
 				System.out.println("Registrado: " + nuevo.getLogin());
 				//return nuevo;
-				return "Usuario: " + nuevo.getLogin() + " - No.Cliente: " + nuevo.getCliente() + " registrado";
+				return "Usuario: " + nuevo.getLogin() + " - No. Cliente: " + (int)nuevo.getCliente() + " registrado";
 			}
 			
 			System.out.println("Hay un problema para registrar");
@@ -114,6 +122,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 	//public Usuario saveOrUpdateUsuario(Usuario u) {
 	public String saveOrUpdateUsuario(Usuario u) {
 		
+		//Validacion de LOGIN != NULL
+		if (u.getLogin() == null || u.getLogin().isBlank()) {			
+			//System.out.println("No hay Login -> se recibio un NULL");
+			//return null;
+			return "No hay un login ingresado, se recibio un valor NULL";
+		}
+		
 		//Si existe, se podra actualizar
 		Usuario encontrado = this.getUsuarioByLogin( u.getLogin() );
 		if ( encontrado != null ) {
@@ -128,6 +143,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 				u.setPass(passEncrypt);
 			}else {
 				u.setPass(encontrado.getPass());
+			}
+			
+			//FechaModificaion es igual a la FechaAlta
+			if (u.getFechaalta() == null) {
+				u.setFechaalta(encontrado.getFechaalta());
+			}
+			if (u.getFechamodificacion() == null) {
+				u.setFechamodificacion(new Date());
 			}
 			
 			Usuario nvo = usuarioDAO.updateUsuario(u);

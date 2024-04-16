@@ -5,8 +5,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -39,11 +41,7 @@ public class UsuarioController {
 	@Autowired
 	UsuarioService usuarioService;
 	
-	@GetMapping(value = "usuario/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Usuario getUsuarioByLogin(@PathVariable("login") String login) {
-		
-		return usuarioService.getUsuarioByLogin(login);
-	}
+
 	
 	@GetMapping(value = "correo/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Usuario getUsuarioByEmail(@PathVariable("email") String email) {
@@ -62,7 +60,7 @@ public class UsuarioController {
 		return "prueba" + s ;
 	}
 	
-	//ALT + SHIFT X, B
+	//ALT + SHIFT + X, B
 	
 	//PRUEBA DE QUE EL SERVICIO SIRVE CON DIFERENTES URL O RECURSOS
 	
@@ -90,6 +88,7 @@ public class UsuarioController {
 			consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE},
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
 		public ResponseEntity<Usuario> getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) {
+		//public Usuario getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) { // USADO SOLO PARA TESTEO DE UN EXPERIMENTO
 				//try {
 					System.out.println("Entro a /login1: " + uc.toString());
 					//return usuarioService.getUsuarioByCredenciales(uc);
@@ -104,9 +103,11 @@ public class UsuarioController {
 					
 					if (user != null) {
 			            return new ResponseEntity<>(user, HttpStatus.OK);
+			            //return user;// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
 			        } else {
 			            // Si el usuario no se encuentra, puedes devolver un error
 			            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			            //return null; // USADO SOLO PARA TESTEO DE UN EXPERIMENTO
 			        }
 					
 				/*} catch (Exception e) {
@@ -182,26 +183,154 @@ public class UsuarioController {
 	
 	/*-----------------------------------------------------------------------------------*/
 	// METODOS DE APLICATIVO
+
+	
+	@GetMapping(value = "usuario/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Usuario> getUsuarioByLogin(@PathVariable("login") String login) {
+	//public Usuario getUsuarioByLogin(@PathVariable("login") String login) {
+		
+		Usuario recuperado = usuarioService.getUsuarioByLogin(login);
+		return new ResponseEntity<Usuario>(recuperado, HttpStatus.OK);
+	}
 	
 	@PostMapping(value = "/registrar", consumes = { MediaType.APPLICATION_JSON_VALUE }, 
-			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public String saveUsuario(@RequestBody Usuario u) {
-	//public Usuario saveUsuario(@RequestBody Usuario u) {
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO	
+	public ResponseEntity<HashMap<String, Object>> saveUsuario(@RequestBody Usuario u) {
+	//public String saveUsuario(@RequestBody Usuario u) {// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
+		
+		//Body de la rspuesta
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		
+		//Instancia de Headers
+		HttpHeaders headers =  new HttpHeaders();
+		
+		//Lista de MediaType soportados por este recurso
+		List<MediaType> listMediaType = new ArrayList<>();
+		listMediaType.add(MediaType.APPLICATION_JSON);
+		listMediaType.add(MediaType.APPLICATION_XML);
+		listMediaType.add(MediaType.TEXT_XML);
+		listMediaType.add(MediaType.TEXT_HTML);
+		listMediaType.add(MediaType.TEXT_PLAIN);
+		
+		//Se agrega los MediaType a los Headers
+		headers.setAccept(listMediaType);
+		
+		//Se declara el ResponseEntity
+		ResponseEntity<HashMap<String, Object>> resp = null;
+		HttpStatus estatus;
+		
 		try {
-			return usuarioService.saveUsuario(u);		
+			//Devolucion del Service		
+			String mensaje = usuarioService.saveUsuario(u);
+			
+			//Body
+			map.put("mensaje", mensaje);
+			//Headers		
+			if(mensaje.contains("No. Cliente")) {
+				headers.add("resultado", "success");
+			}else {
+				headers.add("resultado", "fail");				
+			}			
+			
+			//HttpStatusCode
+			estatus = HttpStatus.OK;
+			
+			resp = new ResponseEntity<>(map, headers, estatus);
+			return resp;
+			
+			// ORIGINALMENTE
+			//return usuarioService.saveUsuario(u);		
 		}catch(Throwable t) {
 			t.printStackTrace();
-			return null;
+			
+			//Body
+			map.put("mensaje", "Error en la peticion:\n" + t.toString());
+			//Headers
+			headers.add("causa", t.getMessage());
+			headers.add("error", "No se agrego al usuario");
+			headers.add("resultado", "fail");
+			//Estatus
+			estatus = HttpStatus.BAD_REQUEST;
+			
+			resp = new ResponseEntity<HashMap<String, Object>>(map, headers, estatus);
+			return resp;
 		}
 	}
 	
-	@PutMapping(value = "/actualizar", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public String updateUsuario(@RequestBody Usuario u) {
+	@PutMapping(value = "/actualizar", consumes = { MediaType.APPLICATION_JSON_VALUE }, 
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
+	public ResponseEntity<HashMap<String,Object>> updateUsuario(@RequestBody Usuario u) {
+	//public String updateUsuario(@RequestBody Usuario u) {
+		//Body de la rspuesta
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		
+		//Instancia de Headers
+		HttpHeaders headers =  new HttpHeaders();
+		
+		//Lista de MediaType soportados por este recurso
+		List<MediaType> listMediaType = new ArrayList<>();
+		listMediaType.add(MediaType.APPLICATION_JSON);
+		listMediaType.add(MediaType.APPLICATION_XML);
+		listMediaType.add(MediaType.TEXT_XML);
+		listMediaType.add(MediaType.TEXT_HTML);
+		listMediaType.add(MediaType.TEXT_PLAIN);
+		
+		//Se agrega los MediaType a los Headers
+		headers.setAccept(listMediaType);
+		
+		//Se declara el HttpStatusCode y ResponseEntity
+		HttpStatus estatus  = HttpStatus.OK;
+		ResponseEntity<HashMap<String,Object>> resp = null;		
+		
 		try {
-			return usuarioService.saveOrUpdateUsuario(u);
+			//Devolucion del Service
+			String mensaje = usuarioService.saveOrUpdateUsuario(u);
+			
+			//Generacion del Body
+			if (mensaje.endsWith("actualizado")) {
+				//Recuperación del objeto
+				Usuario recuperado = usuarioService.getUsuarioByLogin(u.getLogin());
+				
+				//Body: Setteando valores al body
+				map.put("resultado", "success");
+				map.put("data", recuperado);
+				map.put("mensaje", mensaje);
+				
+				//Headers
+				headers.add("resultado", "success");
+			} else {
+				//Body: Setteando valores al body
+				map.put("resultado", "fail");
+				map.put("data", null);
+				map.put("mensaje", mensaje);				
+				
+				//Headers
+				headers.add("resultado", "fail");
+			}						
+			
+			//Genacion del ResponseEntity
+			resp = new ResponseEntity<>(map, headers, estatus);
+			
+			return resp;
 		}catch(Throwable t) {
 			t.printStackTrace();
-			return null;
+			
+			//Body
+			//NO APLICA
+			
+			//Headers
+			headers.add("causa", t.getMessage());
+			headers.add("descripcion", "No se agrego al usuario");
+			headers.add("resultado", "fail");
+			headers.add("causa-backend", t.getMessage());
+			
+			//Estatus
+			estatus = HttpStatus.BAD_REQUEST;
+			resp = new ResponseEntity<>( headers, HttpStatus.NOT_FOUND);
+			
+			return resp;
 		}
 	}
 	

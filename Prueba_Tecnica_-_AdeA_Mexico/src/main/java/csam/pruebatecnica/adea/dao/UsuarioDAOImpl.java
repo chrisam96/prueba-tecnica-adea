@@ -173,7 +173,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 			     * me di cuenta de la fecha real que se envia a la consulta (Criteria)
 			     * y hay se tenia la diferencia de 6 hrs.
 			     * 
-			     * - En las ultimas pruebas, ahora con el seteo de la Zona Horaria,
+			     * - En las ultimas pruebas, ahora con el setteo de la Zona Horaria,
 			     * "pred.rightHandExpression.value" 
 			     * arroja una fecha erronea con 6 hrs de diferencia
 			     * pero la consulta ya la hace bien

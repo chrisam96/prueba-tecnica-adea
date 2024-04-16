@@ -27,41 +27,678 @@
 
 </head>
 <body>
-	<div id="div-Msj-Home">
-	Gestión de usuarios
-		<p id="p-Msj-Home"></p>
+	<div class="container text-center">
+		<h1>Gestión de Usuarios</h1>	
 	</div>
+	&nbsp;&nbsp;&nbsp;
 	
-	<div class="card">
-		<form action="">
-			<div class="card-header bg-primary text-white"> Altas de Usuario</div>
-			<div class="card-body bg-light"> Body or Content</div>
-			<div class="card-footer bg-secondary text-light"> Footer y poner botón submit</div>
-		</form>
+	<div id="modal-GestionUsuarios-Msj" class="modal" >
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+
+				<!-- Header -->
+				<div class="modal-header text-start">
+
+					<!-- "btn-close": Dibuja un botón de cierre en la esquina superior derecha
+						"data-bs-dismiss:  modal" habilita la función del botón cerrar al Modal 
+						"class=modal-title": Es el titulo del modal
+					-->
+					<h4 id="modal-GestionUsuarios-header" class="modal-title"></h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Body -->
+				<div id="modal-GestionUsuarios-body" class="modal-body">
+					
+				</div>
+
+				<!-- Footer -->
+				<div id="modal-GestionUsuarios-footer" class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="container mb-3">
+		<div class="card">
+			<form id="formAlta" action="">
+				<div class="card-header bg-primary text-white text-center"> 
+					<h4><b>Altas de Usuario </b></h4>
+				</div>
+				<div class="card-body bg-light"> 
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Login:</b></span>
+						<input id="alta-login" name="login" type="text" class="form-control" placeholder="Nombre de usuario"
+						maxlength="20" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Contraseña:</b></span>
+						<input id="alta-pass" name="pass" type="text" class="form-control" placeholder="Contraseña de usuario"
+						maxlength="20" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Nombre:</b></span>
+						<input id="alta-nombre" name="nombre" type="text" class="form-control" placeholder="Nombre(s)"
+						maxlength="50" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Cliente:</b></span>
+						<input id="alta-cliente" name="cliente" type="number" class="form-control" placeholder="Número de cliente"
+						maxlength="5" max="80000" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>E-mail:</b></span>
+						<input id="alta-email" name="email" type="text" class="form-control" placeholder="Correo electrónico"
+						maxlength="50">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Alta:</b></span>
+						<input id="alta-fechaalta" name="fechaalta" type="date" class="form-control" placeholder="Fecha de Alta"
+						value="">
+					</div>
+					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Baja:</b></span>
+						<input id="alta-fechabaja" name="fechabaja" type="date" class="form-control" placeholder="Fecha de Baja">
+					</div>
+					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Estatus:</b></span>
+						<select id="alta-estatus" name="estatus" class="form-select" placeholder="A=Activo, B=Inactivo, R=Revocado" 
+						required>
+							<option value="A">A</option>
+							<option value="B">B</option>
+							<option value="R">R</option>
+						</select>
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Intentos:</b></span>
+						<input id="alta-intentos" name="intentos" type="number" class="form-control" placeholder="Intentos"
+						value="0" required readonly>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Revocado:</b></span>
+						<input id="alta-fecharevocado" name="fecharevocado" type="date" class="form-control" placeholder="Fecha de Revocado">
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Vigencia:</b></span>
+						<input id="alta-fechaVigencia" name="fechaVigencia" type="date" class="form-control" placeholder="Fecha de Vigencia">
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>No. Acceso:</b></span>
+						<input id="alta-noAcceso" name="noAcceso" type="number" class="form-control" placeholder="Nombre de usuario"
+						value="1" max="100" min="1">
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Apellido Paterno:</b></span>
+						<input id="alta-apellidoPaterno" name="apellidoPaterno" type="text" class="form-control" placeholder="Apellido Paterno"
+						maxlength="50">
+					</div>					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Apellido Materno:</b></span>
+						<input id="alta-apellidoMaterno" name="apellidoMaterno" type="text" class="form-control" placeholder="Apellido Materno"
+						maxlength="50">
+					</div>					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Area:</b></span>
+						<input id="alta-area" name="area" type="tel" class="form-control" placeholder="Area"
+						maxlength="4" max="4">
+					</div>		
+					<!--			
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Modificación:</b></span>
+						<input id="alta-fechamodificacion" name="fechamodificacion" type="text" class="form-control" placeholder="Nombre de usuario"
+						required>
+					</div>					
+					-->
+					<!-- ejemplo
+					<div class="input-group mb-3">
+						<span class="input-group-text">@</span>
+						<input type="email" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">date</span>
+						<input id="prb-date" type="date" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">datetime</span>
+						<input id="prb-datetime" type="datetime" class="form-control" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">datetime-local</span>
+						<input id="prb-datetime-local" type="datetime-local" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">month</span>
+						<input id="prb-month" type="month" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">range</span>
+						<input id="prb-range" type="range" min="1" max="21" step="5" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">reset</span>
+						<input id="prb-reset" type="reset" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">time</span>
+						<input id="prb-time" type="time" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">week</span>
+						<input id="prb-week" type="week" class="form-control" placeholder="Username" name="usrname">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text">tel</span>
+						<input id="prb-tel" type="tel" class="form-control" placeholder="Username" name="usrname">
+					</div>
+				-->					
+				</div>
+				<div class="card-footer mx-auto bg-secondary text-light">
+					<button id="alta-submit" class="btn btn-primary text-center w-100" type="submit">Registrar</button>
+				</div>
+			</form>
+		</div>
 	</div>
 	<br>
 
 	<span></span>
 
-	<div class="card">
-		<div class="card-header bg-warning "> Modificaciones de Usuario</div>
-		<div class="card-body bg-light"> Body or Content</div>
-		<div class="card-footer bg-secondary text-light"> Footer y poner botón submit</div>
+	<div class="container mb-3">
+		<div class="card">
+			<div class="card-header bg-warning text-center"> 
+				<h4><b>Modificaciones de Usuario</b></h4>
+			</div>
+			<div class="card-body bg-light">
+				<label class="form-label">Ingrese el "login" del usuario que desea modificar y luego presione el botón 
+					<b>"Buscar"</b> para buscar sus información. Presione el botón de <b>"Modificar"</b> para cambiar datos del usuario:
+				</label> 
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Login:</b></span>
+					<input id="modif-login-buscador" name="login" type="text" class="form-control" placeholder="Nombre de usuario"
+					maxlength="20" required>
+					<button id="modif-Buscar" class="btn btn-warning text-dark" type="submit"><b>BUSCAR</b></button>
+				</div>				
+				
+				<hr class="hr">
+
+				<label class="form-label">Datos del Usuario encontrados:</label> &nbsp;
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Login:</b></span>
+					<input id="modif-login" name="login" type="text" class="form-control" placeholder="Nombre de usuario"
+					maxlength="20" required readonly> <!-- Agregar readonly -->
+				</div>
+
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Contraseña:</b></span>
+					<input id="modif-pass" name="pass" type="text" class="form-control" placeholder="Contraseña de usuario"
+					maxlength="20" required>
+				</div>
+
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Nombre:</b></span>
+					<input id="modif-nombre" name="nombre" type="text" class="form-control" placeholder="Nombre(s)"
+					maxlength="50" required>
+				</div>
+
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Cliente:</b></span>
+					<input id="modif-cliente" name="cliente" type="number" class="form-control" placeholder="Número de cliente"
+					maxlength="5" max="80000" required>
+				</div>
+
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>E-mail:</b></span>
+					<input id="modif-email" name="email" type="text" class="form-control" placeholder="Correo electrónico"
+					maxlength="50">
+				</div>
+
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Fecha de Alta:</b></span>
+					<input id="modif-fechaalta" name="fechaalta" type="date" class="form-control" placeholder="Fecha de Alta"
+					value="">
+				</div>
+				
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Fecha de Baja:</b></span>
+					<input id="modif-fechabaja" name="fechabaja" type="date" class="form-control" placeholder="Fecha de Baja">
+				</div>
+				
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Estatus:</b></span>
+					<select id="modif-estatus" name="estatus" class="form-select" placeholder="A=Activo, B=Inactivo, R=Revocado" 
+					required>
+						<option>A</option>
+						<option>B</option>
+						<option>R</option>
+					</select>
+				</div>
+									
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Intentos:</b></span>
+					<input id="modif-intentos" name="intentos" type="number" class="form-control" placeholder="Intentos"
+					value="0" required readonly>
+				</div>
+
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Fecha de Revocado:</b></span>
+					<input id="modif-fecharevocado" name="fecharevocado" type="date" class="form-control" placeholder="Fecha de Revocado">
+				</div>
+									
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Fecha de Vigencia:</b></span>
+					<input id="modif-fechaVigencia" name="fechaVigencia" type="date" class="form-control" placeholder="Fecha de Vigencia">
+				</div>
+									
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>No. Acceso:</b></span>
+					<input id="modif-noAcceso" name="noAcceso" type="number" class="form-control" placeholder="Nombre de usuario"
+					value="1" max="100" min="1">
+				</div>
+									
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Apellido Paterno:</b></span>
+					<input id="modif-apellidoPaterno" name="apellidoPaterno" type="text" class="form-control" placeholder="Apellido Paterno"
+					maxlength="50">
+				</div>					
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Apellido Materno:</b></span>
+					<input id="modif-apellidoMaterno" name="apellidoMaterno" type="text" class="form-control" placeholder="Apellido Materno"
+					maxlength="50">
+				</div>					
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Area:</b></span>
+					<input id="modif-area" name="area" type="tel" class="form-control" placeholder="Area"
+					maxlength="4" max="4">				
+				</div>
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Fecha de Modificación:</b></span>
+					<input id="modif-fechamodificacion" name="fechamodificacion" type="text" class="form-control" placeholder="Fecha de Modificación"
+					readonly>
+				</div>
+
+			</div>
+			<div class="card-footer bg-secondary text-light">
+				<button id="modif-submit" class="btn btn-warning text-dark w-100" type="submit"><b>Modificar datos del Usuario</b></button>
+			</div>
+		</div>
 	</div>
 	<br>
 	
 	<span></span>
 	
-	<div class="card">
-		<div class="card-header bg-danger text-white"> Bajas de Usuario</div>
-		<div class="card-body bg-light"> Body or Content</div>
-		<div class="card-footer bg-secondary text-light"> Footer y poner botón submit</div>
+	<div class="container mb-3">
+		<div class="card">
+			<div class="card-header bg-danger text-white text-center"> 
+				<h4><b>Bajas de Usuario</b></h4>
+			</div>
+			<div class="card-body bg-light"> 
+				<label class="form-label">Ingrese el "login" del usuario que quiere eliminar y presione el botón 
+					<b>"Buscar"</b> para buscar sus datos. Presione el botón de <b>"Eliminar"</b> para borrar al usuario:
+				</label> 
+				<div class="input-group mb-3">
+					<span class="input-group-text"><b>Login:</b></span>
+					<input id="baja-login-buscador" name="login" type="text" class="form-control" placeholder="ID de usuario"
+					maxlength="20" required>
+					<button id="baja-buscar" class="btn btn-danger text-dark" type="submit"><b>Buscar</b></button>
+				</div>								
+				
+				<hr class="hr">	
+				
+				<div class="input-group mb-3">
+						<span class="input-group-text"><b>Login:</b></span>
+						<input id="baja-login" name="login" type="text" class="form-control" placeholder="Nombre de usuario"
+						maxlength="20" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Contraseña:</b></span>
+						<input id="baja-pass" name="pass" type="text" class="form-control" placeholder="Contraseña de usuario"
+						maxlength="20" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Nombre:</b></span>
+						<input id="baja-nombre" name="nombre" type="text" class="form-control" placeholder="Nombre(s)"
+						maxlength="50" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Cliente:</b></span>
+						<input id="baja-cliente" name="cliente" type="number" class="form-control" placeholder="Número de cliente"
+						maxlength="5" max="80000" required>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>E-mail:</b></span>
+						<input id="baja-email" name="email" type="text" class="form-control" placeholder="Correo electrónico"
+						maxlength="50">
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Alta:</b></span>
+						<input id="baja-fechaalta" name="fechaalta" type="date" class="form-control" placeholder="Fecha de Alta"
+						value="">
+					</div>
+					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Baja:</b></span>
+						<input id="baja-fechabaja" name="fechabaja" type="date" class="form-control" placeholder="Fecha de Baja">
+					</div>
+					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Estatus:</b></span>
+						<select id="baja-estatus" name="estatus" class="form-select" placeholder="A=Activo, B=Inactivo, R=Revocado" 
+						required>
+							<option value="A">A</option>
+							<option value="B">B</option>
+							<option value="R">R</option>
+						</select>
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Intentos:</b></span>
+						<input id="baja-intentos" name="intentos" type="number" class="form-control" placeholder="Intentos"
+						value="0" required readonly>
+					</div>
+
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Revocado:</b></span>
+						<input id="baja-fecharevocado" name="fecharevocado" type="date" class="form-control" placeholder="Fecha de Revocado">
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Fecha de Vigencia:</b></span>
+						<input id="baja-fechaVigencia" name="fechaVigencia" type="date" class="form-control" placeholder="Fecha de Vigencia">
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>No. Acceso:</b></span>
+						<input id="baja-noAcceso" name="noAcceso" type="number" class="form-control" placeholder="Nombre de usuario"
+						value="1" max="100" min="1">
+					</div>
+										
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Apellido Paterno:</b></span>
+						<input id="baja-apellidoPaterno" name="apellidoPaterno" type="text" class="form-control" placeholder="Apellido Paterno"
+						maxlength="50">
+					</div>					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Apellido Materno:</b></span>
+						<input id="baja-apellidoMaterno" name="apellidoMaterno" type="text" class="form-control" placeholder="Apellido Materno"
+						maxlength="50">
+					</div>					
+					<div class="input-group mb-3">
+						<span class="input-group-text"><b>Area:</b></span>
+						<input id="baja-area" name="area" type="tel" class="form-control" placeholder="Area"
+						maxlength="4" max="4">
+					</div>			
+			</div>
+			<div class="card-footer bg-secondary text-light"> 
+				<button id="baja-submit" class="btn btn-danger text-light w-100" type="submit"><b>Eliminar al usuario</b></button>
+			</div>
+		</div>
 	</div>
 	
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">
 		$(document).ready(function(){
 				
+		});
+	</script>
+
+	<script type="text/javascript" defer>
+		//variable global para las altas, bajas y modificaciones
+		var usuario = {};
+
+		function generarUsuario(tipoForm){
+
+			if(usuario != null || usuario != undefined){
+				usuario = {};
+			}
+
+			console.log("*********ALTA********");
+			usuario.login 				=		$("#"+tipoForm+"-login").val();
+			usuario.pass 				=		$("#"+tipoForm+"-pass").val();
+			usuario.nombre 				=		$("#"+tipoForm+"-nombre").val();
+			usuario.cliente 			=		$("#"+tipoForm+"-cliente").val();
+			usuario.email 				=		$("#"+tipoForm+"-email").val();
+			usuario.fechaalta 			=		$("#"+tipoForm+"-fechaalta").val();
+			usuario.fechabaja 			=		$("#"+tipoForm+"-fechabaja").val();
+			usuario.estatus 			=		$("#"+tipoForm+"-estatus").val();
+			usuario.intentos 			=		$("#"+tipoForm+"-intentos").val();
+			usuario.fecharevocado 		=		$("#"+tipoForm+"-fecharevocado").val();
+			usuario.fechaVigencia 		=		$("#"+tipoForm+"-fechaVigencia").val();
+			usuario.noAcceso 			=		$("#"+tipoForm+"-noAcceso").val();
+			usuario.apellidoPaterno 	=		$("#"+tipoForm+"-apellidoPaterno").val();
+			usuario.apellidoMaterno 	=		$("#"+tipoForm+"-apellidoMaterno").val();
+			usuario.area 				=		$("#"+tipoForm+"-area").val();
+			//usuario.fechamodificacion 	=		$("#alta-fechamodificacion").val();
+
+			//console.log("Usuario:\n",usuario);
+			return usuario;
+			/*
+			console.log("*********ALTA********");
+			console.log("email(input): ",$('input[type="email"]').val());
+			console.log("date: ",$("#prb-date").val());
+			console.log("datetime: ",$("#prb-datetime").val());
+			console.log("datetime-local: ",$("#prb-datetime-local").val());
+			console.log("month: ",$("#prb-month").val());
+			console.log("range: ",$("#prb-range").val());
+			console.log("reset: ",$("#prb-reset").val());
+			console.log("time: ",$("#prb-time").val());
+			console.log("week: ",$("#prb-week").val());
+			console.log("tel: ",$("#prb-tel").val());
+			*/
+		}
+
+		function ajaxStart(verbo, url, objeto){
+			console.log("accion: ",verbo);
+			console.log("URL: ",url);
+			console.log("Data: ",objeto);
+			
+			//Enviar un String como respuesta a JQuery: https://stackoverflow.com/questions/75509884/spring-controller-not-returning-valid-json
+
+			return $.ajax({
+				type: verbo,				
+				contentType: 'application/json', // Especifica el tipo de contenido como JSON
+				dataType: "json",//"text", //Especifica qcual es el tipo de Data que se espera recibir del Backend
+				url: url,
+				//data: JSON.parse(usuarioCredenciales),
+				//data: usuarioCredenciales, // jQuery convertirá este objeto a una cadena de consulta
+				data: JSON.stringify(objeto)  // Convierte el objeto a una cadena JSON
+			})
+			.done( function (data, status, xhrData) {
+					console.log("done()");
+					console.log("data:\n", data); // Accede al cuerpo de la respuesta
+					console.log("status: " + status);
+					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
+					console.log("headers: \n" + xhrData.getAllResponseHeaders());
+					
+					let titulo = "";
+					if (xhrData.getResponseHeader("resultado") === "success") {
+						//alert("200");
+						titulo = "Mensaje";
+					} else {
+						//alert("304");
+						titulo = "Error";
+					} 
+
+					//Editando el Modal
+					/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
+
+						1. Directa: Usando su ID del elemento interno
+						2. Indirecta: Usando el ID del elemento contenedor y el "class" del 
+						elemento interno.
+					*/
+					$("#modal-GestionUsuarios-body").text(data.mensaje);
+					$("#modal-GestionUsuarios-Msj .modal-title").text(titulo);					
+
+					//Mostrar el mensaje
+					$("#modal-GestionUsuarios-Msj").modal("show");
+				})
+			.fail( function (xhrData, status, error) {
+					console.log("fail()");					
+					console.log("status: " + status);
+					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
+					console.log("Headers: \n" + xhrData.getAllResponseHeaders());
+					console.log("Error Thrown: \n" + error);
+
+					//alert("Error");
+					//Editando el Modal
+					/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
+
+						1. Directa: Usando su ID del elemento interno
+						2. Indirecta: Usando el ID del elemento contenedor y el "class" del 
+						elemento interno.
+					*/
+					let msj_body_error = "Resultado de la Operación: " + xhrData.resultado + "\n" +
+										"Descripcion: " + xhrData.error + "\n" +
+										"Causa (Backend): " + xhrData.causa + "\n" +
+										"Causa (Frontend): " + error;
+					$("#modal-GestionUsuarios-body").text(msj_body_error);
+					$("#modal-GestionUsuarios-Msj .modal-header").text("Error Fatal");					
+
+					//Mostrar el mensaje
+					$("#modal-GestionUsuarios-Msj").modal("show");
+				});//
+			/*.always( function(data_or_xhr, status, xhr_or_error){
+				let text1 = "", text2 = "", text3 = "";
+
+				console.log("always() -> Entro");
+				
+				//Si: existe data_or_xhr.status -> es porque se ejecuto el "fail()"				
+				if(data_or_xhr.status != undefined){
+					// Accede al estado HTTP de la respuesta
+					console.log("HTTP Status Code (Error): " + data_or_xhr.status);
+					text1 = "XHR(Headers): ";
+					text2 = "HTTP Status: ";
+					text3 = "Error Thrown: ";
+				}
+				//Sino: -> "done()"
+				else{
+					text1 = "Data: ";
+					text2 = "HTTP Status: ";
+					text3 = "XHR (Headers): ";
+				}
+				console.log(text1, data_or_xhr);
+				console.log(text2, status);
+				console.log(text3, xhr_or_error);		
+			});*/
+		}
+
+		function formatearFecha(fecha){
+			if(fecha != null){
+				var fechaFormateada = null;
+				//The specified value "2024-04-16T04:18:09.000+00:00" does not conform to the required format, "yyyy-MM-dd".
+				fechaFormateada = new Date(fecha);
+				return fechaFormateada;
+			}
+			return null;
+		}
+
+		$("#formAlta").submit(function(event){
+			event.preventDefault();
+			let verbo = "POST", url = "http://localhost:9010/registrar" /*"/registrar"*/, user = {}, ajaxResult =  null;			
+			
+			user  = generarUsuario("alta");
+			//console.log("formAlta -> submit \n", user);
+			
+			ajaxResult = ajaxStart(verbo, url, user);
+			console.log("ajaxResult: \n", ajaxResult);
+		});
+
+		$("#modif-Buscar").click(function(e){
+			//Declaracion de variables
+			let url_getUsuarioByLogin = "http://localhost:9010/usuario/"; // URL = usuario/{login}
+			let idUsuario = $("#modif-login-buscador").val().trim();
+
+			if (idUsuario == undefined || idUsuario === "") {
+
+				//Modificando el Modal para mostrar el mensaje
+				$("#modal-GestionUsuarios-Msj .modal-title").text("Login inválido");
+				$("#modal-GestionUsuarios-body").text("Favor de agregar un login (ID).");				
+
+				//Mostrar el mensaje
+				$("#modal-GestionUsuarios-Msj").modal("show");
+				return;
+			}
+
+			url_getUsuarioByLogin += idUsuario;
+			console.log(url_getUsuarioByLogin);
+
+			//AJAX
+			$.ajax({
+				type: "GET",				
+				contentType: 'application/json', // Especifica el tipo de contenido como JSON
+				dataType: "json",//"text", //Especifica qcual es el tipo de Data que se espera recibir del Backend
+				url: url_getUsuarioByLogin,				
+				//data: usuarioCredenciales, // jQuery convertirá este objeto a una cadena de consulta
+				//data: JSON.stringify(objeto)  // Convierte el objeto a una cadena JSON
+			})
+			.done( function (data, status, xhrData) {
+				console.log("done()");
+				console.log("data:\n", data); // Accede al cuerpo de la respuesta
+				console.log("status: " + status);
+				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
+				console.log("headers: \n" + xhrData.getAllResponseHeaders());
+
+				$("#modif-login").val(data.login 		);
+				$("#modif-pass").val(data.pass 		);
+				$("#modif-nombre").val(data.nombre 	);
+				$("#modif-cliente").val(data.cliente 	);
+				$("#modif-email").val(data.email 		);
+				
+				let nva_fechaalta = formatearFecha(data.fechaalta);
+				$("#modif-fechaalta").val(	nva_fechaalta	);
+				
+				let nva_fechbaja = formatearFecha(data.fechabaja);
+				$("#modif-fechabaja").val(nva_fechbaja);
+				
+				$("#modif-estatus").val(data.estatus 	);
+				$("#modif-intentos").val(data.intentos 	);
+				
+				let nva_fecharevocado = formatearFecha(data.fecharevocado);
+				$("#modif-fecharevocado").val(nva_fecharevocado );
+
+				let nva_fechaVigencia = formatearFecha(data.fechaVigencia);
+				$("#modif-fechaVigencia").val(nva_fechaVigencia );
+
+				$("#modif-noAcceso").val(data.noAcceso 	);
+				$("#modif-apellidoPaterno").val(data.apellidoPaterno);
+				$("#modif-apellidoMaterno").val(data.apellidoMaterno);
+				$("#modif-area").val(data.area 		);
+				//$("#modif-fechamodificacion").val(usuario.fechamodificacion);
+					
+			})
+			.fail( function (xhrData, status, error) {
+					console.log("fail()");					
+					console.log("status: " + status);
+					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
+					console.log("Headers: \n" + xhrData.getAllResponseHeaders());
+					console.log("Error Thrown: \n" + error);
+			});//
 		});
 	</script>
 </body>
