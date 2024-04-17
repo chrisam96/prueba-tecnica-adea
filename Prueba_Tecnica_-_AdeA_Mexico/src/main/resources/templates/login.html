@@ -763,8 +763,10 @@
 				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
 				url: url,
 				//data: JSON.parse(usuarioCredenciales),
-				//data: usuarioCredenciales, // jQuery convertirá este objeto a una cadena de consulta
-				data: JSON.stringify(usuarioCredenciales),  // Convierte el objeto a una cadena JSON
+				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
+				//data: usuarioCredenciales, 
+				//------Convierte el objeto a una cadena JSON
+				data: JSON.stringify(usuarioCredenciales),  
 				success: function (data, status, xhrData) {
 					console.log("success");
 					console.log("data:\n", data); // Accede al cuerpo de la respuesta

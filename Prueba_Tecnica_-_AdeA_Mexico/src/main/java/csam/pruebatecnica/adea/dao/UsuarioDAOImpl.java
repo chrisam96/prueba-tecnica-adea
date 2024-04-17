@@ -165,7 +165,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 			     *	Ej: 
 			     *		Si la fecha recibida es 	18-Oct 00:00:00 GMT+00:00
 			     *		Tras el bug se modifica al 	17-Oct 18:00:00 GMT-06:00
-			     *	Por la diferencia de horas respecto a CDMX (America/Mexico) 
+			     *	Por la diferencia de horas respecto a CDMX (America/Mexico_City) 
 			     *	que en este caso son -6 hrs. 
 			     * 
 			     * NOTAS
