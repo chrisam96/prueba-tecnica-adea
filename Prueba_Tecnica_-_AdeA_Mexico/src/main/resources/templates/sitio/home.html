@@ -99,10 +99,11 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
-			
+			console.log("datos del login: ", usuario);
+
 			if(usuario != undefined){
-				$('#p-Msj-Home').text("Bienvenido, " + usuario.nombre);
-				$('#div-Msj-Home').text("Hola hola, " + usuario.nombre);
+				//$('#p-Msj-Home').text("Hola estimado, " + usuario.nombre);
+				$('#div-Msj-Home').text("Bienvenido, " + usuario.nombre);
 			}			
 		});
 
