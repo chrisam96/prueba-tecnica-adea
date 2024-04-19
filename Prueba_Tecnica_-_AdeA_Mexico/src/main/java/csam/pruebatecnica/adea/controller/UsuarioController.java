@@ -196,6 +196,7 @@ public class UsuarioController {
 	@PostMapping(value = "/registrar", consumes = { MediaType.APPLICATION_JSON_VALUE }, 
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO	
+	//public ResponseEntity<HashMap<String, ?>> saveUsuario(@RequestBody Usuario u) {
 	public ResponseEntity<HashMap<String, Object>> saveUsuario(@RequestBody Usuario u) {
 	//public String saveUsuario(@RequestBody Usuario u) {// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
 		
@@ -261,6 +262,7 @@ public class UsuarioController {
 	@PutMapping(value = "/actualizar", consumes = { MediaType.APPLICATION_JSON_VALUE }, 
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
+	//public ResponseEntity<HashMap<String, ?>> updateUsuario(@RequestBody Usuario u) {
 	public ResponseEntity<HashMap<String,Object>> updateUsuario(@RequestBody Usuario u) {
 	//public String updateUsuario(@RequestBody Usuario u) {
 		//Body de la rspuesta
@@ -334,24 +336,97 @@ public class UsuarioController {
 		}
 	}
 	
-	@DeleteMapping(value = "/eliminar/{id}", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
-	public void deleteUsuario (@PathVariable("id") String login) {
-		try {						
+	@DeleteMapping(value = "/eliminar/{id}", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE },
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO)
+	//@DeleteMapping(value = "/eliminar/{id}", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<HashMap<String, Object>> deleteUsuario (@PathVariable("id") String login) {
+	//public void deleteUsuario (@PathVariable("id") String login) {
+		//Body de la rspuesta
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		
+		//Instancia de Headers
+		HttpHeaders headers =  new HttpHeaders();
+		
+		//Lista de MediaType soportados por este recurso
+		List<MediaType> listMediaType = new ArrayList<>();
+		listMediaType.add(MediaType.APPLICATION_JSON);
+		listMediaType.add(MediaType.APPLICATION_XML);
+		listMediaType.add(MediaType.TEXT_XML);
+		listMediaType.add(MediaType.TEXT_HTML);
+		listMediaType.add(MediaType.TEXT_PLAIN);
+		
+		//Se agrega los MediaType a los Headers
+		headers.setAccept(listMediaType);
+		
+		//Se declara el HttpStatusCode y ResponseEntity
+		HttpStatus estatus  = HttpStatus.OK;
+		ResponseEntity<HashMap<String,Object>> resp = null;	
+		
+		try {					
+			//Se recupera el usuario esperando a que exista
 			Usuario u = usuarioService.getUsuarioByLogin(login);
 			
 			//Validacion de que exista el usuario
 			if ( u == null ) {
 				System.out.println("Usuario no encontrado");
-				return;
+				//return;
+				
+				//Body: Setteando valores al body
+				map.put("resultado", "fail");				
+				map.put("mensaje", "Usuario no encontrado");
+				
+				//Headers
+				headers.add("resultado", "fail");
+				return new ResponseEntity<HashMap<String,Object>>(map, headers, estatus);
 			}
 			
+			//Elimina al usuario; el método es un void
 			usuarioService.deleteUsuario(u);
 			
+			//Se comprueba que se haya eliminado
 			if (usuarioService.getUsuarioByLogin(login) == null) {
 				System.out.println("Eliminado exitosamente");
+				
+				//Body: Setteando valores al body
+				map.put("resultado", "success");				
+				map.put("mensaje", "Eliminado exitosamente");
+				
+				//Headers
+				headers.add("resultado", "success");
+				
+				//SI TODO FUE EXITOSO, SE RETORNA ESTO
+				return new ResponseEntity<HashMap<String,Object>>(map, headers, estatus);
 			}
+			
+			//Si no se elimino, se devuelve esto
+			//Body: Setteando valores al body
+			map.put("resultado", "fail");				
+			map.put("mensaje", "No fue posible eliminar al usuario");
+			
+			//Headers
+			headers.add("resultado", "fail");			
+			
+			resp = new ResponseEntity<HashMap<String,Object>>(map, headers, estatus);
+			return resp;
 		}catch(Throwable t) {
 			t.printStackTrace();
+			
+			//Body
+			//NO APLICA
+			
+			//Headers
+			headers.add("causa", t.getMessage());
+			headers.add("descripcion", "No se agrego al usuario");
+			headers.add("resultado", "fail");
+			headers.add("causa-backend", t.getMessage());
+			
+			//Estatus
+			estatus = HttpStatus.BAD_REQUEST;
+			
+			//Retorno del Catch
+			resp = new ResponseEntity<>( headers, estatus);
+			return resp;
 		}
 	}
 	
