@@ -190,6 +190,9 @@ public class UsuarioController {
 	//public Usuario getUsuarioByLogin(@PathVariable("login") String login) {
 		
 		Usuario recuperado = usuarioService.getUsuarioByLogin(login);
+		if (recuperado == null) {
+			return new ResponseEntity<Usuario>(HttpStatus.NO_CONTENT);
+		}
 		return new ResponseEntity<Usuario>(recuperado, HttpStatus.OK);
 	}
 	

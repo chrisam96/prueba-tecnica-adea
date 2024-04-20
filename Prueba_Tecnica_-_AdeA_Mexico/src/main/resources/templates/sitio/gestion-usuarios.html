@@ -94,7 +94,7 @@
 
 					<div class="input-group mb-1">
 						<span class="input-group-text"><b>E-mail:</b></span>
-						<input id="alta-email" name="email" type="text" class="form-control" placeholder="Correo electrónico"
+						<input id="alta-email" name="email" type="email" class="form-control" placeholder="Correo electrónico"
 						maxlength="50">
 					</div>
 
@@ -714,15 +714,39 @@
 			return;
 		}
 
+		function limpiarFormulario(id, idForKeep){
+			let formulario = $(id).get(0);			
+			let login = "";
+
+			if(idForKeep != null){
+				login = $( idForKeep ).val();
+			}
+
+			//Usando reset() de Javascript Vanilla
+			$(id).get(0).reset();
+
+			if(idForKeep != null){
+				//Recuperando el valor de la búsqueda del Login
+				$( idForKeep ).val(login);
+			}
+
+			return;
+		}
+
 		$("#formAlta").submit(function(event){
+			//Previene el redireccionamiento de página
 			event.preventDefault();
-			let verbo = "POST", url = "http://localhost:9010/registrar" /*"/registrar"*/, user = {}, ajaxResult =  null;			
-			
-			user  = generarUsuario("alta");
-			//console.log("formAlta -> submit \n", user);
-			
-			ajaxResult = ajaxStart(verbo, url, user);
-			console.log("ajaxResult: \n", ajaxResult);
+
+			desactivarBoton("#alta-submit", true);
+
+			//Hacer la petición AJAX
+			let verbo = "POST", url = "http://localhost:9010/registrar" /*"/registrar"*/, user = {}, ajaxResult =  null;						
+			user  = generarUsuario("alta");					
+			ajaxResult = ajaxStart(verbo, url, user);			
+
+			//Limpia los campos del formulario
+			limpiarFormulario("#formAlta");
+			desactivarBoton("#alta-submit", false);
 		});
 
 		$("#modif-buscar").click(function(e){
@@ -768,6 +792,19 @@
 				console.log("status: " + status);
 				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
 				console.log("headers: \n" + xhrData.getAllResponseHeaders());
+
+				if (xhrData.status == 204) {
+					//Modificando el Modal para mostrar el mensaje
+					$("#modal-GestionUsuarios-Msj .modal-title").text("Usuario no encontrado");
+					$("#modal-GestionUsuarios-body").text("Favor de buscar otro login (ID).");				
+
+					//Mostrar el mensaje
+					$("#modal-GestionUsuarios-Msj").modal("show");
+
+					desactivarBoton("#modif-buscar", false);
+					limpiarFormulario("#formModif", "#modif-login-buscador");
+					return;
+				}
 
 				$("#modif-login").val(data.login 		);
 				$("#modif-pass").val(data.pass 		);
@@ -822,17 +859,18 @@
 		});
 	
 		$("#formModif").submit(function(event){			
+			//Previene el redireccionamiento de página
 			event.preventDefault();
 
-			desactivarBoton("#modif-submit", true);
-			console.log("Entro a #form-Modif");
+			desactivarBoton("#modif-submit", true);			
 
-			let verbo = "PUT", url = "http://localhost:9010/actualizar" /*"/actualizar"*/, user = {}, ajaxResult =  null;			
-			
-			user  = generarUsuario("modif");
-			
+			//Hacer la petición AJAX
+			let verbo = "PUT", url = "http://localhost:9010/actualizar" /*"/actualizar"*/, user = {}, ajaxResult =  null;						
+			user  = generarUsuario("modif");			
 			ajaxResult = ajaxStart(verbo, url, user);
-			console.log("ajaxResult: \n", ajaxResult);
+			
+			//Limpia los campos del formulario
+			limpiarFormulario("#formModif", "#modif-login-buscador");
 			desactivarBoton("#modif-submit", false);
 		});
 
@@ -880,6 +918,20 @@
 				console.log("status: " + status);
 				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
 				console.log("headers: \n" + xhrData.getAllResponseHeaders());
+				
+				if (xhrData.status == 204) {
+					//Modificando el Modal para mostrar el mensaje
+					$("#modal-GestionUsuarios-Msj .modal-title").text("Usuario no encontrado");
+					$("#modal-GestionUsuarios-body").text("Favor de buscar otro login (ID).");				
+
+					//Mostrar el mensaje
+					$("#modal-GestionUsuarios-Msj").modal("show");
+
+					desactivarBoton("#baja-buscar", false);
+					limpiarFormulario("#formBaja", "#baja-login-buscador");
+					return;
+				}
+
 
 				$("#baja-login").val(data.login 		);
 				$("#baja-pass").val(data.pass 		);
@@ -933,24 +985,34 @@
 			});//
 		});	
 	
-		$("#formBaja").submit(function(event){			
+		$("#formBaja").submit(function(event){	
+			//Previene el redireccionamiento de página
 			event.preventDefault();
 
-			desactivarBoton("#baja-submit", true);
-			console.log("Entro a #form-Baja");
+			desactivarBoton("#baja-submit", true);			
 
+			//Hacer la petición AJAX
 			let verbo = "DELETE",  user = {}, ajaxResult =  null;
 			let idUsuario = $("#baja-login-buscador").val().trim();
-			let url = "http://localhost:9010/eliminar/" + idUsuario; /* URL = /eliminar/{id} */
+			let url = "http://localhost:9010/eliminar/" + idUsuario; /* URL = /eliminar/{id} */						
+			ajaxResult = ajaxStart(verbo, url, user);			
 
-			user  = generarUsuario("modif");
-			
-			ajaxResult = ajaxStart(verbo, url, user);
-			console.log("ajaxResult: \n", ajaxResult);
-
+			//Limpia los campos del formulario
+			limpiarFormulario("#formBaja", "#baja-login-buscador");
 			desactivarBoton("#baja-submit", false);
 		});
 		
 	</script>
 </body>
 </html>
+<!-- AGREGAR LA LIMPIEZA DE LOS CAMPOS AL DAR SUBMIT EN ALTA, BAJA, MODIF
+AGREGAR LA VALIDACION DE QUE SI NO SE ENCUENTRA USUARIO, MANDAR ALGO SERIALIZABLE Y NO UN NULL
+
+¿Cómo puedo limpiar campos específicos en lugar de todos los campos de texto y áreas de texto?
+
+¿Qué otros métodos puedo usar para limpiar campos de un formulario con jQuery?
+
+¿Cómo puedo limpiar los campos de un formulario cuando se envía?
+
+¿Cómo puedo deshabilitar el botón de envío después de enviar el formulario para evitar que se envíe varias veces?
+-->
