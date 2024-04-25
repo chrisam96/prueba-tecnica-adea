@@ -17,6 +17,7 @@ import csam.pruebatecnica.adea.utils.UsuarioConstantes;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -125,7 +126,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 			 */
 			List<Predicate> predicates = new ArrayList<>();
 			
-			ZoneId.getAvailableZoneIds().forEach(z -> System.out.println(z));
+			//ZoneId.getAvailableZoneIds().forEach(z -> System.out.println(z));
 		    
 		    //Variables para debuggeo y que el codigo no se vea tan largo
 		    Predicate pred = null;
@@ -223,6 +224,23 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 	            pred = cb.equal(root.get(UsuarioConstantes.FILTRO_ESTATUS), valor);
 	            predicates.add(pred);
 	            System.out.println("ESTATUS = '" + valor + "'");
+	            
+	            
+	            //Pruebas de colecciones
+	            ArrayList<String> lista = new ArrayList<String>();
+	            String [] array = new String[3];
+	            
+	            /*NOTA: 
+	             * Tanto "inClause" como "root.get().in()" retornan un "Predicate"*/
+	            
+	            //CriteriaBuilder
+	           In<String> inClause = cb.in(root.get(UsuarioConstantes.FILTRO_ESTATUS));	           	            	          
+	           for (String elem : lista) {
+	        	   inClause.value(elem);
+	           } 	           	         
+	           
+	           //Expressions.in()
+	            root.get(UsuarioConstantes.FILTRO_ESTATUS).in(lista);
 	        }
 	        
 	        System.out.println();

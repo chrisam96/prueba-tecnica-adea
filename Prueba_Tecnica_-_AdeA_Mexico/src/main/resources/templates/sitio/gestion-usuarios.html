@@ -475,6 +475,7 @@
 	
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">
+		//AL INICIAR EL DOCUMENTO
 		$(document).ready(function(){
 				
 		});
@@ -484,6 +485,12 @@
 		//variable global para las altas, bajas y modificaciones
 		var usuario = {};
 
+		//METODOS
+		/* Func:
+			Obtener los datos del formulario para generar un objeto JSON del mismo
+		Param:
+		- tipoParam: String => El ID del formulario (sea "alta" o "modif") 
+		*/
 		function generarUsuario(tipoForm){
 
 			if(usuario != null || usuario != undefined){
@@ -527,6 +534,13 @@
 			*/
 		}
 
+		/* Func:
+			Función que ejecuta AJAX para las peticiones hacia el Server
+		Param:
+		- verbo: String => Acción del Metodo HTTP 
+		- url: String => Dirección URL
+		- objeto: String => Datos del Body
+		*/
 		async function ajaxStart(verbo, url, objeto){
 			console.log("accion: ",verbo);
 			console.log("URL: ",url);
@@ -621,6 +635,16 @@
 			});*/
 		}
 
+		/* Func:
+			Formateador de las fechas en base a lo recibido por del Server. También
+			se añade función de setear la hora en base a la Zona Horaria.
+		Param:
+		- fecha: Date => Fecha recibida del Back
+		- modHora: Bool => Bandera para concadenar Hora y Minutos a la Fecha
+		- modZonaHoraria: Bool => Bandera para concadenar y modificar la Zona Horaria
+
+		NOTA: Solo formatea la fecha, cortando solo el dia-mes-año
+		*/
 		function formatearFecha(fecha, modHora, modZonaHoraria){
 			/*
 			ISO 8601 es el estándar internacional para la representación de fechas y horas. 
@@ -709,11 +733,25 @@
 			return null;
 		}
 
+		/* Func:
+			Se activa o desactiva u botón dado su ID para identificarlo
+		Param:
+		- idBtn: String => ID del Boton a desactivar
+		- booleano: Bool => Bandera para activar/desactivar el botón
+		*/
 		function desactivarBoton(idBtn, booleano){
 			$(idBtn).prop('disabled', booleano);
 			return;
 		}
 
+		/* Func:
+			Limpia un formulario dado su ID. Opcionalmente, se puede recuperar
+		el valor del campo del segundo parametro con el fin de seguir mostrandolo
+		después de la limpieza del formulario entero.
+		Param:
+		- id: String => ID del formulario a limpiar
+		- idForKeep: String => ID del campo cuyo valor se desea conservar
+		*/
 		function limpiarFormulario(id, idForKeep){
 			let formulario = $(id).get(0);			
 			let login = "";
@@ -733,6 +771,7 @@
 			return;
 		}
 
+		//FORMULARIOS
 		$("#formAlta").submit(function(event){
 			//Previene el redireccionamiento de página
 			event.preventDefault();

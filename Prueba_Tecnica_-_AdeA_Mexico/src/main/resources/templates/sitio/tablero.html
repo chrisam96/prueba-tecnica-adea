@@ -27,16 +27,131 @@
 
 </head>
 <body>
-	<div id="div-Msj-Home">
-	Tablero de Usuarios
-		<p id="p-Msj-Home"></p>
+	<div class="container text-center">
+		<h1>Tablero de Usuarios</h1>	
+	</div>
+	&nbsp;&nbsp;&nbsp;
+	
+	<!-- VENTANA EMERGEMNTE - MODAL-->
+	<div id="modal-Tablero-Msj" class="modal" >
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+
+				<!-- Header -->
+				<div class="modal-header text-start">
+
+					<!-- "btn-close": Dibuja un botón de cierre en la esquina superior derecha
+						"data-bs-dismiss:  modal" habilita la función del botón cerrar al Modal 
+						"class=modal-title": Es el titulo del modal
+					-->
+					<h4 id="modal-Tableros-header" class="modal-title"></h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Body -->
+				<div id="modal-Tableros-body" class="modal-body">
+					
+				</div>
+
+				<!-- Footer -->
+				<div id="modal-Tableros-footer" class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+
+			</div>
+		</div>
 	</div>
 
+
+	<!--PANEL DE BUSQUEDA-->
+	<div class="ms-4 me-4 mb-1">
+		<div class="card">
+			<!--<form id="formModif" action="">-->
+				<!-- CARD HEADER  CARD HEADER  CARD HEADER  CARD HEADER  CARD HEADER  CARD HEADER  CARD HEADER  CARD HEADER  CARD HEADER -->
+				<div class="card-header bg-warning text-center"> 					
+					<label class="form-label">
+						Vista del <b>Tablero de Usuarios</b> por estatus de usuario y filtros de búsqueda 
+						<br><br>
+						Ingrese en los campos de búsqueda la información del o los usuarios que desea modificar y/o borrar y luego presione el botón 
+						<b>"Buscar"</b> para recuperar la información. También p
+						<br><br>						
+						Cada registro tendrá las opciones de los botones de <b>"Modificar"</b> para cambiar datos del usuario y 
+						de <b>"Borrar"</b> para eliminar el registro del usuario.
+					</label> 
+					<form id="form-busqueda" class="" >
+						<div class="mb-2 mt-1 ms-2 me-2" >
+							<div class="row">
+								<span class="input-group-text col-4"><b>Nombre(s):</b></span>
+								<span class="input-group-text col-4"><b>Ape. Paterno:</b></span>
+								<span class="input-group-text col-4"><b>Ape. Materno:</b></span>
+							</div>
+
+							<div class="row">
+								<input id="nombre-buscador" name="nombre" type="text" class="col-4" placeholder="Nombre(s) de usuario"
+								maxlength="50">						
+								<input id="ap-pat-buscador" name="ap-pat" type="text" class="col-4" placeholder="Apellido Paterno"
+								maxlength="30">							
+								<input id="ap-mat-buscador" name="ap-mat" type="text" class="col-4" placeholder="Apellido Materno"
+								maxlength="30">
+							</div>		
+							
+						</div>	
+						<div class="input-group w-75 mb-2 ms-">
+							<span class="input-group-text"><b>Login:</b></span>
+							<input id="login-buscador" name="login" type="text" class="form-control" placeholder="ID de usuario"
+							maxlength="20" required>						
+						</div>	
+						<div class="input-group w-75 mb-2">
+							<span class="input-group-text"><b>Fecha Alta:</b></span>
+							<input id="fechaalta-buscador" name="login" type="date" class="form-control" placeholder="Nombre de usuario"
+							maxlength="20" required>						
+						</div>	
+						<div class="row mb-3">						
+							<div class="col-2"><span class=""><b>Estatus:</b></span></div>
+							<div class="col-10">
+								
+								<input id="estatus-a" name="estatus-a" value="A" type="checkbox" class="ms-3 me-3" checked>
+								<label class="form-check-label" for="estatus-a">Activo (A)</label>
+
+								<input id="estatus-b" name="estatus-b" value="B" type="checkbox" class="ms-3 me-3" checked>
+								<label class="form-check-label" for="estatus-b">Inactivo (B)</label>
+
+								<input id="estatus-r" name="estatus-r" value="R" type="checkbox" class="ms-3 me-3" checked>
+								<label class="form-check-label" for="estatus-r">Reactivo (R)</label>
+							</div>
+						</div>
+						<button id="modif-buscar" class="btn btn-info btn-outline-success text-light w-100" type="button"><b>BUSCAR</b></button>
+					</form>
+				</div>
+
+				<!-- CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY -->
+				<div class="card-body bg-light">
+					
+
+				</div>
+
+				<!-- CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD HEADER -->
+				<div class="card-footer bg-secondary text-light">
+					<button id="modif-submit" class="btn btn-warning text-dark w-100" type="submit"><b>Modificar datos del Usuario</b></button>
+				</div>
+			<!-- </form> -->
+		</div>
+	</div>
+	<br>
+
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
-	<script type="text/javascript">
+	<script type="text/javascript">				
+		//AL INICIAR EL DOCUMENTO
 		$(document).ready(function(){
 				
 		});
+
+
+		//METODOS
+
+
+		
+		//FORMULARIOS
 	</script>
 </body>
 </html>
