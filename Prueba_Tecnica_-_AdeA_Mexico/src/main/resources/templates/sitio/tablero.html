@@ -78,7 +78,7 @@
 						Cada registro tendrá las opciones de los botones de <b>"Modificar"</b> para cambiar datos del usuario y 
 						de <b>"Borrar"</b> para eliminar el registro del usuario.
 					</label> 
-					<form id="form-busqueda" class="" >
+					<form id="form-busqueda" class="" >						     
 						<div class="mb-2 mt-1 ms-2 me-2" >
 							<div class="row">
 								<span class="input-group-text col-4"><b>Nombre(s):</b></span>
@@ -93,19 +93,26 @@
 								maxlength="30">							
 								<input id="ap-mat-buscador" name="ap-mat" type="text" class="col-4" placeholder="Apellido Materno"
 								maxlength="30">
-							</div>		
-							
+							</div>							
 						</div>	
-						<div class="input-group w-75 mb-2 ms-">
-							<span class="input-group-text"><b>Login:</b></span>
-							<input id="login-buscador" name="login" type="text" class="form-control" placeholder="ID de usuario"
-							maxlength="20" required>						
-						</div>	
-						<div class="input-group w-75 mb-2">
-							<span class="input-group-text"><b>Fecha Alta:</b></span>
-							<input id="fechaalta-buscador" name="login" type="date" class="form-control" placeholder="Nombre de usuario"
-							maxlength="20" required>						
-						</div>	
+						<!--
+							<div class="input-group w-75 mb-2 ms-">
+								<span class="input-group-text"><b>Login:</b></span>
+								<input id="login-buscador" name="login" type="text" class="form-control" placeholder="ID de usuario"
+								maxlength="20" >
+							</div>	
+						-->
+						<div class="mb-2 mt-1 ms-2 me-2" >
+							<div class="row">
+								<span class="input-group-text col-6"><b>Fecha Alta (Inicial):</b></span>
+								<span class="input-group-text col-6"><b>Fecha Alta (Final):</b></span>								
+							</div>
+							<div class="row">					
+								<input id="fechaalta-buscador" name="fechaalta" type="date" class="form-control w-50">														
+								<input id="fechaAltaFinal-buscador" name="fechaAltaFinal" type="date" class="form-control w-50">
+							</div>								
+						</div>
+
 						<div class="row mb-3">						
 							<div class="col-2"><span class=""><b>Estatus:</b></span></div>
 							<div class="col-10">
@@ -120,7 +127,7 @@
 								<label class="form-check-label" for="estatus-r">Reactivo (R)</label>
 							</div>
 						</div>
-						<button id="modif-buscar" class="btn btn-info btn-outline-success text-light w-100" type="button"><b>BUSCAR</b></button>
+						<button id="btn-buscar" class="btn btn-info btn-outline-success text-light w-100" type="submit"><b>BUSCAR</b></button>
 					</form>
 				</div>
 
@@ -138,9 +145,57 @@
 		</div>
 	</div>
 	<br>
+	
+	<hr>
+
+	<!-- table-responsive = Agrega un scrollbar de ser necesario -->
+	<div class="table-responsive">
+		<!-- 
+			table-bordered = Agrega margenes a la tabla 
+			table-striped = Agrega un efecto rayado a los registros 
+			table-hover = Agrega un efecto de sombreado al seleccionar un registro	
+		-->
+		<table class="table table-bordered table-striped table-hover">
+			<thead class="table-dark">
+				<tr>
+					<th>Nombre</th>
+					<th>Login</th>
+					<th>Fecha Alta</th>
+					<th>Estatus</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>John</td>
+					<td>Doe</td>
+					<td>john@example.com</td>
+					<td>john@example.com</td>
+					<td>john@example.com</td>
+				  </tr>
+				  <tr>
+					<td>Mary</td>
+					<td>Moe</td>
+					<td>mary@example.com</td>
+					<td>mary@example.com</td>
+					<td>mary@example.com</td>
+				  </tr>
+				  <tr>
+					<td>July</td>
+					<td>Dooley</td>
+					<td>july@example.com</td>
+					<td>july@example.com</td>
+					<td>july@example.com</td>
+				  </tr>
+			</tbody>
+		</table>
+	</div>
 
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
-	<script type="text/javascript">				
+	<script type="text/javascript">		
+		//Variables
+		var datos = undefined;
+
 		//AL INICIAR EL DOCUMENTO
 		$(document).ready(function(){
 				
@@ -148,10 +203,314 @@
 
 
 		//METODOS
-
-
 		
+		/* Func:
+			Se activa o desactiva u botón dado su ID para identificarlo
+		Param:
+		- idBtn: String => ID del Boton a desactivar
+		- booleano: Bool => Bandera para activar/desactivar el botón
+		*/		
+		function desactivarBoton(idBtn, booleano){
+			$(idBtn).prop("disabled", booleano);
+			return;
+		}
+		
+		/* Func:
+			Formateador de las fechas en base a lo recibido por del Server. También
+			se añade función de setear la hora en base a la Zona Horaria.
+		Param:
+		- fecha: Date => Fecha recibida del Back
+		- modHora: Bool => Bandera para concadenar Hora y Minutos a la Fecha
+		- modZonaHoraria: Bool => Bandera para concadenar y modificar la Zona Horaria
+
+		NOTA: Solo formatea la fecha, cortando solo el dia-mes-año
+		*/
+		function formatearFecha(fecha, modHora, modZonaHoraria){
+			/*
+			ISO 8601 es el estándar internacional para la representación de fechas y horas. 
+			La sintaxis ISO 8601 (yyyy-MM-DD) también es el formato de fecha preferido de JavaScript.
+
+			## Formato
+			UTC 		== Mon Jun 28 2021 08:30:00 GMT-0600 (Greenwich Mean Time)
+			ISO String 	== 2024-04-16T04:18:09.000+00:00
+
+			NOTA =
+			- UTC (Universal Time Coordinated) es lo mismo que GMT (Greenwich Mean Time)
+			- La fecha y la hora están separadas por T mayúscula. 
+			- La hora UTC se define con una letra mayúscula Z.
+			- Si desea modificar la hora relativa a UTC, elimine la Z y agregue +HH:MM o -HH:MM en su lugar
+			- Z por defecto toma el valor de GMT+00:00
+			*/
+			if(fecha != null){
+				let fechaFormateada = null, fechaResultado = null;
+				//The specified value "2024-04-16T04:18:09.000+00:00" does not conform to the required format, "yyyy-MM-dd".
+
+				let fechaDia = fecha.split('T')[0];
+				let fechaHora = fecha.split('T')[1];
+
+				//Modificando el formato del dia en la fecha (yyyy-MM-dd)
+				fechaFormateada = fechaDia;
+
+				//Modificando el formato de la hora en la fecha (HH:mm:ss)
+				if(modHora == true){
+					fechaFormateada += "T";
+					fechaFormateada += fechaHora.substring(0, fechaHora.length - 6);
+				}
+
+				//Modificando la zona horaria
+				if(modZonaHoraria != undefined && modHora == true){
+					//Zona Horario con Date() y el campo Z
+					if(modZonaHoraria == true){
+						//Esto establece en la zona de GMT (00:00), para Mexico, CDMX sería (-06:00)
+						fechaFormateada += "+00:00";
+					}
+
+					//Zona Horaria con Date.toLocaleString()
+					if(modZonaHoraria == false){
+						/*Zona Horaria con Date.toLocaleString()
+
+						Para obtener la fecha y hora en la zona horaria específica de una región 
+						puedes usar el método toLocaleString()
+						
+						El mismo recibe 2 parámetros opcionales:
+
+						- locales: Un tipo String que contienen etiquetas de idioma y localidad
+						con formato BCP 47 de la IETF.					
+						- options: Un objeto que se utiliza para especificar propiedades, entre las 
+						cuales se encuentra timeZone. Este atributo indica la zona horaria a usar.
+
+						 	Su valor predeterminado es la zona horaria del cliente, pero se pueden 
+						establecer valores que sean compatibles con la lista de zonas horarias de 
+						la base de datos de la IANA.
+
+						NOTA: Otras opciones de "options" pueden ser
+						{ hour: 'numeric', hour12: false, minute: 'numeric', timeZoneName: 'short'}
+						{year: 'numeric', month: '2-digit', day: '2-digit', weekday:"long", hour: '2-digit', 
+							hour12: false, minute:'2-digit', second:'2-digit'}), //Genera -> 'Wednesday, 14/06/2023, 13:43:57'
+						{hour: '2-digit', hour12: false, timeZone: "America/New_York"}),  // 09 (just the hour)
+
+						Timezone de CDMX:
+						America/Mexico
+						*/
+						let locale = "es-MX";
+						let zonaHoraria = "America/Mexico_City";
+						let formato12Hrs = true;
+						let fechaConZonaHoraria = new Date(fechaFormateada)
+							.toLocaleString(locale, {timeZone: zonaHoraria, hour12: formato12Hrs});
+						console.log("fechaConZonaHoraria:", fechaConZonaHoraria, 
+							"\nfecha-Actual", new Date(),
+							"\nfecha Actual con timeZone", 
+							new Date().toLocaleString(locale, {timeZone: zonaHoraria, hour12: formato12Hrs}));
+					}
+
+				}
+
+				//Se puede crear fechas más especificas con Date.UTC()
+				// new Date.UTC(year, month, day, hours, minutes, seconds, ms);
+
+				return fechaFormateada;
+			}
+			return null;
+		}		
+
+		async function ajax_GET_Exec(url_, respuesta){
+			return $.ajax({
+				type: "GET",
+				contentType: "application/json",
+				dataType: "json",
+				url: url_
+			})
+			.done( function (data, status, xhrData) {				
+				console.log("done()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
+				console.log("headers: \n" + xhrData.getAllResponseHeaders());
+				console.log("data:\n", data); // Accede al cuerpo de la respuesta				
+				respuesta = data;
+			})
+			.fail( function (xhrData, status, errorThrown){
+				console.log("fail()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
+				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
+				console.log("Error Thrown: \n" + error);
+			});
+		}
+
+		async function ajax_Exec(verbo, url_, respuesta){
+			return $.ajax({
+				type: verbo,
+				contentType: "application/json",
+				dataType: "json",
+				url: url_
+			})
+			.done( function (data, status, xhrData) {				
+				console.log("done()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
+				console.log("headers: \n" + xhrData.getAllResponseHeaders());
+				console.log("data:\n", data); // Accede al cuerpo de la respuesta				
+				respuesta = data;
+			})
+			.fail( function (xhrData, status, errorThrown){
+				console.log("fail()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
+				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
+				console.log("Error Thrown: \n" + error);
+			});
+		}
+
+		async function ajax_With_Body_Exec(verbo, url_, objeto){
+
+			return $.ajax({
+				type: verbo,
+				contentType: "application/json",
+				dataType: "json",
+				url: url_,
+				//------Convierte el objeto a una cadena JSON
+				//data: JSON.stringify(objeto)
+				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
+				data: objeto
+			})
+			/*.done( function (data, status, xhrData) {				
+				console.log("done()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
+				console.log("headers: \n" + xhrData.getAllResponseHeaders());
+				console.log("data:\n", data); // Accede al cuerpo de la respuesta
+				
+				//respuesta = data;
+			})
+			.fail( function (xhrData, status, errorThrown){
+				console.log("fail()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
+				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
+				console.log("Error Thrown: \n" + errorThrown);
+			})*/;
+		}
+
+		/* Func:
+			Genera un JSON con los filtros de búsqueda que serán enviados al server			
+		Param: N/A
+		*/	
+		function generarFiltros(){
+			let filtros = {}, arrayEstatus = [], estatus = "";
+			
+			//Nombre Completo
+			if($("#nombre-buscador").val() != null && $("#nombre-buscador").val().trim() != ''){
+				filtros.nombre = $("#nombre-buscador").val();
+			}
+			if($("#ap-pat-buscador").val() != null && $("#ap-pat-buscador").val().trim() != ''){
+				filtros.apellidoPaterno = $("#ap-pat-buscador").val();
+			}
+			if($("#ap-mat-buscador").val() != null && $("#ap-mat-buscador").val().trim() != ''){
+				filtros.apellidoMaterno = $("#ap-mat-buscador").val();
+			}
+			//if($("#login-buscador").val() != null && $("#login-buscador").val().trim() != ''){
+				//filtros.login = $("#login-buscador").val();
+			//}
+			if($("#fechaalta-buscador").val() != null && $("#fechaalta-buscador").val().trim() != ''){
+				filtros.fechaalta = $("#fechaalta-buscador").val();			
+			}
+			if($("#fechaAltaFinal-buscador").val() != null && $("#fechaAltaFinal-buscador").val().trim() != ''){
+				filtros.fechaAltaFinal = $("#fechaAltaFinal-buscador").val();			
+			}
+
+			//Estatus
+			// prop("checked") => se obtiene si esta check i uncheck
+			filtros.estatus = getEstatus();
+
+			console.log("FILTROS",filtros);
+			return filtros;
+		}
+
+		/* Func:
+			Obtiene los checkboxes marcados y genera el valor del filtro estatus
+		Param: N/A
+		*/	
+		function getEstatus (){
+			let arrayEstatus = [];
+			let text = "";
+
+			let a_ = $("#estatus-a").is(":checked");
+			if( $("#estatus-a").is(":checked") ){
+				arrayEstatus.push( $("#estatus-a").val() );
+			}
+
+			let b_ = $("#estatus-b").is(":checked");
+			if( $("#estatus-b").is(":checked") ){
+				arrayEstatus.push( $("#estatus-b").val() );
+			}
+
+			let r_ = $("#estatus-r").is(":checked");
+			if( $("#estatus-r").is(":checked") ){
+				arrayEstatus.push( $("#estatus-r").val() );
+			}
+
+			if(arrayEstatus.length == 0){
+				return undefined;
+			}
+
+			text = arrayEstatus.toString();
+			/*la parte "/ " significa que es una expresion regultar que busca espacios, 
+			y la "/g" significa que es global, es decir,
+			busca todos los espacios en la variable. */
+			text = text.replace("[","").replace("]","").replace(/ /g,'');
+
+			return text;
+		}		
+
 		//FORMULARIOS
+		$("#form-busqueda").submit(function(e){
+			//Previene el redireccionamiento de página
+			e.preventDefault();
+
+			//Desactiva el boton para no generar peticiones repetidas
+			desactivarBoton("#btn-buscar", true);
+
+			//Obtiene el cuerpo de los filtros a buscar
+			let filtros = generarFiltros();			
+			console.log("filtros-JSON:\n",JSON.stringify(filtros),
+				"\nfiltros-QueryString\n", $.param(filtros));
+
+			//Peticion AJAX
+			let verbo = "GET", url = "http://localhost:9010/filtro"
+
+			//Ejecuta el Ajax
+			let prom = ajax_With_Body_Exec(verbo, url, filtros)
+				//Valor RESUELTO de la Promesa
+				.then(function onfulfilled(value){
+					//Asigna los datos recuperados del Servidor a la var. externa
+					datos = value;
+				}
+				/*,
+					//valor de RECHAZO de la Promesa
+					function onrejected(reason){}*/
+				)
+				//reason == MOTIVO del RECHAZO de la Promesa
+				.catch(function onrejected(reason){
+					console.log("Razon de falla del servicio", reason);
+				})
+				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
+				.finally(function onfinally(){
+					//Se comprueba si se asignaron correctamente
+					console.log("Datos finales", datos);
+
+					////Resactiva el boton para permitir las peticiones 
+					desactivarBoton("#btn-buscar", false);
+				});
+
+			/* NOTA:
+			Este código se ejecutará inmediatamente después de que se inicie la solicitud AJAX,
+			pero antes de que se resuelva (then() ) o se rechace (catch() ) la promesa devuelta
+			 por ajax_With_Body_Exec()
+
+			CONCLUSIONES
+			> Primero se ejecuto todo lineal hasta antes de 'ajax_With_Body_Exec()'
+			> Luego se ejecuto 'ajax_With_Body_Exec()' y se devolvió la promesa,
+				mas nunca se ejcutaron 'then()', 'catch()' y 'finally()'
+			> Se ejecuto 'desactivarBoton()' hasta el final del método
+			> Finalmente se regreso a ejecutar 'then()', 'catch()' y 'finally()'
+			*/
+			////Resactiva el boton para permitir las peticiones 
+			desactivarBoton("#btn-buscar", false);
+
+			let res = (datos != null) ? "SI" : "NO" ;
+			console.log("Este mensaje " + res + " se ejecutó después de invocar a 'ajax_With_Body_Exec()' "+
+			"y también después de then(), catch() y finally()");
+			//console.log("Ese mensaje se ejecutará despues de invocar 'ajax_With_Body_Exec()' "+
+			//pero antes de then(), catch() y finally():")			
+		});
 	</script>
 </body>
 </html>

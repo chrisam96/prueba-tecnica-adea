@@ -98,9 +98,10 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 				return this.getAllUsuario();
 			}
 			
-			//AGREGAR CONSULTA CUANDO SOLO HAY DE "estatus"
-			if (filtros.size() == 1 && 
-					filtros.containsKey(UsuarioConstantes.FILTRO_ESTATUS)) {
+			//AGREGAR CONSULTA CUANDO SOLO HAY UN FILTRO Y ES UNO DE "estatus"
+			if (filtros.size() == 1 
+					&& filtros.containsKey(UsuarioConstantes.FILTRO_ESTATUS)
+					&& filtros.get(UsuarioConstantes.FILTRO_ESTATUS).length() == 1) {
 				return this.getAllUsuarioByEstatus(filtros.get(UsuarioConstantes.FILTRO_ESTATUS));
 			}
 
@@ -156,7 +157,8 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 	        
 	        try {
 	        	 // Formateador de Fecha estilo == 2021-03-24 16:48:05
-			    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			    //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			    /*
 			     * Agregado para corregir Bug donde se cambiaban la fecha,
 			     * en especifico la cantidad de horas de la fecha por culpa
@@ -220,27 +222,40 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 	        
 	        //ESTATUS
 	        if (filtros.containsKey(UsuarioConstantes.FILTRO_ESTATUS)) {
+	        	//Se obtiene el valor de los estatus
 	        	valor = filtros.get(UsuarioConstantes.FILTRO_ESTATUS);
+	        	
+	        	//DEPRECADO
+	        	/*//Usado para cuando era un solo estatus
 	            pred = cb.equal(root.get(UsuarioConstantes.FILTRO_ESTATUS), valor);
 	            predicates.add(pred);
 	            System.out.println("ESTATUS = '" + valor + "'");
+	            */
+	        	
+	            //NUEVO
+	            String [] arrEstatus = valor.split(",");
+	            pred = root.get(UsuarioConstantes.FILTRO_ESTATUS).in(arrEstatus);
+	            predicates.add(pred);
+	            System.out.println("ESTATUS IN (" + valor + ")");
 	            
-	            
-	            //Pruebas de colecciones
+	            /*
+	            //Pruebas de colecciones compatibles con IN-Clause|root.get().in() 
 	            ArrayList<String> lista = new ArrayList<String>();
 	            String [] array = new String[3];
+	             */
 	            
 	            /*NOTA: 
-	             * Tanto "inClause" como "root.get().in()" retornan un "Predicate"*/
+	             * Tanto "inClause" como "root.get().in()" retornan un "Predicate" *
 	            
 	            //CriteriaBuilder
-	           In<String> inClause = cb.in(root.get(UsuarioConstantes.FILTRO_ESTATUS));	           	            	          
-	           for (String elem : lista) {
+	           	In<String> inClause = cb.in(root.get(UsuarioConstantes.FILTRO_ESTATUS));	           	            	          
+	           	for (String elem : lista) {
 	        	   inClause.value(elem);
-	           } 	           	         
+	           	} 	           	         
 	           
-	           //Expressions.in()
-	            root.get(UsuarioConstantes.FILTRO_ESTATUS).in(lista);
+	           	//Expressions.in()
+	            root.get(UsuarioConstantes.FILTRO_ESTATUS).in(arrEstatus);
+	            */
 	        }
 	        
 	        System.out.println();
@@ -258,5 +273,5 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 			return null;
 		}
 	}
-	
+		
 }
