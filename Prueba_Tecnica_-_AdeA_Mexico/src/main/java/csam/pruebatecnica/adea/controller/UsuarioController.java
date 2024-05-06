@@ -30,7 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import csam.pruebatecnica.adea.model.Usuario;
 import csam.pruebatecnica.adea.model.UsuarioCredenciales;
-import csam.pruebatecnica.adea.service.UsuarioService;;
+import csam.pruebatecnica.adea.service.UsuarioService;
+import csam.pruebatecnica.adea.utils.UsuarioConstantes;;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -441,14 +442,72 @@ public class UsuarioController {
 	
 	@GetMapping(value = "filtro", //consumes = {MediaType.APPLICATION_JSON_VALUE}, 
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public List<Usuario> getListOfUsuariosByFiltros
+	//public List<Usuario> getListOfUsuariosByFiltros
+	public ResponseEntity<List<Usuario>> getListOfUsuariosByFiltros
 	//(@RequestParam Map<String, String> filtros) {		
-	(@RequestParam LinkedHashMap<String, String> filtros) {		
-		try {
-			return usuarioService.getListOfUsuariosByFiltros(filtros);
+	(@RequestParam LinkedHashMap<String, String> filtros) {	
+		//Body de la rspuesta
+		//HashMap<String, Object> map = new HashMap<String, Object>();
+		
+		//Instancia de Headers
+		HttpHeaders headers =  new HttpHeaders();
+		
+		//Lista de MediaType soportados por este recurso
+		List<MediaType> listMediaType = new ArrayList<>();
+		listMediaType.add(MediaType.APPLICATION_JSON);
+		listMediaType.add(MediaType.APPLICATION_XML);
+		listMediaType.add(MediaType.TEXT_XML);
+		listMediaType.add(MediaType.TEXT_HTML);
+		listMediaType.add(MediaType.TEXT_PLAIN);
+		
+		//Se agrega los MediaType a los Headers
+		headers.setAccept(listMediaType);
+		
+		//HttpStatus
+		HttpStatus estatus ;
+		
+		//Se declara el ResponseEntity
+		//ResponseEntity<HashMap<String, Object>> resp = null;
+		//ResponseEntity<List<Usuario>> resp = new ResponseEntity<List<Usuario>>(HttpStatus.I_AM_A_TEAPOT);//408		
+		ResponseEntity<List<Usuario>> resp = null;		
+		
+		try {		
+			if(filtros.containsKey(UsuarioConstantes.FILTRO_NOMBRE) 
+					&& filtros.get(UsuarioConstantes.FILTRO_NOMBRE).equalsIgnoreCase("ERROR")) {
+				headers.add("cantidad", "0");
+				headers.add("estatus", "202");
+				headers.add("status code", String.valueOf(HttpStatus.ACCEPTED));				
+				headers.add("resultado", "fail");
+				
+				//Agregando cabeceras
+				//resp =  new ResponseEntity<List<Usuario>>(null, headers, HttpStatus.OK);
+				resp =  new ResponseEntity<List<Usuario>>(new ArrayList<Usuario>(),headers, HttpStatus.ACCEPTED);				
+				return resp;
+			}
+			
+			//return usuarioService.getListOfUsuariosByFiltros(filtros);
+			List<Usuario> lista = usuarioService.getListOfUsuariosByFiltros(filtros);			
+			headers.add("cantidad", String.valueOf(lista.size()));
+			
+			resp =  new ResponseEntity<List<Usuario>>(lista, headers, HttpStatus.OK);
+			return resp;
 		}catch(Throwable t) {			
 			t.printStackTrace();
-			return new ArrayList<Usuario>();
+			//return new ArrayList<Usuario>();
+			
+			//Headers
+			headers.add("causa", t.getMessage());
+			headers.add("descripcion", "No se agrego al usuario");
+			headers.add("resultado", "fail");
+			headers.add("causa-backend", t.getMessage());
+			
+			//Estatus
+			estatus = HttpStatus.INTERNAL_SERVER_ERROR;
+			
+			//Retorno del Catch			
+			resp = new ResponseEntity<>( headers, estatus);
+			resp.ofNullable(new ArrayList<Usuario>());
+			return resp;
 		}
 	}
 	

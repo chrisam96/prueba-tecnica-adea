@@ -44,17 +44,17 @@
 						"data-bs-dismiss:  modal" habilita la función del botón cerrar al Modal 
 						"class=modal-title": Es el titulo del modal
 					-->
-					<h4 id="modal-Tableros-header" class="modal-title"></h4>
+					<h4 id="modal-Tablero-header" class="modal-title"></h4>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 
 				<!-- Body -->
-				<div id="modal-Tableros-body" class="modal-body">
+				<div id="modal-Tablero-body" class="modal-body">
 					
 				</div>
 
 				<!-- Footer -->
-				<div id="modal-Tableros-footer" class="modal-footer">
+				<div id="modal-Tablero-footer" class="modal-footer">
 					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
 				</div>
 
@@ -131,21 +131,23 @@
 					</form>
 				</div>
 
-				<!-- CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY -->
+				<!-- CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY  CARD BODY --
 				<div class="card-body bg-light">
 					
 
 				</div>
 
-				<!-- CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD HEADER -->
+				!-- CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD FOOTER  CARD HEADER --
 				<div class="card-footer bg-secondary text-light">
-					<button id="modif-submit" class="btn btn-warning text-dark w-100" type="submit"><b>Modificar datos del Usuario</b></button>
-				</div>
+					
+				</div> -->
 			<!-- </form> -->
 		</div>
 	</div>
 	<br>
 	
+	<hr>
+	<div id="text-contador"></div>
 	<hr>
 
 	<!-- table-responsive = Agrega un scrollbar de ser necesario -->
@@ -155,8 +157,8 @@
 			table-striped = Agrega un efecto rayado a los registros 
 			table-hover = Agrega un efecto de sombreado al seleccionar un registro	
 		-->
-		<table class="table table-bordered table-striped table-hover">
-			<thead class="table-dark">
+		<table id="tbl-registros" class="table table-bordered table-striped table-hover">
+			<thead id="tbl-registros-head" class="table-dark">
 				<tr>
 					<th>Nombre</th>
 					<th>Login</th>
@@ -165,7 +167,7 @@
 					<th>Acciones</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="tbl-registros-body">
 				<tr>
 					<td>John</td>
 					<td>Doe</td>
@@ -354,6 +356,7 @@
 		}
 
 		async function ajax_With_Body_Exec(verbo, url_, objeto){
+			let headers = {};
 
 			return $.ajax({
 				type: verbo,
@@ -365,18 +368,56 @@
 				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
 				data: objeto
 			})
-			/*.done( function (data, status, xhrData) {				
-				console.log("done()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
-				console.log("headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("data:\n", data); // Accede al cuerpo de la respuesta
-				
-				//respuesta = data;
+			.done( function (data, status, xhrData) {							
+				//headers = xhrData.getAllResponseHeaders();
+				headers = xhrData.getAllResponseHeaders();
+
 			})
 			.fail( function (xhrData, status, errorThrown){
-				console.log("fail()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + errorThrown);
-			})*/;
+				headers = xhrData.getAllResponseHeaders();
+			})//;
+			/* RESUELVE LA PROMESA
+			En este caso, se espera que la promesa se haya resuelto (resolve/success)
+			y no rechazado (reject/fail).
+
+			Lo que hace aquí "then()" es terminar de ejecutar la promesa done o fail,
+			según sea el caso, y recibir los parametros de dicha promesa anterior.
+			
+			Este método es la cara del return, es decir, genera los valores 
+			que van a ser devueltos por el método de la promesa $.ajax(), 
+			aunque haya fallado o si haya funcionado.
+			*/
+			//.then(doneFilter(value, ...values),failFilter(),progressFilter())
+			.then(function(value, textStatus, jqXHR){
+				// Imprime los encabezados de la respuesta almacenados en "headers"
+				console.log("Encabezados de la respuesta:", headers);
+
+				//Imprime el valor de los parametros
+				console.log("Value/Data:", value);
+				console.log("Status:", textStatus);
+				console.log("jqXHR:", jqXHR);
+
+				//Objeto que engloba la data, textStatus y jqXHR.headers
+				obj = {};
+
+				//En caso de success
+				if(textStatus == "success"){
+					obj.data = value;
+					obj.status = textStatus;
+					obj.headers = headersToObject(jqXHR.getAllResponseHeaders());
+				}
+				//En caso de fail
+				else{
+					//XHRData (jqXHR)
+					obj.headers = headersToObject(value.getAllResponseHeaders()); 
+					//textStatus
+					obj.status = textStatus;
+					//errorThrown
+					obj.data = jqXHR;
+				}
+				//Retorna una respuesta completa (body + headers)
+				return obj;
+			});
 		}
 
 		/* Func:
@@ -450,6 +491,133 @@
 			return text;
 		}		
 
+		/* Func:
+			Transforma en un objeto a los headers que vienen en formato de string
+		Param: 
+			texto = los headers de la respuesta del servidor (respuesta HTTP)
+		*/	
+		function headersToObject(texto){
+			//Objeto donde se almacenará el string
+			let objeto = {};
+			
+			//Partir el texto por saltos de linea
+			let lineas = texto.split("\n");
+			let clave_valor = "", clave = "", valor = "";
+			
+			for (let i=0; i<lineas.length; i++){
+				//Parte la línea separandola por dos-puntos (:)
+				clave_valor = lineas[i].split(":");
+				
+				clave = clave_valor[0];
+				if(clave_valor[1] != undefined){
+					valor = clave_valor[1].replace("\r","");
+				}
+
+				//Se agrega la propiedad al objeto
+				if(clave != null && clave.length > 0){
+					objeto[clave] = valor;
+				}
+			}
+
+			return objeto;
+		}
+
+		/* Func:
+			Obtiene los checkboxes marcados y genera el valor del filtro estatus
+		Param: N/A
+		*/	
+		function generarRegistros(datos){
+			//Limpia los registros de la tabla
+			$("#tbl-registros tbody").empty();
+
+			//texto que se usara para generar los registros
+			registros = "";
+
+			for(let i = 0; i < datos.length; i++){
+				registros +=
+				"<tr>" +
+					"<td>"+datos[i].nombre+" "+datos[i].apellidoPaterno+" "+datos[i].apellidoMaterno+"</td>" +
+					"<td>"+datos[i].login+"</td>" +
+					"<td>"+datos[i].fechaalta+"</td>" +
+					'<td>'+datos[i].estatus+'</td>' +
+					'<td>'+
+						'<button id="'+datos[i].login+'-modificar" class="btn-modificar btn btn-danger btn-outline-info text-light w-50" type="button" value="'+datos[i].login+'"><b>Modificar</b></button>'+
+						//'&nbsp;'+
+						'<button id="'+datos[i].login+'-eliminar" class="btn-eliminar btn btn-warning btn-outline-dark text-light w-50" type="button" value="'+datos[i].login+'"><b>Eliminar</b></button>'+
+					'</td>'+
+				  "</tr>";
+				
+			}
+
+			//Escribe el codigo HTML
+			$("#tbl-registros tbody").html(registros);
+		}
+
+		function modificarRegistroDelBack(id, value){
+			console.log("MODIFICAR - Se ha pulsado el boton con ID:" + id + " - valor:"+ value);
+		}
+
+		function eliminarRegistroDelBack(btnID, btnValue){
+			console.log("ELIMINAR - Se ha pulsado el boton con ID: " + btnID + " - valor:"+ btnValue);
+
+			//Hacer la petición AJAX
+			//let verbo = "DELETE",  user = {}, ajaxResult =  null;			
+			let ajaxResult =  null, datosEliminar = {};			
+			let url = "http://localhost:9010/eliminar/" + btnValue;
+
+			//ajaxResult = ajaxStart(verbo, url, objeto);	
+			ajaxResult = ajax_With_Body_Exec("DELETE", url, undefined)
+				//Valor de la funcion de RESUELTO de la Promesa
+				.then(function onfulfilled(value){
+					//Asigna los datos recuperados del Servidor a la var. externa
+					datosEliminar = value;					
+				}
+				/*,
+					//Valor de la funcion de RECHAZO de la Promesa
+					//function onrejected(reason){}*/
+				)
+				//reason == MOTIVO del RECHAZO de la Promesa
+				.catch(function onrejected(reason){				
+					console.log("Razon de falla del servicio", reason);
+					datosEliminar = reason;					
+				})
+				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
+				.finally(function onfinally(){
+					//Se comprueba si se asignaron correctamente
+					console.log("Datos finales", datosEliminar);			
+
+					//Pone el texto sobre cuantos elementos han sido recuperados
+					datos.headers.cantidad = datos.headers.cantidad - 1;
+					$("#text-contador").html("Se han encontrado <b>"+
+						datos.headers.cantidad +"</b> registro(s)");
+
+					mensajeModal(datosEliminar);						
+				});
+
+		}
+
+		function mensajeModal(data){
+			let titulo = "";
+			if (data.headers["resultado"].trim() === "success") {
+				titulo = "Mensaje";
+			} else {
+				titulo = "Error";
+			} 
+
+			//Editando el Modal
+			/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
+
+				1. Directa: Usando su ID del elemento interno
+				2. Indirecta: Usando el ID del elemento contenedor y el "class" del 
+				elemento interno.
+			*/
+			$("#modal-Tablero-body").text(data.data.mensaje);
+			$("#modal-Tablero-Msj .modal-title").text(titulo);					
+
+			//Mostrar el mensaje
+			$("#modal-Tablero-Msj").modal("show");
+		}
+
 		//FORMULARIOS
 		$("#form-busqueda").submit(function(e){
 			//Previene el redireccionamiento de página
@@ -460,25 +628,26 @@
 
 			//Obtiene el cuerpo de los filtros a buscar
 			let filtros = generarFiltros();			
-			console.log("filtros-JSON:\n",JSON.stringify(filtros),
-				"\nfiltros-QueryString\n", $.param(filtros));
+			//console.log("filtros-JSON:\n",JSON.stringify(filtros),
+			//	"\nfiltros-QueryString\n", $.param(filtros));
 
 			//Peticion AJAX
 			let verbo = "GET", url = "http://localhost:9010/filtro"
 
 			//Ejecuta el Ajax
-			let prom = ajax_With_Body_Exec(verbo, url, filtros)
-				//Valor RESUELTO de la Promesa
+			ajax_With_Body_Exec(verbo, url, filtros)
+				
+				//Valor de la funcion de RESUELTO de la Promesa
 				.then(function onfulfilled(value){
 					//Asigna los datos recuperados del Servidor a la var. externa
 					datos = value;
 				}
 				/*,
-					//valor de RECHAZO de la Promesa
-					function onrejected(reason){}*/
+					//Valor de la funcion de RECHAZO de la Promesa
+					//function onrejected(reason){}*/
 				)
 				//reason == MOTIVO del RECHAZO de la Promesa
-				.catch(function onrejected(reason){
+				.catch(function onrejected(reason){				
 					console.log("Razon de falla del servicio", reason);
 				})
 				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
@@ -486,9 +655,17 @@
 					//Se comprueba si se asignaron correctamente
 					console.log("Datos finales", datos);
 
-					////Resactiva el boton para permitir las peticiones 
+					////Reactiva el boton para permitir las peticiones 
 					desactivarBoton("#btn-buscar", false);
+
+					//Pone el texto sobre cuantos elementos han sido recuperados
+					$("#text-contador").html("Se han encontrado <b>"+
+						datos.headers.cantidad +"</b> registro(s)");
+
+					//Genera la tabla dinamicamente
+					generarRegistros(datos.data);
 				});
+				
 
 			/* NOTA:
 			Este código se ejecutará inmediatamente después de que se inicie la solicitud AJAX,
@@ -497,19 +674,43 @@
 
 			CONCLUSIONES
 			> Primero se ejecuto todo lineal hasta antes de 'ajax_With_Body_Exec()'
-			> Luego se ejecuto 'ajax_With_Body_Exec()' y se devolvió la promesa,
-				mas nunca se ejcutaron 'then()', 'catch()' y 'finally()'
-			> Se ejecuto 'desactivarBoton()' hasta el final del método
-			> Finalmente se regreso a ejecutar 'then()', 'catch()' y 'finally()'
+			> Luego se ejecuto 'ajax_With_Body_Exec()' y se devolvió la promesa
+				de $.ajax(), mas nunca se ejecutan 'then()', 'catch()' y 'finally()'
+			> Se ejecuto el resto del bloque de código que esta después del 
+				'ajax_With_Body_Exec()', es decir, desde 'desactivarBoton()' 
+				hasta el final de este método
+			> Finalmente se regreso a ejecutar a 'then()', 'catch()' y 'finally()',
+				que son los métodos concadenados con 'ajax_With_Body_Exec()', 
+				es decir, son los métodos de la promesa $.ajax().
 			*/
-			////Resactiva el boton para permitir las peticiones 
-			desactivarBoton("#btn-buscar", false);
+			////Reactiva el boton para permitir las peticiones 
+			desactivarBoton("#btn-buscar", false);		
+		});
 
-			let res = (datos != null) ? "SI" : "NO" ;
-			console.log("Este mensaje " + res + " se ejecutó después de invocar a 'ajax_With_Body_Exec()' "+
-			"y también después de then(), catch() y finally()");
-			//console.log("Ese mensaje se ejecutará despues de invocar 'ajax_With_Body_Exec()' "+
-			//pero antes de then(), catch() y finally():")			
+		//$("#tbl-registros").on('click',function(event, otros){
+		$("#tbl-registros").on('click','.btn-modificar', function(event, otros){
+			console.log("this.id:", $(this).prop('id'), " this.value:", $(this).prop('value'));
+			
+			/*$(this) apunta hacía el botón que se dió 'click' y no a la tabla, 
+			debe ser por lo de: #tbl-registros -> .btn-eliminar */			
+			let btnID = $(this).prop('id');
+			let btnValue = $(this).prop('value');
+			modificarRegistroDelBack(btnID, btnValue);
+		});
+
+		$("#tbl-registros").on('click','.btn-eliminar', function(event, otros){
+			console.log("this.id:", $(this).prop('id'), " this.value:", $(this).prop('value'));
+			
+			/*$(this) apunta hacía el botón que se dió 'click' y no a la tabla, 
+			debe ser por lo de: #tbl-registros -> .btn-eliminar */			
+			let btnID = $(this).prop('id');
+			let btnValue = $(this).prop('value');
+			eliminarRegistroDelBack(btnID, btnValue);
+
+			//Eliminar el <tr> más cercano al botón dentro del DOM, 
+			//en este caso el del propio registro contenedor
+			$("#"+btnID).closest("tr").remove(); 
+			//$(this).closest('tr').remove();
 		});
 	</script>
 </body>
