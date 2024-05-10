@@ -327,7 +327,7 @@ public class UsuarioController {
 			//NO APLICA
 			
 			//Headers
-			headers.add("causa", t.getMessage());
+			headers.add("mensaje", t.getMessage());
 			headers.add("descripcion", "No se agrego al usuario");
 			headers.add("resultado", "fail");
 			headers.add("causa-backend", t.getMessage());
@@ -420,7 +420,7 @@ public class UsuarioController {
 			//NO APLICA
 			
 			//Headers
-			headers.add("causa", t.getMessage());
+			headers.add("mensaje", t.getMessage());
 			headers.add("descripcion", "No se agrego al usuario");
 			headers.add("resultado", "fail");
 			headers.add("causa-backend", t.getMessage());
@@ -496,7 +496,7 @@ public class UsuarioController {
 			//return new ArrayList<Usuario>();
 			
 			//Headers
-			headers.add("causa", t.getMessage());
+			headers.add("mensaje", t.getMessage());
 			headers.add("descripcion", "No se agrego al usuario");
 			headers.add("resultado", "fail");
 			headers.add("causa-backend", t.getMessage());

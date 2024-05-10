@@ -62,6 +62,36 @@
 		</div>
 	</div>
 
+	<!--FORM EMERGENTE - MODAL -->
+	<div id="modal-Tablero-Form" class="modal" >
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+
+				<!-- Header -->
+				<div class="modal-header text-start">
+
+					<!-- "btn-close": Dibuja un botón de cierre en la esquina superior derecha
+						"data-bs-dismiss:  modal" habilita la función del botón cerrar al Modal 
+						"class=modal-title": Es el titulo del modal
+					-->
+					<h4 id="modal-Tablero-Form-header" class="modal-title"></h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Body -->
+				<div id="modal-Tablero-Form-body" class="modal-body">
+					
+				</div>
+
+				<!-- Footer -->
+				<div id="modal-Tablero-Form-footer" class="modal-footer">
+					<button type="button" id="btn-modalForm-guardar" class="btn btn-success">Guardar</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
 
 	<!--PANEL DE BUSQUEDA-->
 	<div class="ms-4 me-4 mb-1">
@@ -196,7 +226,7 @@
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">		
 		//Variables
-		var datos = undefined;
+		var datos = undefined, datosModificar = {};		
 
 		//AL INICIAR EL DOCUMENTO
 		$(document).ready(function(){
@@ -315,48 +345,14 @@
 			return null;
 		}		
 
-		async function ajax_GET_Exec(url_, respuesta){
-			return $.ajax({
-				type: "GET",
-				contentType: "application/json",
-				dataType: "json",
-				url: url_
-			})
-			.done( function (data, status, xhrData) {				
-				console.log("done()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
-				console.log("headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("data:\n", data); // Accede al cuerpo de la respuesta				
-				respuesta = data;
-			})
-			.fail( function (xhrData, status, errorThrown){
-				console.log("fail()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + error);
-			});
-		}
 
-		async function ajax_Exec(verbo, url_, respuesta){
-			return $.ajax({
-				type: verbo,
-				contentType: "application/json",
-				dataType: "json",
-				url: url_
-			})
-			.done( function (data, status, xhrData) {				
-				console.log("done()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
-				console.log("headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("data:\n", data); // Accede al cuerpo de la respuesta				
-				respuesta = data;
-			})
-			.fail( function (xhrData, status, errorThrown){
-				console.log("fail()\nstatus: " + status, "HTTP Status Code: " + xhrData.status);
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + error);
-			});
-		}
 
 		async function ajax_With_Body_Exec(verbo, url_, objeto){
 			let headers = {};
+
+			if(verbo !== "GET"){
+				objeto = JSON.stringify(objeto);
+			}
 
 			return $.ajax({
 				type: verbo,
@@ -375,6 +371,7 @@
 			})
 			.fail( function (xhrData, status, errorThrown){
 				headers = xhrData.getAllResponseHeaders();
+				headers.resultado = "fail";
 			})//;
 			/* RESUELVE LA PROMESA
 			En este caso, se espera que la promesa se haya resuelto (resolve/success)
@@ -553,10 +550,6 @@
 			$("#tbl-registros tbody").html(registros);
 		}
 
-		function modificarRegistroDelBack(id, value){
-			console.log("MODIFICAR - Se ha pulsado el boton con ID:" + id + " - valor:"+ value);
-		}
-
 		function eliminarRegistroDelBack(btnID, btnValue){
 			console.log("ELIMINAR - Se ha pulsado el boton con ID: " + btnID + " - valor:"+ btnValue);
 
@@ -596,6 +589,219 @@
 
 		}
 
+
+		function modificarRegistroDelBack(id, value){
+			console.log("MODIFICAR - Se ha pulsado el boton con ID:" + id + " - valor:"+ value);
+
+			//Agregar ajax para recuperar los datos
+			//Declaracion de variables
+			let url_getUsuarioByLogin = "http://localhost:9010/usuario/"; 
+			//let datosModificar = {};
+
+			// URL = usuario/{login}
+			url_getUsuarioByLogin += value;
+
+			ajax_With_Body_Exec("GET",url_getUsuarioByLogin)
+			
+			//Valor de la funcion de RESUELTO de la Promesa
+			.then(function onfulfilled(value){
+				//Asigna los datos recuperados del Servidor a la var. externa
+				datosModificar = value;
+				datosModificar.headers["resultado"] = "success";
+			}
+			/*,
+				//Valor de la funcion de RECHAZO de la Promesa
+				//function onrejected(reason){}*/
+			)
+			//reason == MOTIVO del RECHAZO de la Promesa
+			.catch(function onrejected(reason){				
+				console.log("Razon de falla del servicio", reason);
+				datosModificar.headers["resultado"] = "fail";
+			})
+			//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
+			.finally(function onfinally(){
+				//Se comprueba si se asignaron correctamente
+				console.log("Datos finales > GET-Usuario ", datosModificar);
+				if (datosModificar.headers.resultado == "success") {
+					//agregar el form
+					generarFormParaModificar(datosModificar);
+				} else {
+					alert("Fallo el modificarRegistroDelBack", datosModificar);
+				}
+			});			
+			//agregar el form
+			//agregar otro boton para hacer el update
+		}
+
+		function generarFormParaModificar(datos){
+			let header = "";
+			header = 
+			'<div class="bg-warning text-center w-100"> ' +
+			'	<b>Datos del Usuario encontrados</b>' +
+			'</div>';
+
+			let form = "";
+			form = 
+			'<form id="formModif" action="">' +
+				/*'<div class="bg-warning text-center text-white"> ' +
+				'	<h4><b>Datos del Usuario encontrados:</b></h4>' +
+				'</div>' + 
+
+				'<hr class="hr">			' + */
+
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Login:</b></span>' +
+				'	<input id="modif-login" name="login" type="text" class="form-control" placeholder="Nombre de usuario"' +
+				'	maxlength="20" value="'+datos.data.login +'" required readonly>' +
+				'</div>' +
+
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Contraseña:</b></span>' +
+				'	<input id="modif-pass" name="pass" type="text" class="form-control" placeholder="Contraseña de usuario"' +
+				'	maxlength="20"  value="'+datos.data.pass +'" required>' +
+				'</div>' +
+
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Nombre:</b></span>' +
+				'	<input id="modif-nombre" name="nombre" type="text" class="form-control" placeholder="Nombre(s)"' +
+				'	maxlength="50"  value="'+datos.data.nombre +'" required>' +
+				'</div>' +
+
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Cliente:</b></span>' +
+				'	<input id="modif-cliente" name="cliente" type="number" class="form-control" placeholder="Número de cliente"' +
+				'	maxlength="5" max="80000"  value="'+datos.data.cliente +'" required>' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>E-mail:</b></span>' +
+				'	<input id="modif-email" name="email" type="text" class="form-control" placeholder="Correo electrónico"' +
+				'	maxlength="50"  value="'+datos.data.email +'" >' +
+				'</div>' +
+
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Fecha de Alta:</b></span>' +
+				'	<input id="modif-fechaalta" name="fechaalta" type="date" class="form-control" placeholder="Fecha de Alta"' +
+				'	 value="'+ formatearFecha(datos.data.fechaalta) +'" >' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Fecha de Baja:</b></span>' +
+				'	<input id="modif-fechabaja" name="fechabaja" type="date" class="form-control" placeholder="Fecha de Baja"' +
+				'	 value="'+ formatearFecha(datos.data.fechabaja) +'" >' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Estatus:</b></span>' +
+				'	<select id="modif-estatus" name="estatus" class="form-select" placeholder="A=Activo, B=Inactivo, R=Revocado" ' +
+				'	 value="'+datos.data.estatus +'" required>' +
+				'		<option>A</option>' +
+				'		<option>B</option>' +
+				'		<option>R</option>' +
+				'	</select>' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Intentos:</b></span>' +
+				'	<input id="modif-intentos" name="intentos" type="number" class="form-control" placeholder="Intentos"' +
+				'	value="0"  value="'+datos.data.intentos +'" required>' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Fecha de Revocado:</b></span>' +
+				'	<input id="modif-fecharevocado" name="fecharevocado" type="date" class="form-control" placeholder="Fecha de Revocado"'+
+				'	 value="'+ formatearFecha(datos.data.fecharevocado) +'" >' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Fecha de Vigencia:</b></span>' +
+				'	<input id="modif-fechaVigencia" name="fechaVigencia" type="date" class="form-control" placeholder="Fecha de Vigencia"'+
+				'	 value="'+ formatearFecha(datos.data.fechaVigencia) +'" >' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>No. Acceso:</b></span>' +
+				'	<input id="modif-noAcceso" name="noAcceso" type="number" class="form-control" placeholder="Nombre de usuario"' +
+				'	value="1" max="100" min="1"  value="'+datos.data.noAcceso +'" >' +
+				'</div>' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Apellido Paterno:</b></span>' +
+				'	<input id="modif-apellidoPaterno" name="apellidoPaterno" type="text" class="form-control" placeholder="Apellido Paterno"' +
+				'	maxlength="50"  value="'+datos.data.apellidoPaterno +'" >' +
+				'</div>					' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Apellido Materno:</b></span>' +
+				'	<input id="modif-apellidoMaterno" name="apellidoMaterno" type="text" class="form-control" placeholder="Apellido Materno"' +
+				'	maxlength="50"  value="'+datos.data.apellidoMaterno +'" >' +
+				'</div>					' +
+				
+				'<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Area:</b></span>' +
+				'	<input id="modif-area" name="area" type="number" class="form-control" placeholder="Area"' +
+				'	maxlength="4" max="9999"  value="'+datos.data.area +'" >				' +
+				'</div>' +
+				
+				/* '<div class="input-group mb-1">' +
+				'	<span class="input-group-text"><b>Fecha de Modificación:</b></span>' +
+				'	<input id="modif-fechamodificacion" name="fechamodificacion" type="date" class="form-control" placeholder="Fecha de Modificación"' +
+				'	 value="'+ formatearFecha(datos.data.fechamodificacion) +'" readonly>' +
+				'</div>' + */
+				
+				/*'<div class="card-footer bg-secondary text-light">' +
+				'	<button id="modif-submit" class="btn btn-warning text-dark w-100" type="button"><b>Modificar datos del Usuario</b></button>' +
+				'</div>' +*/
+			'</form>';
+
+			mensajeModalForm(header, form, datos);
+		}
+
+		function mensajeModalForm(header, body, data){
+			//Editando el Modal
+			/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
+
+				1. Directa: Usando su ID del elemento interno
+				2. Indirecta: Usando el ID del elemento contenedor y el "class" del 
+				elemento interno.
+			*/
+			$("#modal-Tablero-Form-body").html(body);			
+			$("#modal-Tablero-Form .modal-title").html(header);					
+
+			//Mostrar el mensaje
+			$("#modal-Tablero-Form").modal("show");
+		}
+
+		/* Func:
+			Obtener los datos del formulario para generar un objeto JSON del mismo
+		Param:
+		- tipoParam: String => El ID del formulario (sea "alta" o "modif") 
+		*/
+		function generarUsuario(){
+			let usuario = {};
+			let tipoForm = "modif";//Parte del ID de cada componente del Form
+
+			usuario.login 				=		$("#"+tipoForm+"-login").val();
+			usuario.pass 				=		$("#"+tipoForm+"-pass").val();
+			usuario.nombre 				=		$("#"+tipoForm+"-nombre").val();
+			usuario.cliente 			=		$("#"+tipoForm+"-cliente").val();
+			usuario.email 				=		$("#"+tipoForm+"-email").val();
+			usuario.fechaalta 			=		$("#"+tipoForm+"-fechaalta").val();
+			usuario.fechabaja 			=		$("#"+tipoForm+"-fechabaja").val();
+			usuario.estatus 			=		$("#"+tipoForm+"-estatus").val();
+			usuario.intentos 			=		$("#"+tipoForm+"-intentos").val();
+			usuario.fecharevocado 		=		$("#"+tipoForm+"-fecharevocado").val();
+			usuario.fechaVigencia 		=		$("#"+tipoForm+"-fechaVigencia").val();
+			usuario.noAcceso 			=		$("#"+tipoForm+"-noAcceso").val();
+			usuario.apellidoPaterno 	=		$("#"+tipoForm+"-apellidoPaterno").val();
+			usuario.apellidoMaterno 	=		$("#"+tipoForm+"-apellidoMaterno").val();
+			usuario.area 				=		$("#"+tipoForm+"-area").val();
+			//usuario.fechamodificacion 	=	$("#"+tipoForm+"-fechamodificacion").val();			
+			return usuario;
+			
+		}
+
+		
 		function mensajeModal(data){
 			let titulo = "";
 			if (data.headers["resultado"].trim() === "success") {
@@ -618,21 +824,14 @@
 			$("#modal-Tablero-Msj").modal("show");
 		}
 
-		//FORMULARIOS
-		$("#form-busqueda").submit(function(e){
-			//Previene el redireccionamiento de página
-			e.preventDefault();
-
-			//Desactiva el boton para no generar peticiones repetidas
-			desactivarBoton("#btn-buscar", true);
-
+		function generarTabla(){
 			//Obtiene el cuerpo de los filtros a buscar
 			let filtros = generarFiltros();			
 			//console.log("filtros-JSON:\n",JSON.stringify(filtros),
 			//	"\nfiltros-QueryString\n", $.param(filtros));
 
 			//Peticion AJAX
-			let verbo = "GET", url = "http://localhost:9010/filtro"
+			let verbo = "GET", url = "http://localhost:9010/filtro";
 
 			//Ejecuta el Ajax
 			ajax_With_Body_Exec(verbo, url, filtros)
@@ -685,9 +884,19 @@
 			*/
 			////Reactiva el boton para permitir las peticiones 
 			desactivarBoton("#btn-buscar", false);		
-		});
+		}
 
-		//$("#tbl-registros").on('click',function(event, otros){
+		//FORMULARIOS
+		$("#form-busqueda").submit(function(e){
+			//Previene el redireccionamiento de página
+			e.preventDefault();
+
+			//Desactiva el boton para no generar peticiones repetidas
+			desactivarBoton("#btn-buscar", true);
+
+			generarTabla();
+		});
+		
 		$("#tbl-registros").on('click','.btn-modificar', function(event, otros){
 			console.log("this.id:", $(this).prop('id'), " this.value:", $(this).prop('value'));
 			
@@ -711,6 +920,58 @@
 			//en este caso el del propio registro contenedor
 			$("#"+btnID).closest("tr").remove(); 
 			//$(this).closest('tr').remove();
+		});
+
+		//Cómo este Modal se crea dinamicamente, se pondrá esta función
+		$("#modal-Tablero-Form").on('click','#btn-modalForm-guardar', function(event){			
+			//Obtiene los datos del usuario modificado
+			let usuario = generarUsuario();
+			
+			//Hacer la petición AJAX
+			let verbo = "PUT", url = "http://localhost:9010/actualizar";
+			
+			//Ejecuta el Ajax
+			ajax_With_Body_Exec(verbo, url, usuario)
+				
+				//Valor de la funcion de RESUELTO de la Promesa
+				.then(function onfulfilled(value){
+					//Asigna los datos recuperados del Servidor a la var. externa
+					datosModificar = value;
+					datosModificar.headers["resultado"] = "success";
+				}
+				/*,
+				//Valor de la funcion de RECHAZO de la Promesa
+				function onrejected(reason){
+						datosModificar = reason;	
+					}*/
+				)
+				//reason == MOTIVO del RECHAZO de la Promesa
+				.catch(function onrejected(reason){				
+					console.log("Razon de falla del servicio", reason);
+					datosModificar = reason;
+					datosModificar.headers = {};
+					datosModificar.headers["resultado"] = "fail";
+				})
+				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
+				.finally(function onfinally(){
+					//Se comprueba si se asignaron correctamente
+					console.log("Datos finales de ModificarForm", datosModificar);
+		
+					////Reactiva el boton para permitir las peticiones 
+					desactivarBoton("#btn-buscar", false);								
+		
+					//Regenera la tabla dinamicamente
+					generarTabla();
+
+					//Oculta el modal
+					$("#modal-Tablero-Form").modal('hide');
+					
+					//Muestra a Mensaje-Modal para informar que se actualizo
+					mensajeModal(datosModificar);
+				});
+		
+
+			
 		});
 	</script>
 </body>

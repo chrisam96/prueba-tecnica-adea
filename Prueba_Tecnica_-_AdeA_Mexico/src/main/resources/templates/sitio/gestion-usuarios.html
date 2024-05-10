@@ -61,6 +61,7 @@
 		</div>
 	</div>
 
+	<!--ALTAS DE USUARIO-->
 	<div class="container mb-1">
 		<div class="card">
 			<form id="formAlta" action="">
@@ -225,6 +226,7 @@
 
 	<span></span>
 
+	<!--MODIFICACIONES DE USUARIO-->
 	<div class="container mb-1">
 		<div class="card">
 			<form id="formModif" action="">
@@ -350,6 +352,7 @@
 	
 	<span></span>
 	
+	<!--BAJAS DE USUARIO-->
 	<div class="container mb-1">
 		<div class="card">
 			<form id="formBaja" action="">
@@ -904,7 +907,7 @@
 			desactivarBoton("#modif-submit", true);			
 
 			//Hacer la petición AJAX
-			let verbo = "PUT", url = "http://localhost:9010/actualizar" /*"/actualizar"*/, user = {}, ajaxResult =  null;						
+			let verbo = "PUT", url = "http://localhost:9010/actualizar" /*"/actualizar"*/, user = {}, ajaxResult =  null;
 			user  = generarUsuario("modif");			
 			ajaxResult = ajaxStart(verbo, url, user);
 			
