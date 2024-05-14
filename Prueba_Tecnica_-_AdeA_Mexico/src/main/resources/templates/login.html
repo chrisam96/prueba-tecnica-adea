@@ -794,7 +794,22 @@
 						sessionStorage.setItem('usuario', JSON.stringify(data));
 			        	
 			            // Usuario encontrado, redirige a "/home"
-			            window.location.href = "/sitio/home";
+			            //window.location.href = "/sitio/home";
+						window.location.replace("/sitio/home");
+
+						/*
+						=> window.location.replace("http://example.com");
+						Este método reemplaza la URL actual en el historial del navegador con la nueva URL, 
+						lo que significa que el usuario no podrá usar el botón de retroceso 
+						para volver a la página anterior.
+
+						=> $(location).attr('href', url)
+						Similar a cambiar a "window.location.href" directamente, 
+						pero usando la sintaxis de jQuery para hacerlo.
+
+						=> location.assign("http://example.com");
+						Este método carga una nueva URL en el navegador, similar a window.location.href
+						*/
 			        } else {
 			            // Usuario no encontrado, muestra mensaje de error
 			            //alert("Usuario no encontrado");
