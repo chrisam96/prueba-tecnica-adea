@@ -198,27 +198,7 @@
 				</tr>
 			</thead>
 			<tbody id="tbl-registros-body">
-				<tr>
-					<td>John</td>
-					<td>Doe</td>
-					<td>john@example.com</td>
-					<td>john@example.com</td>
-					<td>john@example.com</td>
-				  </tr>
-				  <tr>
-					<td>Mary</td>
-					<td>Moe</td>
-					<td>mary@example.com</td>
-					<td>mary@example.com</td>
-					<td>mary@example.com</td>
-				  </tr>
-				  <tr>
-					<td>July</td>
-					<td>Dooley</td>
-					<td>july@example.com</td>
-					<td>july@example.com</td>
-					<td>july@example.com</td>
-				  </tr>
+				
 			</tbody>
 		</table>
 	</div>
@@ -345,8 +325,13 @@
 			return null;
 		}		
 
-
-
+		/* Func:
+			Petición AJAX y la resolución de la promesa (a tráves de then())
+		Param:
+		- verbo: String => Tipo de verbo HTTP 
+		- url_: String => Dirección URL de la petición 
+		- objeto: ANY => Cuerpo de la petición
+		*/
 		async function ajax_With_Body_Exec(verbo, url_, objeto){
 			let headers = {};
 
@@ -520,8 +505,9 @@
 		}
 
 		/* Func:
-			Obtiene los checkboxes marcados y genera el valor del filtro estatus
-		Param: N/A
+			Generará dinamicamente los registros que se mostrarán en la tabla
+		Param: 
+		- datos : object[] => Los datos recuperados del server
 		*/	
 		function generarRegistros(datos){
 			//Limpia los registros de la tabla
@@ -550,6 +536,12 @@
 			$("#tbl-registros tbody").html(registros);
 		}
 
+		/* Func:
+			Elimina el registro tanto en el servidor como en front-end
+		Param:
+		- btnID: String => ID del botón (cuyo formato es "[ID del registro]"+"-eliminar")
+		- url_: String =>  ID del regsitro
+		*/
 		function eliminarRegistroDelBack(btnID, btnValue){
 			console.log("ELIMINAR - Se ha pulsado el boton con ID: " + btnID + " - valor:"+ btnValue);
 
@@ -590,6 +582,13 @@
 		}
 
 
+		/* Func:
+			Recupera el registro a modificar y con esos datos generara un 
+			formulario para su edición a tráves de generarFormParaModificar()
+		Param:
+		- id: String => ID del botón (cuyo formato es "[ID del registro]"+"-eliminar")
+		- value: String =>  ID del regsitro
+		*/
 		function modificarRegistroDelBack(id, value){
 			console.log("MODIFICAR - Se ha pulsado el boton con ID:" + id + " - valor:"+ value);
 
@@ -633,6 +632,12 @@
 			//agregar otro boton para hacer el update
 		}
 
+		/* Func:
+			Generará un formulario para la edición del registro. Posteriormente se manda
+			el formulario a mensajeModalForm() para renderizarlo.
+		Param:
+		- datos: object => El registro (objeto) a modificar
+		*/
 		function generarFormParaModificar(datos){
 			let header = "";
 			header = 
@@ -757,6 +762,13 @@
 			mensajeModalForm(header, form, datos);
 		}
 
+		/* Func:
+			Renderiza el formulario y habilita dos botones para su edición del registro o cancelar la operación.
+		Param:
+		- header: html => Codigo HTML para dibujar
+		- body: html => Cuerpo del formulario para modificar el registro escogido
+		- datos: objeto => El registro (objeto) a modificar (sin uso)
+		*/
 		function mensajeModalForm(header, body, data){
 			//Editando el Modal
 			/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
@@ -801,7 +813,11 @@
 			
 		}
 
-		
+		/* Func:
+			Renderiza un modal para mostrar un determinado mensaje.
+		Param:
+		- data: object => Objeto con los datos a mostrar en el modal
+		*/
 		function mensajeModal(data){
 			let titulo = "";
 			if (data.headers["resultado"].trim() === "success") {
@@ -824,6 +840,12 @@
 			$("#modal-Tablero-Msj").modal("show");
 		}
 
+		/* Func:
+			Recoge los datos del formulario (filtros de busqueda) y hace la petición al server para recuperar los registros
+			dinamicamente que se mostrarán en la tabla
+		Param:
+			N/A
+		*/
 		function generarTabla(){
 			//Obtiene el cuerpo de los filtros a buscar
 			let filtros = generarFiltros();			

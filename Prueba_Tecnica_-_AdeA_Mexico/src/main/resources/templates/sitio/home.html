@@ -26,7 +26,7 @@
 
 </head>
 <body>
-	<div id="div-Msj-Home">
+	<div id="div-Msj-Home" class="text-center">
 		Hola usuario
 	</div>
 
@@ -78,14 +78,14 @@
 				<div class="col-1"></div>
 
 				<div class="col-5">
-					<button id="btn-gestion" type="button" class="btn btn-success">
+					<button id="btn-gestion" type="button" class="btn btn-success mx-auto">
 						Ir a Gestión de Usuarios
 					</button>
 					<br>
 				</div>
 
 				<div class="col-5">
-					<button id="btn-tablero" type="button" class="btn btn-primary" >
+					<button id="btn-tablero" type="button" class="btn btn-primary mx-auto" >
 						Ir al Tablero de Usuarios
 					</button>
 					<br>
@@ -95,30 +95,6 @@
 			</div>
 			
 			<br>
-
-			<!-- PARA EXPERIMENTAR -->
-			<div class="row">
-				<div class="col-1"></div>
-
-				<div class="col-5">
-					<button id="btn-tablero-2" type="button" class="btn btn-success">
-						Ir a Tablero (/tablero2) de Usuarios
-					</button>
-					<br>
-				</div>
-
-				<div class="col-5">
-					<button id="btn-tablero-3" type="button" class="btn btn-primary" hidden disabled>
-						Ir al Tablero (/tablero2) de Usuarios
-					</button>
-					<br>
-				</div>
-
-				<div class="col-1"></div>
-			</div>
-
-			<br>
-			
 		</form>
 	</div>
 	
@@ -128,8 +104,7 @@
 			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
 			console.log("datos del login: ", usuario);
 
-			if(usuario != undefined){
-				//$('#p-Msj-Home').text("Hola estimado, " + usuario.nombre);
+			if(usuario != undefined){				
 				$('#div-Msj-Home').text("Bienvenido, " + usuario.nombre);
 			}			
 		});
@@ -148,72 +123,6 @@
 
 			//Con JQuery
 			$(location).attr("href", "/sitio/tablero");
-		});
-
-		<!-- NO SIRVE -->
-		$("#btn-tablero-2").click(function() {
-			//Se redirige a Gestion de Usuarios
-			//ANTES
-			//window.location.href = "/tablero2"
-
-			//AHORA
-			$.ajax({
-				type: "GET",				
-				//url: "/sitio/tabla"
-				url: "/tablero2"
-				/*
-				ES UN GET, OBVIO NO TIENE BODY
-				Pero si se le pueden serializar los paramteros (clave=valor&...&claveN=valorN)
-				*/
-			})
-			.done( function (data, status, xhrData) {
-				/*console.log(data, xhrData.status);
-				console.log("done()");
-				console.log("data:\n", data); // Accede al cuerpo de la respuesta
-				console.log("status: " + status);
-				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
-				console.log("headers: \n" + xhrData.getAllResponseHeaders());
-				*/
-				//alert("tablero 2");
-			})
-			.fail( function (xhrData, status, error) {				
-				console.log("fail()");					
-				console.log("status: " + status);
-				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + error);
-				alert("falló tablero 2");
-				return;
-			});//
-
-		});
-		
-		$("#btn-tablero-3").click(function() {
-			//Se redirige a Gestion de Usuarios
-			//ANTES
-			//window.location.href = "/sitio/tablero"
-
-			//AHORA
-			$.ajax({
-				type: "GET",
-				url: "/tablero3" //NO SIRVE EL ENDPOINT, SIN SOLUCION
-				/*
-				ES UN GET, OBVIO NO TIENE BODY
-				Pero si se le pueden serializar los paramteros (clave=valor&...&claveN=valorN)
-				*/
-			})
-			.done( function (data, status, xhrData) {
-				alert("-tablero 3-");
-			})
-			.fail( function (xhrData, status, error) {				
-				console.log("fail()");					
-				console.log("status: " + status);
-				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + error);
-				alert("-fallo tablero 3-")
-				return;
-			});//
 		});
 	</script>
 </body>
