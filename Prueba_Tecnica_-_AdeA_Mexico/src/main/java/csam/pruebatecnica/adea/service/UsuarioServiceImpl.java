@@ -223,7 +223,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 					//Si HOY es mayor a FechaVigencia => Prohibir el acceso
 					//25/02/2024 es mayor 21/02/2024 ==> Para fuera
 					System.out.println(encontrado.getFechaVigencia());
-					if(ahora.after( encontrado.getFechaVigencia() )) {
+					if(encontrado.getFechaVigencia() != null && 
+							ahora.after( encontrado.getFechaVigencia() )) {
 						//return new Usuario();
 						System.out.println("Usuario con la Fecha de Vigencia EXPIRADA");
 						Usuario expirado = new Usuario(uc.getLogin());

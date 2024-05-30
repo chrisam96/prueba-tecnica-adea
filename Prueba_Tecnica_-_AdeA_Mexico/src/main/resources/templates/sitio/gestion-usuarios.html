@@ -479,12 +479,30 @@
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">
 		//AL INICIAR EL DOCUMENTO
+		/*
 		$(document).ready(function(){
-				
+				desactivarBoton("#alta-submit");
+				desactivarBoton("#modif-submit");
+				desactivarBoton("#baja-submit");
+
+				quitarFoco("#alta-submit");
+				quitarFoco("#modif-submit");
+				quitarFoco("#baja-submit");				
 		});
+		*/
 	</script>
 
 	<script type="text/javascript" defer>
+		//AL INICIAR EL DOCUMENTO
+		$(document).ready(function(){
+				//desactivarBoton("#alta-submit", true);
+				//desactivarBoton("#modif-submit", true);
+				//desactivarBoton("#baja-submit", true);
+
+				//quitarFocos(["#alta-submit","#modif-submit","#baja-submit"]);
+				quitarFocos(["#formAlta","#formModif","#formBaja"]);				
+		});
+
 		//variable global para las altas, bajas y modificaciones
 		var usuario = {};
 
@@ -772,6 +790,27 @@
 			}
 
 			return;
+		}
+
+
+		function quitarFoco(id){
+			$(id).blur();
+			//alert("se quito foco de " + id);
+		}
+
+		function quitarFocos(arreglo){
+			for (let i = 0; i < arreglo.length; i++) {
+				
+				const form = $(arreglo[i]);
+				if (form != undefined) {
+					form.on('keypress', function(e){
+						if (e.which == 13) {
+							e.preventDefault();
+							alert("tecla Enter");
+						}
+					});				
+				}
+			}
 		}
 
 		//FORMULARIOS

@@ -65,7 +65,7 @@ public class UsuarioWebController {
 		 * ruta: resources/templates/sitio
 		 * metodo: UsuarioWebController.sitio_home()
 		 */
-		return "/sitio/home";
+		return "sitio/home";
 	}
 	
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
@@ -76,7 +76,7 @@ public class UsuarioWebController {
 		 * ruta: resources/templates/sitio
 		 * metodo: UsuarioWebController.gestion_usuarios()
 		 */
-		return "/sitio/gestion-usuarios";
+		return "sitio/gestion-usuarios";
 	}
 	
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
@@ -87,7 +87,7 @@ public class UsuarioWebController {
 		 * ruta: resources/templates/sitio
 		 * metodo: UsuarioWebController.tablero()
 		 */
-		return "/sitio/tablero";
+		return "sitio/tablero";
 	}
 	
 	/* PRUEBA - EXPERIMENTO
