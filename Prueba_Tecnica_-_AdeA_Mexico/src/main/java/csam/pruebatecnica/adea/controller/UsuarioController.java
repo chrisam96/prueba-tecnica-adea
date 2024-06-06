@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -38,11 +39,15 @@ import csam.pruebatecnica.adea.utils.UsuarioConstantes;;
 //@Controller
 public class UsuarioController {
 
+	//PROPIEDADES
+	
 	//Bean del UsuarioService
 	@Autowired
 	UsuarioService usuarioService;
 	
-
+	//server.port
+	@Value("${server.port}")
+	public int serverPort;
 	
 	@GetMapping(value = "correo/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Usuario getUsuarioByEmail(@PathVariable("email") String email) {
@@ -266,9 +271,7 @@ public class UsuarioController {
 	@PutMapping(value = "/actualizar", consumes = { MediaType.APPLICATION_JSON_VALUE }, 
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
-	//public ResponseEntity<HashMap<String, ?>> updateUsuario(@RequestBody Usuario u) {
 	public ResponseEntity<HashMap<String,Object>> updateUsuario(@RequestBody Usuario u) {
-	//public String updateUsuario(@RequestBody Usuario u) {
 		//Body de la rspuesta
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		
@@ -290,31 +293,32 @@ public class UsuarioController {
 		HttpStatus estatus  = HttpStatus.OK;
 		ResponseEntity<HashMap<String,Object>> resp = null;		
 		
-		try {
-			//Devolucion del Service
-			String mensaje = usuarioService.saveOrUpdateUsuario(u);
+		try {			
+			//Devolucion del Servic
+			Map<String, Object> resultado = usuarioService.saveOrUpdateUsuario(u);
 			
 			//Generacion del Body
-			if (mensaje.endsWith("actualizado")) {
+			if ( ((Boolean)resultado.get("exito")).booleanValue() ) {
 				//Recuperación del objeto
-				Usuario recuperado = usuarioService.getUsuarioByLogin(u.getLogin());
+				//Usuario recuperado = usuarioService.getUsuarioByLogin(u.getLogin());
+				Usuario recuperado = (Usuario) resultado.get("data");
 				
 				//Body: Setteando valores al body
 				map.put("resultado", "success");
-				map.put("data", recuperado);
-				map.put("mensaje", mensaje);
 				
 				//Headers
 				headers.add("resultado", "success");
 			} else {
 				//Body: Setteando valores al body
-				map.put("resultado", "fail");
-				map.put("data", null);
-				map.put("mensaje", mensaje);				
+				map.put("resultado", "fail");				
 				
 				//Headers
 				headers.add("resultado", "fail");
 			}						
+			
+			//Completando al Body
+			map.put("data", (Usuario) resultado.get("data"));
+			map.put("mensaje", resultado.get("mensaje"));
 			
 			//Genacion del ResponseEntity
 			resp = new ResponseEntity<>(map, headers, estatus);
@@ -332,8 +336,7 @@ public class UsuarioController {
 			headers.add("resultado", "fail");
 			headers.add("causa-backend", t.getMessage());
 			
-			//Estatus
-			estatus = HttpStatus.BAD_REQUEST;
+			//Estatus y ResponseEntity
 			resp = new ResponseEntity<>( headers, HttpStatus.NOT_FOUND);
 			
 			return resp;
@@ -343,10 +346,8 @@ public class UsuarioController {
 	@DeleteMapping(value = "/eliminar/{id}", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE },
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 					MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.TEXT_PLAIN_VALUE })// USADO SOLO PARA TESTEO DE UN EXPERIMENTO)
-	//@DeleteMapping(value = "/eliminar/{id}", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<HashMap<String, Object>> deleteUsuario (@PathVariable("id") String login) {
-	//public void deleteUsuario (@PathVariable("id") String login) {
-		//Body de la rspuesta
+		//Body de la Respuesta
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		
 		//Instancia de Headers
@@ -377,11 +378,15 @@ public class UsuarioController {
 				//return;
 				
 				//Body: Setteando valores al body
+				map.put("mensaje", "Usuario no encontrado");				
 				map.put("resultado", "fail");				
-				map.put("mensaje", "Usuario no encontrado");
 				
 				//Headers
+				headers.add("mensaje", "No existe usuario");
+				headers.add("descripcion", "No se encontró el usuario registrado bajo ese Login (ID)");
 				headers.add("resultado", "fail");
+				
+				//Estatus y ResponseEntity
 				return new ResponseEntity<HashMap<String,Object>>(map, headers, estatus);
 			}
 			
@@ -509,6 +514,15 @@ public class UsuarioController {
 			resp.ofNullable(new ArrayList<Usuario>());
 			return resp;
 		}
+	}
+	
+	//metodo para devolver el server.port = mpdesp
+	@GetMapping(value = "mpdesp", //consumes = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE},
+			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
+	public Map<String,String> mpdesp() {
+		Map<String, String> datos = new HashMap<String, String>();
+		datos.put("serverPort",	String.valueOf(serverPort));
+		return datos; 
 	}
 	
 	/* POR ELIMINAR DE ESTA CAPA

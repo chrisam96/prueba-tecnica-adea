@@ -24,7 +24,8 @@ public interface UsuarioService {
 	String saveUsuario(Usuario u);
 	
 	//Usuario saveOrUpdateUsuario(Usuario u);
-	String saveOrUpdateUsuario(Usuario u);
+	//String saveOrUpdateUsuario(Usuario u);
+	Map<String, Object> saveOrUpdateUsuario(Usuario u);
 	
 	//Metodo para borrar al Usuario
 	void deleteUsuario (Usuario u);

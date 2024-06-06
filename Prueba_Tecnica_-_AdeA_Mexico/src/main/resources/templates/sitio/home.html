@@ -27,7 +27,6 @@
 </head>
 <body>
 	<div id="div-Msj-Home" class="text-center">
-		Hola usuario
 	</div>
 
 	<br> 
@@ -104,9 +103,11 @@
 			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
 			console.log("datos del login: ", usuario);
 
+			/*
 			if(usuario != undefined){				
 				$('#div-Msj-Home').text("Bienvenido, " + usuario.nombre);
-			}			
+			}
+			*/			
 		});
 
 		$("#btn-gestion").click(function() {

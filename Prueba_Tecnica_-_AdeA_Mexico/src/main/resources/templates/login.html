@@ -27,7 +27,10 @@
 		<h1>Bienvenido a la Prueba Técnica</h1>	
 	</div>
 	&nbsp;&nbsp;&nbsp; <!-- Ctrl + Alt + Shift + B, R -->
-	
+
+	<div id="testing" class="container text-center">		
+	</div>
+
 	<div id="div-Msj-Login" class="container text-center">		
 	</div>
 
@@ -487,14 +490,98 @@
 	});
 	</script>
 	-->
-	<script type="text/javascript">		
-		
-		//Declaracion de variables
+	<script type="text/javascript">
+		//Variables Universales
+		var urlObject = {};		
 		var usuarioCredenciales = {}; 
-		var url = "/login", url1 = "/login1"; 
-		var urlFull = "http://localhost:9010/login1";
+		//var url = "/login", url1 = "/login1"; 		
 		var resultado = null;
+		var puertoServer = null;
 
+		//AL INICIAR EL DOCUMENTO
+		$(document).ready(function(){
+			//Variables con info de la URL						
+			urlObject.protocolo = window.location.protocol;// "http:" o "https:"
+			urlObject.host = window.location.host;// Nombre del Host + Puerto
+			urlObject.hostname = window.location.hostname;// Nombre del Host (ej. www.ejemplo.com)
+			urlObject.puerto = getPuerto();// Numero del Puerto (ej. "80", "443" o "8080")
+			urlObject.path = window.location.pathname;// Path de la URL (ej. "/ruta/pagin")
+			urlObject.queryString = window.location.search;// Query string de la URL (ej. "?param1=valor1&param2=valor2")
+			urlObject.hash = window.location.hash;// Fragmento de la URL (ej "#seccion1")
+			urlObject.ancestorOrigins = window.location.ancestorOrigins;// Origen de la pag. anterior de donde vino la URL actual
+			//Propiedades personalizadas basadas en propiedades previas
+			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
+			urlObject.puertoBack = 9010;// Puerto usado por el Servicio del BackEnd
+			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
+			//Propiedades personalizadas auxiliares
+			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
+			urlObject.customPuerto = 0;// Puerto Web "Personalizada" del Back (ej. 8000, 8080, 8081)
+			urlObject.customDireccion = urlObject.protocolo + "//" + urlObject.customHostname + ":" + urlObject.customPuerto;// Direccion Web Personalizada del Back (Protocolo + Host + Puerto)
+			
+			//$("#testing").html(JSON.stringify(data));
+			puertoServer = portProperties().then(
+				function(value){ 
+					puertoServer = value;
+					console.log("portProperties.then():", value);
+					//return value
+					$("#testing").html("PuertoServer: ",puertoServer);
+
+			});
+			console.log("puerto server:", puertoServer)
+			$("#testing").html(puertoServer);
+		});		
+
+		//METODOS
+		
+		async function portProperties(){
+			let puerto;
+			//$.get("../application.properties", function(data){
+			/*$.get("/mpdesp", function(data){
+				puerto = data.serverPort;
+			}).then(function(data){
+				return puerto;
+			});*/
+			
+			puerto = await $.get("/mpdesp").
+				then(function(value){
+					return value.serverPort;
+				});
+			return puerto;
+		}
+
+		/* Func:
+			Obtiene el puerto que esta usando el FrontEnd.
+		Param:
+		N/A
+		*/
+		function getPuerto(){
+			// Obtener el puerto actual en el que está escuchando la aplicación web
+			let puerto = window.location.port;
+
+			/* NOTA:
+			Si la aplicación está usando el puerto por defecto para HTTP (80) o 
+			HTTPS (443), la propiedad "window.location.port" puede devolver 
+			una cadena vacía. 
+			
+			En ese caso, se puede comprobar el esquema http/https (window.location.protocol)
+			para inferir el puerto usado.
+			*/
+
+			//Si el puerto no contiene datos
+			if(!puerto){
+				//Se usa el protocolo HTTP
+				if(window.location.protocol == "http:"){
+					puerto = 80;	
+				}
+				//Se usa el protocolo HTTPS
+				else if(window.location.port == "https:"){
+					puerto = 443;
+				}
+			}
+			return puerto;
+		}
+
+		//FORMULARIOS
 		$("#formLogin").submit(function(e){
 			e.preventDefault();				
 			//console.log('Alcanzo form a traves del input(submit)');
@@ -760,7 +847,7 @@
 				//contentType: 'application/json; charset=utf-8',
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
-				url: url,
+				url: urlObject.direccionBack,//url,
 				//------Convierte un objeto JSON a un objeto JavaScript
 				//data: JSON.parse(usuarioCredenciales),
 				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)

@@ -205,14 +205,30 @@
 
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">		
-		//Variables
+		//Variables Universales
 		var datos = undefined, datosModificar = {};		
+		var urlObject = {};
 
 		//AL INICIAR EL DOCUMENTO
 		$(document).ready(function(){
-				
+			//Variables con info de la URL						
+			urlObject.protocolo = window.location.protocol;// "http:" o "https:"
+			urlObject.host = window.location.host;// Nombre del Host + Puerto
+			urlObject.hostname = window.location.hostname;// Nombre del Host (ej. www.ejemplo.com)
+			urlObject.puerto = getPuerto();// Numero del Puerto (ej. "80", "443" o "8080")
+			urlObject.path = window.location.pathname;// Path de la URL (ej. "/ruta/pagin")
+			urlObject.queryString = window.location.search;// Query string de la URL (ej. "?param1=valor1&param2=valor2")
+			urlObject.hash = window.location.hash;// Fragmento de la URL (ej "#seccion1")
+			urlObject.ancestorOrigins = window.location.ancestorOrigins;// Origen de la pag. anterior de donde vino la URL actual
+			//Propiedades personalizadas basadas en propiedades previas
+			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
+			urlObject.puertoBack = 9010;// Puerto usado por el Servicio del BackEnd
+			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
+			//Propiedades personalizadas auxiliares
+			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
+			urlObject.customPuerto = 0;// Puerto Web "Personalizada" del Back (ej. 8000, 8080, 8081)
+			urlObject.customDireccion = urlObject.protocolo + "//" + urlObject.customHostname + ":" + urlObject.customPuerto;// Direccion Web Personalizada del Back (Protocolo + Host + Puerto)							
 		});
-
 
 		//METODOS
 		
@@ -548,7 +564,7 @@
 			//Hacer la petición AJAX
 			//let verbo = "DELETE",  user = {}, ajaxResult =  null;			
 			let ajaxResult =  null, datosEliminar = {};			
-			let url = "http://localhost:9010/eliminar/" + btnValue;
+			let url = urlObject.direccionBack+"/eliminar/" + btnValue;
 
 			//ajaxResult = ajaxStart(verbo, url, objeto);	
 			ajaxResult = ajax_With_Body_Exec("DELETE", url, undefined)
@@ -594,7 +610,7 @@
 
 			//Agregar ajax para recuperar los datos
 			//Declaracion de variables
-			let url_getUsuarioByLogin = "http://localhost:9010/usuario/"; 
+			let url_getUsuarioByLogin = urlObject.direccionBack+"/usuario/"; 
 			//let datosModificar = {};
 
 			// URL = usuario/{login}
@@ -624,8 +640,8 @@
 				if (datosModificar.headers.resultado == "success") {
 					//agregar el form
 					generarFormParaModificar(datosModificar);
-				} else {
-					alert("Fallo el modificarRegistroDelBack", datosModificar);
+				} else {					
+					msjGenerico("Error","Fallo el modificar el registro en el Servidor");
 				}
 			});			
 			//agregar el form
@@ -639,6 +655,9 @@
 		- datos: object => El registro (objeto) a modificar
 		*/
 		function generarFormParaModificar(datos){
+			//Se muestra el mensaje de advertencia
+			msjGenerico("<b>Advertencia</b>",'Si deja la <b>casilla de "Contraseña"</b> vacía, entonces la contraseña se conservará.<br>Si ingresa cualquier texto, entonces sustituirá.');
+
 			let header = "";
 			header = 
 			'<div class="bg-warning text-center w-100"> ' +
@@ -650,9 +669,15 @@
 			'<form id="formModif" action="">' +
 				/*'<div class="bg-warning text-center text-white"> ' +
 				'	<h4><b>Datos del Usuario encontrados:</b></h4>' +
-				'</div>' + 
+				'</div>' + */
 
-				'<hr class="hr">			' + */
+				'<label class="form-label">'+					
+						'<h6><b>Advertencia</b></h6>'+
+						'Si deja la <b>casilla de "Contraseña"</b> vacía, entonces la contraseña actual se conservará.<br>'+
+						'Si ingresa cualquier texto, entonces la sustituirá.' +
+				'</label> ' +				
+				
+				'<hr class="hr">' +
 
 				'<div class="input-group mb-1">' +
 				'	<span class="input-group-text"><b>Login:</b></span>' +
@@ -663,7 +688,7 @@
 				'<div class="input-group mb-1">' +
 				'	<span class="input-group-text"><b>Contraseña:</b></span>' +
 				'	<input id="modif-pass" name="pass" type="text" class="form-control" placeholder="Contraseña de usuario"' +
-				'	maxlength="20"  value="'+datos.data.pass +'" required>' +
+				'	maxlength="20"  value="' /*+datos.data.pass*/ +'">' +
 				'</div>' +
 
 				'<div class="input-group mb-1">' +
@@ -826,18 +851,7 @@
 				titulo = "Error";
 			} 
 
-			//Editando el Modal
-			/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
-
-				1. Directa: Usando su ID del elemento interno
-				2. Indirecta: Usando el ID del elemento contenedor y el "class" del 
-				elemento interno.
-			*/
-			$("#modal-Tablero-body").text(data.data.mensaje);
-			$("#modal-Tablero-Msj .modal-title").text(titulo);					
-
-			//Mostrar el mensaje
-			$("#modal-Tablero-Msj").modal("show");
+			msjGenerico(titulo, data.data.mensaje);
 		}
 
 		/* Func:
@@ -853,7 +867,7 @@
 			//	"\nfiltros-QueryString\n", $.param(filtros));
 
 			//Peticion AJAX
-			let verbo = "GET", url = "http://localhost:9010/filtro";
+			let verbo = "GET", url = urlObject.direccionBack+"/filtro";
 
 			//Ejecuta el Ajax
 			ajax_With_Body_Exec(verbo, url, filtros)
@@ -908,6 +922,54 @@
 			desactivarBoton("#btn-buscar", false);		
 		}
 
+		/* Func:
+			Despliega un mensaje Modal
+		Param:
+		- titulo: String => Titulo de la ventana Modal
+		- msj: String => Mensaje de la ventana Modal
+		*/
+		function msjGenerico(titulo, msj){
+			//Editando el Modal			
+			$("#modal-Tablero-Msj .modal-title").html(titulo);
+			$("#modal-Tablero-body").html(msj);
+
+			//Mostrar el mensaje
+			$("#modal-Tablero-Msj").modal("show");			
+		}
+
+		/* Func:
+			Obtiene el puerto que esta usando el FrontEnd.
+		Param:
+		N/A
+		*/
+		function getPuerto(){
+			// Obtener el puerto actual en el que está escuchando la aplicación web
+			let puerto = window.location.port;
+
+			/* NOTA:
+			Si la aplicación está usando el puerto por defecto para HTTP (80) o 
+			HTTPS (443), la propiedad "window.location.port" puede devolver 
+			una cadena vacía. 
+			
+			En ese caso, se puede comprobar el esquema http/https (window.location.protocol)
+			para inferir el puerto usado.
+			*/
+
+			//Si el puerto no contiene datos
+			if(!puerto){
+				//Se usa el protocolo HTTP
+				if(window.location.protocol == "http:"){
+					puerto = 80;	
+				}
+				//Se usa el protocolo HTTPS
+				else if(window.location.port == "https:"){
+					puerto = 443;
+				}
+			}
+			return puerto;
+		}
+
+
 		//FORMULARIOS
 		$("#form-busqueda").submit(function(e){
 			//Previene el redireccionamiento de página
@@ -923,7 +985,7 @@
 			console.log("this.id:", $(this).prop('id'), " this.value:", $(this).prop('value'));
 			
 			/*$(this) apunta hacía el botón que se dió 'click' y no a la tabla, 
-			debe ser por lo de: #tbl-registros -> .btn-eliminar */			
+			debe ser como una propiedad si nos basamos en la POO: #tbl-registros -> .btn-eliminar */			
 			let btnID = $(this).prop('id');
 			let btnValue = $(this).prop('value');
 			modificarRegistroDelBack(btnID, btnValue);
@@ -950,7 +1012,7 @@
 			let usuario = generarUsuario();
 			
 			//Hacer la petición AJAX
-			let verbo = "PUT", url = "http://localhost:9010/actualizar";
+			let verbo = "PUT", url = urlObject.direccionBack+"/actualizar";
 			
 			//Ejecuta el Ajax
 			ajax_With_Body_Exec(verbo, url, usuario)

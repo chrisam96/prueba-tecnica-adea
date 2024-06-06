@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -120,54 +121,82 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	//public Usuario saveOrUpdateUsuario(Usuario u) {
-	public String saveOrUpdateUsuario(Usuario u) {
+	//public String saveOrUpdateUsuario(Usuario u) {
+	public Map<String, Object> saveOrUpdateUsuario(Usuario u) {
+		Map<String, Object> resp =  new HashMap<String, Object>();
 		
 		//Validacion de LOGIN != NULL
-		if (u.getLogin() == null || u.getLogin().isBlank()) {			
-			//System.out.println("No hay Login -> se recibio un NULL");
-			//return null;
-			return "No hay un login ingresado, se recibio un valor NULL";
+		if (u.getLogin() == null || u.getLogin().isBlank()) {
+			resp.put("exito", false);
+			resp.put("data", null);
+			resp.put("mensaje", "No hay un login ingresado, se recibio un valor nulo.");
+			return resp;
 		}
 		
-		//Si existe, se podra actualizar
+		//Validacion de existencia de del Usuario
 		Usuario encontrado = this.getUsuarioByLogin( u.getLogin() );
 		if ( encontrado != null ) {
 			
-			/* Validacion de la contraseña
-			 * 	Se compara si se modifico la contraseña
-			 * 		SI ES LA MISMA 	=> ya no se guarda
-			 * 		SI ES DIFERENTE => se encrypta
-			 */
-			String passEncrypt = this.cifrar_y_encryptar(u.getPass());
-			if ( !passEncrypt.equals(encontrado.getPass() ) ) {
-				u.setPass(passEncrypt);
-			}else {
+			/*Validacion de la contraseña 
+			* SI desde el Front se envía vacío/nulo 
+			* 	-> la contraseña no se debe modificar
+			* SI desde el Front se envía un texto 
+			* 	-> la contraseña se sustituira y encryptara*/
+			if(u.getPass() == null || u.getPass().isBlank()) {
 				u.setPass(encontrado.getPass());
+			}else {
+				u.setPass(this.cifrar_y_encryptar(u.getPass()));
 			}
 			
-			//FechaModificaion es igual a la FechaAlta
+			//Validaciones para las fechas cuando se reciben en NULL
 			if (u.getFechaalta() == null) {
 				u.setFechaalta(encontrado.getFechaalta());
 			}
 			if (u.getFechamodificacion() == null) {
 				u.setFechamodificacion(new Date());
 			}
-			
-			Usuario nvo = usuarioDAO.updateUsuario(u);
-			
-			//Si devuelve un null es que no se pudo guardar
-			if(nvo != null) {
-				System.out.println("Actualizado: " + nvo.getLogin());
-				return "Usuario: " + nvo.getLogin() + " actualizado";
+			/*//Quitado para permitir setear vacios en estas fechas
+			if (u.getFechabaja() == null) {
+				u.setFechabaja(encontrado.getFechabaja());
 			}
-			return "Hay un problema para actualizar al usuario";					
+			if (u.getFecharevocado() == null) {
+				u.setFecharevocado(encontrado.getFecharevocado());
+			}
+			if (u.getFechaVigencia() == null) {
+				u.setFechaVigencia(encontrado.getFechaVigencia());
+			}
+			*/
+			
+			//Se persiste el objeto y se devuelve
+			Usuario nuevo = usuarioDAO.updateUsuario(u);
+			
+			/*Validacion de la Persistencia
+			* SI devuelve un null 	-> no se pudo guardar
+			* SI devuelve un objeto -> se guardaron los cambios*/
+			if(nuevo != null) {
+				System.out.println("Actualizado: " + nuevo.getLogin());
+				
+				resp.put("exito", true);
+				resp.put("data", nuevo);
+				resp.put("mensaje", "Usuario \"" + nuevo.getLogin() + "\" actualizado");				
+			}
+			else {
+				resp.put("exito", false);
+				resp.put("data", encontrado);
+				resp.put("mensaje", "Hay un problema para actualizar al usuario, por lo que"
+						+ "se mantuvieron los datos previos.");
+			}
+			
+			return resp;					
+			
 		}
-		//No encontrado == null
-		
+		//No encontrado == null		
 		else {
-			return "Usuario no encontrado";
+			resp.put("exito", false);
+			resp.put("data", null);
+			resp.put("mensaje", "Usuario no encontrado.");			
+			return resp;
 		}
-		//return usuarioDAO.updateUsuario(u);
 	}
 
 	@Override
