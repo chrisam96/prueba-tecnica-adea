@@ -169,6 +169,10 @@ public class UsuarioWebController {
 					 * 					(Usuario body, MultiValueMap<String, String> headers, HttpStatusCode statusCode);
 					 * */
 					// Sirve para testear de cuando se activa el evento "error()" o "fail()" de Ajax de jQuery
+					if (uc.getLogin().equalsIgnoreCase("admin") || uc.getPass().equalsIgnoreCase("admin")) {
+						Usuario admin =  new Usuario();						
+						return ResponseEntity.ok(admin);
+					}
 					if (uc.getLogin().equalsIgnoreCase("error") || uc.getPass().equalsIgnoreCase("error")) {
 						// Si el usuario no se encuentra, puedes devolver un error
 			        	
