@@ -1,10 +1,17 @@
 /.metadata/
 /PRB-BBVA/
+/Prueba-Tecnica-Inbursa/
 /PruebaTecnica_AdeA/
+/Prueba_Tecnica_-_AdeA_Mexico/
+/Prueba_Tecnica_-_AdeA_Mexico/HELP.md
+/Prueba_Tecnica_-_AdeA_Mexico/target/classes/
+/Prueba_Tecnica_-_AdeA_Mexico/target/generated-sources/
+/Prueba_Tecnica_-_AdeA_Mexico/target/generated-test-sources/
+/Prueba_Tecnica_-_AdeA_Mexico/target/maven-archiver/
+/Prueba_Tecnica_-_AdeA_Mexico/target/maven-status/
+/Prueba_Tecnica_-_AdeA_Mexico/target/test-classes/
 /Prueba_Tecnica_-_AdeA_Mexico/src/test/
 /Prueba_Tecnica_-_AdeA_Mexico/src/main/java/META-INF/persistence.xml_respaldo
-/Prueba-Tecnica-Inbursa/
-/Prueba-Tecnica-Inbursa/**
 
 ### STS ###
 .apt_generated
