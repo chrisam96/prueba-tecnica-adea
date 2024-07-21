@@ -8,6 +8,7 @@ target/test-classes/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+**/Prueba-Tecnica-Inbursa/
 
 ### STS ###
 .apt_generated
