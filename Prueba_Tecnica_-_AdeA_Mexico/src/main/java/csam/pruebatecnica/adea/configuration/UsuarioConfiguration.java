@@ -24,13 +24,14 @@ public class UsuarioConfiguration {
 		
 		CorsConfiguration config = new CorsConfiguration();
 		
-		String [] arr = {"*"};		
+		ArrayList<String> list = new ArrayList<>();		
+		list.add("*");
 		
-		config.setAllowedOrigins(Arrays.asList(arr) );
+		config.setAllowedOrigins( list );
 		
-		config.setAllowedHeaders(Arrays.asList(arr) );
+		config.setAllowedHeaders( list );
 		
-		config.setAllowedMethods(Arrays.asList(arr) );			
+		config.setAllowedMethods( list );			
 		
 		/*Instacia que extiende de CorsConfigurationSpurce.
 		 * Esta clase que permite registrar configuraciones CORS basadas en patrones de URL.*/
