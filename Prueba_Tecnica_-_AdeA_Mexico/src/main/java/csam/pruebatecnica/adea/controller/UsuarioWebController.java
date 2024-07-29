@@ -26,6 +26,11 @@ import csam.pruebatecnica.adea.model.Usuario;
 import csam.pruebatecnica.adea.model.UsuarioCredenciales;
 import csam.pruebatecnica.adea.service.UsuarioService;
 
+/*Notacion @CrossOrigin
+ * 
+ * Indica que orígenes (de URL) se quieren admitir en el controller. 
+ * Al usar * se permiten peticiones desde cualquier URL
+ */
 @CrossOrigin(origins = "*")
 @Controller
 public class UsuarioWebController {
