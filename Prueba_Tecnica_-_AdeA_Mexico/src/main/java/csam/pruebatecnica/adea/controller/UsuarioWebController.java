@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import csam.pruebatecnica.adea.model.Usuario;
@@ -43,7 +44,7 @@ public class UsuarioWebController {
 	// VISTAS DE PAGINAS WEB
 
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
-	@RequestMapping(path = {"/login", "/"}) 
+	@RequestMapping(path = {"/login", "/"}, method = RequestMethod.GET) 
 	public String login() {
 		/*
 		 * archivo: login.html
