@@ -27,7 +27,7 @@ public class UsuarioConfiguration {
 		ArrayList<String> list = new ArrayList<>();		
 		list.add("*");
 		
-		config.setAllowedOrigins( Arrays.asList("/*") );
+		config.setAllowedOrigins( Arrays.asList("/**") );
 		config.addAllowedOrigin("*");
 		
 		config.setAllowedHeaders( Arrays.asList("*") );
@@ -35,7 +35,7 @@ public class UsuarioConfiguration {
 		
 		config.setAllowedMethods( Arrays.asList("*") );
 		
-		
+		config.setAllowCredentials(Boolean.TRUE);
 		/*Instacia que extiende de CorsConfigurationSpurce.
 		 * Esta clase que permite registrar configuraciones CORS basadas en patrones de URL.*/
 		UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
