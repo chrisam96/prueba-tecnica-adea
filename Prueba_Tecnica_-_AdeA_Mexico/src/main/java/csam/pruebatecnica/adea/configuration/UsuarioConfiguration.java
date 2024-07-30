@@ -30,7 +30,7 @@ public class UsuarioConfiguration {
 		ArrayList<String> list = new ArrayList<>();		
 		list.add("*");
 		
-		config.setAllowedOrigins( Arrays.asList("/*") );
+		config.setAllowedOrigins( Arrays.asList("*") );
 		config.addAllowedOrigin("*");
 		
 		config.setAllowedHeaders( Arrays.asList("*") );
