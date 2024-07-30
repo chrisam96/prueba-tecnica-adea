@@ -27,7 +27,7 @@ public class UsuarioConfiguration {
 		ArrayList<String> list = new ArrayList<>();		
 		list.add("*");
 		
-		config.setAllowedOrigins( Arrays.asList("/*") );
+		config.setAllowedOrigins( Arrays.asList("/**") );
 		
 		config.setAllowedHeaders( Arrays.asList("*") );
 		config.setExposedHeaders( Arrays.asList("*") );
