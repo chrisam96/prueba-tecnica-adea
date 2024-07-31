@@ -21,7 +21,7 @@ public class UsuarioConfiguration {
 	
 	
 	//Configuración de las politicas de seguridad CORS de la aplicación
-	
+	/*
 	@Bean
 	public CorsConfigurationSource  corsConfigurationSource() {
 		
@@ -51,5 +51,5 @@ public class UsuarioConfiguration {
 		//return new CorsFilter(corsSource);
 		return corsSource;
 	}  
-	
+	*/
 }
