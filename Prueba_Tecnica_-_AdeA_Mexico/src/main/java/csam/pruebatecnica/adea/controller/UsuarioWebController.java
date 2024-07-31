@@ -32,7 +32,12 @@ import csam.pruebatecnica.adea.service.UsuarioService;
  * Indica que orígenes (de URL) se quieren admitir en el controller. 
  * Al usar * se permiten peticiones desde cualquier URL
  */
-@CrossOrigin(origins = "*")
+/*
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "*", 
+methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE,
+		RequestMethod.HEAD})
+//@CrossOrigin(origins = "*") 
+*/
 @Controller
 public class UsuarioWebController {
 	

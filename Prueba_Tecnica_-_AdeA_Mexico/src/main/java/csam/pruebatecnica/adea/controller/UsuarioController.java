@@ -14,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,9 +36,14 @@ import csam.pruebatecnica.adea.utils.UsuarioConstantes;;
  * Indica que orígenes (de URL) se quieren admitir en el controller. 
  * Al usar * se permiten peticiones desde cualquier URL
  */
-@CrossOrigin(origins = "*")
+/*
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "*", 
+methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE,
+		RequestMethod.HEAD})
+//@CrossOrigin(origins = "*") 
+*/
+
 @RestController
-//@Controller
 public class UsuarioController {
 
 	//PROPIEDADES

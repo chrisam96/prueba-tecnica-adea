@@ -1,16 +1,14 @@
 package csam.pruebatecnica.adea.configuration;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -23,14 +21,21 @@ public class UsuarioConfiguration {
 	
 	
 	//Configuración de las politicas de seguridad CORS de la aplicación
+	
 	@Bean
-	public CorsConfigurationSource  corsFilter() {
+	public CorsConfigurationSource  corsConfigurationSource() {
 		
 		CorsConfiguration config = new CorsConfiguration();
 		
 		config.setAllowedOrigins( Arrays.asList("*") );
-		config.addAllowedOrigin("*");
-		config.setAllowedMethods( Arrays.asList("*") );
+		//config.addAllowedOrigin("*");
+		config.setAllowedMethods( Arrays.asList(
+				RequestMethod.GET.name(),
+				RequestMethod.POST.name(),
+				RequestMethod.PUT.name(),
+				RequestMethod.DELETE.name(),
+				RequestMethod.HEAD.name()
+				) );
 		config.setAllowedHeaders( Arrays.asList("*") );
 		config.setExposedHeaders( Arrays.asList("*") );
 		
@@ -45,6 +50,6 @@ public class UsuarioConfiguration {
 		
 		//return new CorsFilter(corsSource);
 		return corsSource;
-	} 
+	}  
 	
 }
