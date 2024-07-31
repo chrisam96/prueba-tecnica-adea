@@ -21,13 +21,13 @@ public class UsuarioConfiguration {
 	
 	
 	//Configuración de las politicas de seguridad CORS de la aplicación
-	/*
+	
 	@Bean
 	public CorsConfigurationSource  corsConfigurationSource() {
 		
 		CorsConfiguration config = new CorsConfiguration();
 		
-		config.setAllowedOrigins( Arrays.asList("*") );
+		config.setAllowedOriginPatterns( Arrays.asList("*") );
 		//config.addAllowedOrigin("*");
 		config.setAllowedMethods( Arrays.asList(
 				RequestMethod.GET.name(),
@@ -51,5 +51,5 @@ public class UsuarioConfiguration {
 		//return new CorsFilter(corsSource);
 		return corsSource;
 	}  
-	*/
+	
 }
