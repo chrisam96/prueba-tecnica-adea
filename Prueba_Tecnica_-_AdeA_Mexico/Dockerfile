@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk
+FROM amazoncorretto:17
 ADD /target/backend-usuario-1.jar app.jar
-#EXPOSE 9011
+EXPOSE 10000
 ENTRYPOINT ["java", "-jar", "/app.jar"]
