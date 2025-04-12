@@ -39,9 +39,9 @@ import csam.pruebatecnica.adea.utils.UsuarioConstantes;;
  * Al usar * se permiten peticiones desde cualquier URL
  */
 
-@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "*", 
+/*@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "*", 
 methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE,
-		RequestMethod.HEAD})
+		RequestMethod.HEAD})*/
 //@CrossOrigin(origins = "*") 
 @RestController
 public class UsuarioController {

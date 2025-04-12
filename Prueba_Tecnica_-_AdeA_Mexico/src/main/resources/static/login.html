@@ -513,7 +513,7 @@
 			urlObject.ancestorOrigins = window.location.ancestorOrigins;// Origen de la pag. anterior de donde vino la URL actual
 			//Propiedades personalizadas basadas en propiedades previas
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
-			urlObject.puertoBack = await getPuertoBack(9010);//9010;// Puerto usado por el Servicio del BackEnd
+			urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
@@ -547,6 +547,8 @@
 
 				NOTA: Solo puede ser usado dentro de métodos async
 				*/
+				//puerto = await $.get("http://127.0.0.1:10000/mpdesp")
+				//puerto = await $.get(urlObject.direccionBack+"/mpdesp")
 				puerto = await $.get("/mpdesp")
 					.then(function doneCallback(value){
 						return value.serverPort;
@@ -934,6 +936,7 @@
 			            // Usuario encontrado, redirige a "/home"
 			            //window.location.href = "/sitio/home";
 						window.location.replace("/sitio/home");
+						//window.location.replace("http://127.0.0.1:5500/src/main/resources/templates/sitio/home.html");
 
 						/*
 						=> window.location.replace("http://example.com");

@@ -48,18 +48,33 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jersey</artifactId>
 		</dependency>
-		-->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		-->
 	</dependencies>
+	
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- Con este plugin puedo usar acentos y elementos UTF-8
+				en archivos como application.properties, páginas HTML u
+				otros recursos (resources) que se encuentren en  
+				la carpeta "resource" del proyecto	
+			-->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-resources-plugin</artifactId>
+			    <version>3.1.0</version>
+			    <configuration>
+			        <encoding>UTF-8</encoding>
+			    </configuration>
 			</plugin>
 		</plugins>
 	</build>
