@@ -39,7 +39,7 @@ public class CORSConfiguration {
 					//.allowPrivateNetwork(true)
 				//Configurear durante cuánto tiempo en segundos los clientes 
 				//pueden almacenar en caché la respuesta de una solicitud
-					.maxAge(300);
+					.maxAge(3600);
 			}
 		};
 	}

@@ -506,7 +506,7 @@
 			urlObject.protocolo = window.location.protocol;// "http:" o "https:"
 			urlObject.host = window.location.host;// Nombre del Host + Puerto
 			urlObject.hostname = window.location.hostname;// Nombre del Host (ej. www.ejemplo.com)
-			urlObject.puerto = getPuertoFront();// Numero del Puerto (ej. "80", "443" o "8080")
+			urlObject.puerto = await getPuertoFront();// Numero del Puerto (ej. "80", "443" o "8080")
 			urlObject.path = window.location.pathname;// Path de la URL (ej. "/ruta/pagin")
 			urlObject.queryString = window.location.search;// Query string de la URL (ej. "?param1=valor1&param2=valor2")
 			urlObject.hash = window.location.hash;// Fragmento de la URL (ej "#seccion1")
@@ -525,6 +525,9 @@
 			puertoServer = await getPuertoBack(8080);
 			console.log("puerto server:", puertoServer);
 			console.log("puerto server v2:", await getPuertoBackV2());
+			console.log("direccionBack: ", urlObject.direccionBack);
+			console.log("puerto front:", await getPuertoFront());
+			
 			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodo saync-await");
 		});		
 
@@ -634,7 +637,7 @@
 		//FORMULARIOS
 		$("#formLogin").submit(function(e){
 			e.preventDefault();				
-			//console.log('Alcanzo form a traves del input(submit)');
+			console.log('Alcanzo form a traves del input(submit)');
 			
 			//Obteniendo los valores del form y creando un objeto
 			usuarioCredenciales.login = $("#loginLogin").val();
@@ -892,7 +895,9 @@
 				- Un Map<K,V>
 			*/
 			console.log("direccionBack: ", urlObject.direccionBack);
+
 			console.log("objeto completo: \n", urlObject);
+
 			console.log( JSON.stringify(urlObject) );			
 			
 			$.ajax({
