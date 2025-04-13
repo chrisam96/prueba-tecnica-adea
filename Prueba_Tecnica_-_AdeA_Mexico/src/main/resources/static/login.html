@@ -515,6 +515,7 @@
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
 			urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
+			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
 			urlObject.customPuerto = 0;// Puerto Web "Personalizada" del Back (ej. 8000, 8080, 8081)
@@ -526,6 +527,7 @@
 			console.log("puerto server:", puertoServer);
 			console.log("puerto server v2:", await getPuertoBackV2());
 			console.log("direccionBack: ", urlObject.direccionBack);
+			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
 			console.log("puerto front:", await getPuertoFront());
 			
 			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodo saync-await");
@@ -558,7 +560,8 @@
 					})
 					.then(function doneFilter(valueFilter){
 						urlObject.puertoBack = valueFilter;
-						console.log("direccionBack: ", urlObject.direccionBack);
+						//console.log("direccionBack: ", urlObject.direccionBack);
+						console.log("direccionBack: ", urlObject.direccionBackSinPuerto);
 						puerto = valueFilter;
 						return puerto;
 					});
@@ -577,6 +580,7 @@
 		N/A
 		*/
 		async function getPuertoBackV2(port){
+
 			let resp, puerto;
 
 			try{
@@ -894,6 +898,7 @@
 				- Un objeto de una Clase Especifica				
 				- Un Map<K,V>
 			*/
+			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
 			console.log("direccionBack: ", urlObject.direccionBack);
 
 			console.log("objeto completo: \n", urlObject);
@@ -905,7 +910,8 @@
 				//contentType: 'application/json; charset=utf-8',
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
-				url: urlObject.direccionBack + "/login1", //url,
+				//url: urlObject.direccionBack + "/login1", //url,
+				url: urlObject.direccionBackSinPuerto + "/login1", //url,
 				//------Convierte un objeto JSON a un objeto JavaScript
 				//data: JSON.parse(usuarioCredenciales),
 				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
