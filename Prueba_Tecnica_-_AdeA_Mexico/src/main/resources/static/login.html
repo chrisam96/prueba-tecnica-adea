@@ -513,7 +513,7 @@
 			urlObject.ancestorOrigins = window.location.ancestorOrigins;// Origen de la pag. anterior de donde vino la URL actual
 			//Propiedades personalizadas basadas en propiedades previas
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
-			urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
+			//urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
 			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
 			//Propiedades personalizadas auxiliares
@@ -522,10 +522,10 @@
 			urlObject.customDireccion = urlObject.protocolo + "//" + urlObject.customHostname + ":" + urlObject.customPuerto;// Direccion Web Personalizada del Back (Protocolo + Host + Puerto)
 			
 			//Prueba de async - await
-			let puertoServer = null;
-			puertoServer = await getPuertoBack(8080);
-			console.log("puerto server:", puertoServer);
-			console.log("puerto server v2:", await getPuertoBackV2());
+			//let puertoServer = null;
+			//puertoServer = await getPuertoBack(8080);
+			//console.log("puerto server:", puertoServer);
+			//console.log("puerto server v2:", await getPuertoBackV2());
 			console.log("direccionBack: ", urlObject.direccionBack);
 			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
 			console.log("puerto front:", await getPuertoFront());
@@ -611,7 +611,7 @@
 		Param:
 		N/A
 		*/
-		function getPuertoFront(){
+		async function getPuertoFront(){
 			// Obtener el puerto actual en el que está escuchando la aplicación web
 			let puerto = window.location.port;
 

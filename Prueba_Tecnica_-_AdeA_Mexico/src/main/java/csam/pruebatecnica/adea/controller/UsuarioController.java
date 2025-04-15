@@ -16,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import csam.pruebatecnica.adea.model.Usuario;
@@ -194,6 +193,86 @@ public class UsuarioController {
 		}
 
 	
+	/*-----------------------------------------------------------------------------------*/
+	@PostMapping(value = { "/login", "/"},
+			consumes = { MediaType.APPLICATION_JSON_VALUE},
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
+	@ResponseBody
+	public ResponseEntity<Usuario> getUsuarioByCredencialesTesting(@RequestBody UsuarioCredenciales uc) {
+				System.out.println("ENTRO: " + uc.toString());
+				
+				//Instancia de los HttpHeaders
+				HttpHeaders headers = new HttpHeaders();
+				
+				/*[EDITAR]
+				 * Creacion de una lista de MediaType (que son los formatos de entrega de la info),
+				 * siendo estos guardados en la propiedad "Accept" (HttpHeaders.setAccept())
+				 * que es en donde se indica que formatos son soportados en esta petición
+				 * tanto como para ser aceptados (REQUEST) 
+				 * como para ser devueltos (RESPONSE)
+				 */
+				List<MediaType> listaMT = new ArrayList<MediaType>();
+				listaMT.add(MediaType.APPLICATION_JSON);
+				listaMT.add(MediaType.TEXT_PLAIN);
+				listaMT.add(MediaType.APPLICATION_XML);
+				headers.setAccept(listaMT);
+
+				/*ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>
+				 * 					(Usuario body, MultiValueMap<String, String> headers, HttpStatusCode statusCode);
+				 * */
+				// Sirve para testear de cuando se activa el evento "error()" o "fail()" de Ajax de jQuery
+				if (uc.getLogin().equalsIgnoreCase("admin") || uc.getPass().equalsIgnoreCase("admin")) {
+					Usuario admin =  new Usuario();						
+					return ResponseEntity.ok(admin);
+				}
+				if (uc.getLogin().equalsIgnoreCase("error") || uc.getPass().equalsIgnoreCase("error")) {
+					// Si el usuario no se encuentra, puedes devolver un error
+		        	
+					headers.add("encontrado","no");
+					//headers.add("redireccion","/login");
+					headers.add("mensaje","Se ha encontrado a una excepción");
+					headers.add("mensaje","BAD_REQUEST 400");
+		            
+					//return new ResponseEntity<>(HttpStatus.OK); 						//200 ACEPTADO - CON CUERPO
+					//return new ResponseEntity<>(headers, HttpStatusCode.valueOf(201));//201
+		            //return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);		//202
+					//return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT;);		//204 ACEPTADO - SIN CUERPO
+		            //return new ResponseEntity<>(headers, HttpStatus.IM_USED);			//226
+					//return new ResponseEntity<>(headers, HttpStatus.NOT_MODIFIED);	//304 ACEPTADO - SIN CUERPO
+					return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);		//400
+					//return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);		//404
+				}
+				
+				Usuario user = usuarioService.getUsuarioByCredenciales(uc);
+				
+				if (user != null) {
+					//CODIGO PARA REDIRECCIONAR A LA VISTA "/Home"			
+					headers.add("encontrado","si");
+					headers.add("redireccion","/home");
+					headers.add("mensaje","USUARIO ENCONTRADO");
+					headers.add("mensaje","TEST-HEADER");
+					
+		            //return new ResponseEntity<>(user, HttpStatus.OK);
+		            return new ResponseEntity<>(user, headers, HttpStatus.OK);
+		        } else {
+		            // Si el usuario no se encuentra, puedes devolver un error
+		        	
+					headers.add("encontrado","no");
+					//headers.add("redireccion","/login");
+					headers.add("mensaje","USUARIO NO REGISTRADO");
+					headers.add("mensaje","NOT_MODIFIED 304");
+		            
+					//return new ResponseEntity<>(HttpStatus.OK); 						//200 ACEPTADO
+					//return new ResponseEntity<>(headers, HttpStatusCode.valueOf(201));//201
+		            //return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);		//202
+					//return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT;);		//204 ACEPTADO - SIN CUERPO
+		            //return new ResponseEntity<>(headers, HttpStatus.IM_USED);			//226
+					return new ResponseEntity<>(headers, HttpStatus.NOT_MODIFIED);		//304 ACEPTADO - SIN CUERPO
+					//return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);		//400
+					//return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);		//404	
+
+		        }
+	}
 	/*-----------------------------------------------------------------------------------*/
 	// METODOS DE APLICATIVO
 
@@ -535,7 +614,7 @@ public class UsuarioController {
 	/* POR ELIMINAR DE ESTA CAPA
 	 * */
 	
-	@GetMapping(value = "pass/", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "pass", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String cifrar_y_encryptar(@RequestParam("pass") String pass) {
 		
 		System.out.println("\n=============================================");
