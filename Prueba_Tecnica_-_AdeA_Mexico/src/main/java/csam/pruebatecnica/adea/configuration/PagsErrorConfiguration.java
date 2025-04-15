@@ -27,9 +27,9 @@ public class PagsErrorConfiguration {
 			ErrorPage error404 = new ErrorPage(HttpStatus.NOT_FOUND, "/errores/paginaNoEncontrada.html");
 			ErrorPage error401 = new ErrorPage(HttpStatus.UNAUTHORIZED, "/errores/sinAutorizacion.html");
 			ErrorPage error403 = new ErrorPage(HttpStatus.FORBIDDEN, "/errores/sinPermisos.html");
-			ErrorPage error = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/errores/error.html");
+			//ErrorPage error = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/errores/error.html");
 			
-			factory.addErrorPages(error404, error401, error403, error);
+			factory.addErrorPages(error404, error401, error403/*, error*/);
 		};
 	}
 	
