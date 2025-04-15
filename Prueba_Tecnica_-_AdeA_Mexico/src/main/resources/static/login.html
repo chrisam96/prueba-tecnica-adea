@@ -501,6 +501,7 @@
 		var resultado = null;		
 
 		//AL INICIAR EL DOCUMENTO
+
 		$(document).ready( async function(){			
 			//Variables con info de la URL						
 			urlObject.protocolo = window.location.protocol;// "http:" o "https:"
@@ -514,97 +515,29 @@
 			//Propiedades personalizadas basadas en propiedades previas
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
 			//urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
-			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
+			//urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
 			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
 			urlObject.customPuerto = 0;// Puerto Web "Personalizada" del Back (ej. 8000, 8080, 8081)
 			urlObject.customDireccion = urlObject.protocolo + "//" + urlObject.customHostname + ":" + urlObject.customPuerto;// Direccion Web Personalizada del Back (Protocolo + Host + Puerto)
 			
-			//Prueba de async - await
-			//let puertoServer = null;
-			//puertoServer = await getPuertoBack(8080);
-			//console.log("puerto server:", puertoServer);
-			//console.log("puerto server v2:", await getPuertoBackV2());
-			console.log("direccionBack: ", urlObject.direccionBack);
+			/* await
+				Espera a que se termine su proceso para continuar con el resto del codigo.
+				Usamos "await" para esperar a que se complete su proceso antes de continuar 
+				con el resto del código.
+				NOTA: Solo puede ser usado dentro de métodos async
+			*/			
+
+			//Console.logs()
 			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
-			console.log("puerto front:", await getPuertoFront());
-			
+			console.log("puerto front:", await getPuertoFront());			
+			//console.log("direccionBack: ", urlObject.direccionBack);
+			console.log("objeto completo: \n", urlObject);
 			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodo saync-await");
 		});		
 
 		//METODOS
-		
-		/* Func:
-			Obtiene el puerto que esta usando el BackEnd.
-			Se implementa await dentro de un método async para (forzar y)
-			esperar a que se concluya el proceso que esta marcado con esa keyword.			
-		Param:
-		N/A
-		*/
-		async function getPuertoBack(port){
-			let puerto = "";
-			try{
-				/* await
-				Espera a que se termine su proceso para continuar con el resto del codigo.
-				Usamos "await" para esperar a que se complete su proceso antes de continuar 
-				con el resto del código.
-
-				NOTA: Solo puede ser usado dentro de métodos async
-				*/
-				//puerto = await $.get("http://127.0.0.1:10000/mpdesp")
-				//puerto = await $.get(urlObject.direccionBack+"/mpdesp")
-				puerto = await $.get("/mpdesp")
-					.then(function doneCallback(value){
-						return value.serverPort;
-					})
-					.then(function doneFilter(valueFilter){
-						urlObject.puertoBack = valueFilter;
-						//console.log("direccionBack: ", urlObject.direccionBack);
-						console.log("direccionBack: ", urlObject.direccionBackSinPuerto);
-						puerto = valueFilter;
-						return puerto;
-					});
-			}catch(error){
-				console.log("Peticion del puerto fallida:\n",error);
-				puerto = port;
-			}
-			return puerto;
-		}
-
-		/* Func:
-			Obtiene el puerto que esta usando el BackEnd.
-			Esta version es un version sobre simplificada del
-			otro método del mismo nombre.
-		Param:
-		N/A
-		*/
-		async function getPuertoBackV2(port){
-
-			let resp, puerto;
-
-			try{
-				/* await
-				Espera a que se termine su proceso para continuar con el resto del codigo.
-				Usamos "await" para esperar a que se complete su proceso antes de continuar 
-				con el resto del código.
-
-				NOTA: Solo puede ser usado dentro de métodos async
-				*/
-
-				//Respuesta (integra) del Back
-				resp = await $.get("/mpdesp");
-					
-				//Extraccion de serverPort de resp
-				puerto = resp.serverPort;
-			}
-			catch(error){
-				console.log("Peticion del puerto fallida v2:\n", error);
-				puerto = port;
-			}
-			//Retorno del puerto
-			return puerto;
-		}
 
 		/* Func:
 			Obtiene el puerto que esta usando el FrontEnd.
@@ -647,7 +580,7 @@
 			usuarioCredenciales.login = $("#loginLogin").val();
 			usuarioCredenciales.pass = $("#passLogin").val();
 
-			console.log(usuarioCredenciales);
+			console.log("UsuarioCredenciales \n", usuarioCredenciales);
 
 			/*NOTAS DE AJAX
 			A. contentType: 'application/json'
@@ -897,12 +830,7 @@
 			a tráves de:
 				- Un objeto de una Clase Especifica				
 				- Un Map<K,V>
-			*/
-			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
-			console.log("direccionBack: ", urlObject.direccionBack);
-
-			console.log("objeto completo: \n", urlObject);
-
+			*/			
 			console.log( JSON.stringify(urlObject) );			
 			
 			$.ajax({
@@ -911,7 +839,7 @@
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
 				//url: urlObject.direccionBack + "/login1", //url,
-				url: urlObject.direccionBackSinPuerto + "/login1", //url,
+				url: urlObject.direccionBackSinPuerto + "/getUser", //url,
 				//------Convierte un objeto JSON a un objeto JavaScript
 				//data: JSON.parse(usuarioCredenciales),
 				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)

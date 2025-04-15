@@ -48,7 +48,7 @@ public class UsuarioWebController {
 	// VISTAS DE PAGINAS WEB
 
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
-	@RequestMapping(path = {"/login", "/"}, method = RequestMethod.GET) 
+	@RequestMapping(path = {"/"}, method = RequestMethod.GET) 
 	public String login() {
 		/*
 		 * archivo: login.html

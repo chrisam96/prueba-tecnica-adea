@@ -194,7 +194,7 @@ public class UsuarioController {
 
 	
 	/*-----------------------------------------------------------------------------------*/
-	@PostMapping(value = { "/login", "/"},
+	@PostMapping(value = { "/getUser"},
 			consumes = { MediaType.APPLICATION_JSON_VALUE},
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
 	@ResponseBody
