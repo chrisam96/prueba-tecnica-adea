@@ -47,35 +47,61 @@ public class UsuarioWebController {
 	/*-----------------------------------------------------------------------------------*/
 	// VISTAS DE PAGINAS WEB
 
-	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
-	@RequestMapping(path = {"/","/login"}, method = RequestMethod.GET) 
+	// Para "@GetMapping(value ="/foo")" es igual == @RequestMapping(path="/foo", method = RequestMethod.GET)	
+	@RequestMapping(path = {"/"}, method = RequestMethod.GET) 
 	public String login() {
 		/*
 		 * archivo: login.html
-		 * ruta: resources/templates
+		 * ruta: resources/static
 		 * metodo: UsuarioWebController.getUsuarioByCredenciales(UsuarioCredenciales)
 		 */
 		return "login";
 	}
 	
+	// Método que redirecciona a la página de inicio (la raíz) cuando se accede a la URL "/login"
+	/* NOTA:
+	 * En Spring Boot, los archivos ubicados en "src/main/resources/static" 
+	 * se sirven directamente desde la raíz de la aplicación. 
+	 * 
+	 * Es decir, que si tienes un archivo login.html en dicha carpeta (resources/static/), 
+	 * la URL correcta para acceder a él es "/login.html".
+	 * */
+	@GetMapping(value="/login")
+	public String loginRedirect() {
+		/*
+		 * archivo: login.html
+		 * ruta: resources/static
+		 * metodo: UsuarioWebController.getUsuarioByCredenciales(UsuarioCredenciales)
+		 */
+		return "redirect:/login.html";// "redirect:/"
+	}
+	/*
+	@RequestMapping(path = {"/login"}, method = RequestMethod.GET)
+	public String loginRedirect() {
+	    return "redirect:/"; // o también "forward:/" si prefieres un forward explícito 
+	    return "redirect:/login.html"; También es opción válida.
+	}
+	*/
+	
 	@GetMapping(value = "/home") // @GetMapping	(value) == @RequestMapping(path="/foo").
 	public String home() {
 		/*
 		 * archivo: home.html
-		 * ruta: resources/templates
+		 * ruta: resources/static
 		 * metodo: UsuarioWebController.home()
 		 */
 		return "home";
 	}
 	
-	@GetMapping(value = "/sitio/home") // @GetMapping	(value) == @RequestMapping(path="/foo").
+	//@GetMapping(value = "/sitio/home") // @GetMapping	(value) == @RequestMapping(path="/foo").
+	@GetMapping(value = "/dashboard") // @GetMapping	(value) == @RequestMapping(path="/foo").
 	public String sitio_home() {
 		/*
 		 * archivo: home.html
-		 * ruta: resources/templates/sitio
+		 * ruta: resources/static/sitio
 		 * metodo: UsuarioWebController.sitio_home()
 		 */
-		return "sitio/home";
+		return "/sitio/home";
 	}
 	
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
@@ -83,7 +109,7 @@ public class UsuarioWebController {
 	public String gestion_usuarios() {
 		/*
 		 * archivo: gestion-usuarios.html
-		 * ruta: resources/templates/sitio
+		 * ruta: resources/static/sitio
 		 * metodo: UsuarioWebController.gestion_usuarios()
 		 */
 		//return "sitio/gestion-usuarios";
@@ -96,7 +122,7 @@ public class UsuarioWebController {
 	public String tablero_usuarios() {
 		/*
 		 * archivo: login.html
-		 * ruta: resources/templates/sitio
+		 * ruta: resources/static/sitio
 		 * metodo: UsuarioWebController.tablero()
 		 */
 		//return "sitio/tablero";
@@ -175,7 +201,7 @@ public class UsuarioWebController {
 	public String prb2() {
 		/*
 		 * archivo: index.html
-		 * ruta: resources/templates
+		 * ruta: resources/static
 		 * metodo: UsuarioWebController.prb()
 		 */
 		return "__index_prb";
@@ -185,7 +211,7 @@ public class UsuarioWebController {
 	public String prb3() {
 		/*
 		 * archivo: home.html
-		 * ruta: resources/templates
+		 * ruta: resources/static
 		 * metodo: UsuarioWebController.prb()
 		 */
 		return "__home";

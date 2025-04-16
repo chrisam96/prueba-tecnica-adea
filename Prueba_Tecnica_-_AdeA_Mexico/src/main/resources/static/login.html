@@ -837,8 +837,8 @@
 			
 			$.ajax({
 				type: "POST",
-				//contentType: 'application/json; charset=utf-8',
-				contentType: 'application/json', // Especifica el tipo de contenido como JSON
+				contentType: 'application/json; charset=utf-8',
+				//contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
 				//url: urlObject.direccionBack + "/login1", //url,
 				url: urlObject.direccionBackSinPuerto + "/getUser", //url,
@@ -857,6 +857,7 @@
 					
 			        if (xhrData.status === 200) {
 			        	
+						console.log("Entro y regreso del back, iniciando redireccionamiento...");
 			        	/* ALMACEN DE DATOS ENTRE DIFERENTES PAGINAS
 						Para enviar datos entre diferentes páginas se puede utilizar 
 						"localStorage" o "sessionStorage" para almacenar la información.
@@ -874,10 +875,10 @@
 						// Almacena la información del usuario en localStorage
 						sessionStorage.setItem('usuario', JSON.stringify(data));
 			        	
-			            // Usuario encontrado, redirige a "/home"
-			            //window.location.href = "/sitio/home";
-						window.location.replace("/sitio/home");
-						//window.location.replace("http://127.0.0.1:5500/src/main/resources/templates/sitio/home.html");
+			            // Usuario encontrado, redirige a "/home" 
+			            //window.location.href = "/sitio/home.html";
+						window.location.replace("/sitio/home.html");
+						//window.location.replace("http://127.0.0.1:5500/src/main/resources/templates/sitio/home.html"); //No
 
 						/*
 						=> window.location.replace("http://example.com");
@@ -893,6 +894,7 @@
 						Este método carga una nueva URL en el navegador, similar a window.location.href
 						*/
 			        } else {
+						console.log("data", data, "\n xhrData:", xhrData);
 			            // Usuario no encontrado, muestra mensaje de error
 			            //alert("Usuario no encontrado");
 						$("#modalLoginError").modal('show');
