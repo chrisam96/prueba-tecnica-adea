@@ -199,7 +199,7 @@ public class UsuarioController {
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
 	@ResponseBody
 	public ResponseEntity<Usuario> getUsuarioByCredencialesTesting(@RequestBody UsuarioCredenciales uc) {
-				System.out.println("ENTRO: " + uc.toString());
+				System.out.println("ENTRO: Login:" + uc.getLogin() + " - Pass:" + uc.getPass());
 				
 				//Instancia de los HttpHeaders
 				HttpHeaders headers = new HttpHeaders();
@@ -243,6 +243,7 @@ public class UsuarioController {
 					//return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);		//404
 				}
 				
+				System.out.println("Consultando la base de datos...");
 				Usuario user = usuarioService.getUsuarioByCredenciales(uc);
 				
 				if (user != null) {
@@ -613,11 +614,11 @@ public class UsuarioController {
 	
 	/* POR ELIMINAR DE ESTA CAPA
 	 * */
-	
+	/*
 	@GetMapping(value = "pass", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String cifrar_y_encryptar(@RequestParam("pass") String pass) {
 		
-		System.out.println("\n=============================================");
+		System.out.println("\n====UsuarioController.class=========================================");
 		
 		String codificado = this.codificarBase64(pass.getBytes());
 		String decodificado = this.decodificarBase64(codificado);
@@ -636,34 +637,34 @@ public class UsuarioController {
 		System.out.println("Hasheado y Codificado: |" + hashToString 
 				+ "| + length=" + hashToString.length());
 		
-		/* HIPOTESIS
-		 * Prueba para ver si se podia enviar directamente un String (byte[].toString() )
-		 * en lugar del byte[] despues de que se encryptase 
-		 * (es decir, MessageDigest.digest() ).
-		 *  
-		 *  RESULTADO
-		 *  En cada prueba, al devolver el String encryptado (byte[].toString() ) 
-		 *  y pasarlo a cifrar (Base64.encodeToString() ) se cambia el texto
-		 *  cifrado por el sistema, y por tanto, la integridad de la contraseña
-		 *  
-		 *  Por lo tanto, no usar el metodo encryptarSHA256aString(String) 
-		 *  
-		System.out.println("\n PRUEBA - Hashed.toString() codificado a Base64 \n");
-		
-		//Convirtiendo a Base64
-		String hashedByString = encryptarSHA256aString(pass);
-		String hashToString2 = codificarBase64(hashedByString.getBytes()); 		
-		System.out.println("Hasheado y Codificado: |" + hashToString2 
-				+ "| + length=" + hashToString2.length());
-		*/
+		///* HIPOTESIS
+		// * Prueba para ver si se podia enviar directamente un String (byte[].toString() )
+		// * en lugar del byte[] despues de que se encryptase 
+		// * (es decir, MessageDigest.digest() ).
+		// *  
+		// *  RESULTADO
+		// *  En cada prueba, al devolver el String encryptado (byte[].toString() ) 
+		// *  y pasarlo a cifrar (Base64.encodeToString() ) se cambia el texto
+		// *  cifrado por el sistema, y por tanto, la integridad de la contraseña
+		// *  
+		// *  Por lo tanto, no usar el metodo encryptarSHA256aString(String) 
+		// *  
+		//System.out.println("\n PRUEBA - Hashed.toString() codificado a Base64 \n");
+		//
+		////Convirtiendo a Base64
+		//String hashedByString = encryptarSHA256aString(pass);
+		//String hashToString2 = codificarBase64(hashedByString.getBytes()); 		
+		//System.out.println("Hasheado y Codificado: |" + hashToString2 
+		//		+ "| + length=" + hashToString2.length());
+		//
 		
 		return hashToString;
 	}
 	
-	/*NOTA
-	 * Mover a CAPA Service porque es más logica de negocio 
-	 * que de Controller
-	 */
+	///NOTA
+	 // Mover a CAPA Service porque es más logica de negocio 
+	 // que de Controller
+	 ///
 	private String codificarBase64(byte[] texto) {
 		//Obj. de la respuesta despues de ser codificada a Base64
 		String texto64;
@@ -699,13 +700,13 @@ public class UsuarioController {
 			//Se convierte a hash el texto y esto devuelve byte[]
 			byte[] hashed = md.digest();
 			
-			/*
-			System.out.print("\nHash: '");
-			System.out.print( hashed );
-			System.out.print( "'" );
-			System.out.println("\nHash (toString()): '" + hashed.toString() 
-				+ "'\nRepresentacion Hex:");
-			*/
+			// /*
+			// System.out.print("\nHash: '");
+			// System.out.print( hashed );
+			// System.out.print( "'" );
+			// System.out.println("\nHash (toString()): '" + hashed.toString() 
+			// 	+ "'\nRepresentacion Hex:");
+			// * /
 			
 			// Se escribe byte a byte en hexadecimal
 		      for (byte b : hashed) {
@@ -727,5 +728,5 @@ public class UsuarioController {
 		}
 		return new byte[0];
 	}
-
+	 */
 }
