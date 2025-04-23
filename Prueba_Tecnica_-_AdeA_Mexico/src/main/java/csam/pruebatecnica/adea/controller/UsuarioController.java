@@ -82,17 +82,6 @@ public class UsuarioController {
 		return "Prueba - /prb";
 	}
 	
-	@RequestMapping(value = "/prb2") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String prb2() {
-		//return "index";
-		return "Prueba - /prb2";
-	}
-	
-	@RequestMapping(value = "/prb3") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String prb3() {
-		//return "home";
-		return "Prueba - /prb3";
-	}
 	
 	// PRUEBAS PARA SABER QUE FRONT Y BACK SE COMUNICABAN CORRECTAMENTE
 	
@@ -538,6 +527,8 @@ public class UsuarioController {
 	public ResponseEntity<List<Usuario>> getListOfUsuariosByFiltros
 	//(@RequestParam Map<String, String> filtros) {		
 	(@RequestParam LinkedHashMap<String, String> filtros) {	
+		System.out.println("Entro a /filtros");
+		
 		//Body de la rspuesta
 		//HashMap<String, Object> map = new HashMap<String, Object>();
 		
