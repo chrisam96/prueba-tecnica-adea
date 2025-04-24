@@ -501,7 +501,6 @@
 		var resultado = null;		
 
 		//AL INICIAR EL DOCUMENTO
-
 		$(document).ready( async function(){			
 			//Variables con info de la URL						
 			urlObject.protocolo = window.location.protocol;// "http:" o "https:"
@@ -512,11 +511,13 @@
 			urlObject.queryString = window.location.search;// Query string de la URL (ej. "?param1=valor1&param2=valor2")
 			urlObject.hash = window.location.hash;// Fragmento de la URL (ej "#seccion1")
 			urlObject.ancestorOrigins = window.location.ancestorOrigins;// Origen de la pag. anterior de donde vino la URL actual
+
 			//Propiedades personalizadas basadas en propiedades previas
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
 			//urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			//urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
 			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
 			urlObject.customPuerto = 0;// Puerto Web "Personalizada" del Back (ej. 8000, 8080, 8081)
@@ -535,7 +536,7 @@
 			console.log("puerto front:", await getPuertoFront());			
 			//console.log("direccionBack: ", urlObject.direccionBack);
 			console.log("objeto completo: \n", urlObject);
-			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodo saync-await");
+			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodos aync-await");
 		});		
 
 		//METODOS
