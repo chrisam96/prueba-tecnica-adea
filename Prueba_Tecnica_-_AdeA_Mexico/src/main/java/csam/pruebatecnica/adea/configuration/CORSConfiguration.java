@@ -32,9 +32,10 @@ public class CORSConfiguration {
 					.allowedOrigins("*")
 				//Establece los métodos HTTP permitidos
 					.allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
-				//Establece los headers de una solicitud (pre-flight) puede 
-				//incluir como permitidos para su uso
-					.allowedHeaders("*")
+				//Establece los headers que una solicitud (pre-flight) 
+				//puede incluir como permitidos para su uso
+					// Permite cualquier encabezado en las solicitudes.
+					.allowedHeaders("*")					
 				//Se admite el acceso a la red privada
 					//.allowPrivateNetwork(true)
 				//Configurear durante cuánto tiempo en segundos los clientes 

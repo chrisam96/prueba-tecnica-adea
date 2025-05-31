@@ -46,6 +46,7 @@
 			
 			&nbsp;<br>
 
+			<!--
 			<div class="row">
 				<div class="col-1"></div>
 
@@ -92,13 +93,14 @@
 
 				<div class="col-1"></div>
 			</div>
-			
+		-->
 			<br>
 		</form>
 	</div>
 	
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">
+		/*
 		$(document).ready(function(){
 			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
 			console.log("datos del login: ", usuario);
@@ -107,7 +109,7 @@
 			if(usuario != undefined){				
 				$('#div-Msj-Home').text("Bienvenido, " + usuario.nombre);
 			}
-			*/			
+			//			
 		});
 
 		//METODOS
@@ -128,6 +130,7 @@
 			//Con JQuery
 			$(location).attr("href", "/sitio/tablero");
 		});
+		*/
 	</script>
 </body>
 </html>

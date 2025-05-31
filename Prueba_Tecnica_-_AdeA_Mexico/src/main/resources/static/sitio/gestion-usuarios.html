@@ -488,13 +488,15 @@
 	<script type="text/javascript" defer>
 		//Variables Universales
 		var urlObject = {};
+		var token = '';
+		var usuario = '';
 		//variable global para las altas, bajas y modificaciones
 		var usuario = {};
 
 		//AL INICIAR EL DOCUMENTO
 		$(document).ready(async function(){
-						//Variables con info de la URL						
-						urlObject.protocolo = window.location.protocol;// "http:" o "https:"
+			//Variables con info de la URL						
+			urlObject.protocolo = window.location.protocol;// "http:" o "https:"
 			urlObject.host = window.location.host;// Nombre del Host + Puerto
 			urlObject.hostname = window.location.hostname;// Nombre del Host (ej. www.ejemplo.com)
 			urlObject.puerto = await getPuertoFront();// Numero del Puerto (ej. "80", "443" o "8080")
@@ -507,8 +509,8 @@
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
 			//urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			//urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
-			//urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
-			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+			urlObject.direccionWeb = urlObject.protocolo + "//" + urlObject.host; //Direccion Web Real del Back (Sin necesidad de cambiar los puertos)
 			
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
@@ -524,11 +526,19 @@
 
 			//Console.logs()
 			//urlObject.direccionBackSinPuerto = urlObject.direccionBackSinPuerto + ":10000";
-			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
-			console.log("puerto front:", await getPuertoFront());			
+			//console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
 			//console.log("direccionBack: ", urlObject.direccionBack);
+			console.log("direccionWeb: ", urlObject.direccionWeb);
+			console.log("puerto front:", await getPuertoFront());			
 			console.log("objeto completo: \n", urlObject);
 			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodos aync-await");
+
+			//token del sistema
+			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
+			//var authorization = JSON.parse(sessionStorage.getItem('authorization'));
+			token = sessionStorage.getItem('authorization');
+			console.log("datos del login: ", usuario);
+			console.log("datos del token: ", token);
 		});
 
 
@@ -599,7 +609,12 @@
 				type: verbo,				
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text", //Especifica qcual es el tipo de Data que se espera recibir del Backend
-				url: url,
+				url: url,				
+				headers: {
+					//'authorization': authorization
+					'authorization': token,
+					'urlDestino' : 'this.url'
+				},
 				//data: JSON.parse(usuarioCredenciales),
 				// 		jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
 				//data: usuarioCredenciales,
@@ -623,11 +638,11 @@
 					msjGenerico(titulo, data.mensaje);
 				})
 			.fail( function (xhrData, status, error) {
-					console.log("fail()");					
-					console.log("status: " + status);
-					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
-					console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-					console.log("Error Thrown: \n" + error);
+					// Accede al estado HTTP de la respuesta
+					console.log("ajaxStart.fail() -> status: " + status + " - HTTP Status: " + xhrData.status);
+					//console.log("Response Text: \n" + xhrData.responseText);
+					//console.log("All Headers: \n" + xhrData.getAllResponseHeaders());
+					//console.log("Error Thrown: \n" + error);
 					
 					//Editando el Modal
 					/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
@@ -641,7 +656,7 @@
 										"Causa (Backend): " + xhrData.causa + "\n" +
 										"Causa (Frontend): " + error;
 
-					msjGenerico("Error fatal", msj_body_error);
+					msjGenerico("Error fatal", msj_body_error, xhrData);
 				});//
 			/*.always( function(data_or_xhr, status, xhr_or_error){
 				let text1 = "", text2 = "", text3 = "";
@@ -824,7 +839,8 @@
 		- titulo: String => Titulo de la ventana Modal
 		- msj: String => Mensaje de la ventana Modal
 		*/
-		function msjGenerico(titulo, msj){
+		function msjGenerico(titulo, msj, xhrData){
+			//return;
 			//Editando el Modal
 			/* Dos formas diferentes de llamar a un elemento dentro de un <div> u otro elemento
 
@@ -836,7 +852,33 @@
 			$("#modal-GestionUsuarios-body").html(msj);
 
 			//Mostrar el mensaje
-			$("#modal-GestionUsuarios-Msj").modal("show");			
+			$("#modal-GestionUsuarios-Msj").modal("show");	
+			
+			if(xhrData != null){
+				let redirect = '';
+				switch(xhrData.status){
+					case 401:
+						redirect = "/errores/sinAutorizacion.html";
+						break;
+					case 403:
+						redirect = "/errores/sinPermisos.html";
+						break;
+					case 405:
+					default:
+						redirect = "/errores/error.html";
+						break;
+				};
+							
+				$("#modal-GestionUsuarios-Msj .modal-title").html("Token caducado");
+				$("#modal-GestionUsuarios-body").html("Ya no tienes permisos para usar el sitio");
+
+				$("#modal-GestionUsuarios-Msj")
+					.one('hidden.bs.modal', function () {
+						// redirección a las págas de error
+						window.location.href = redirect;
+						return;
+				});				
+			}
 		}
 
 		/* Func:
@@ -879,7 +921,7 @@
 			desactivarBoton("#alta-submit", true);
 
 			//Hacer la petición AJAX
-			let verbo = "POST", url = urlObject.direccionBack+"/registrar" /*"/registrar"*/, user = {}, ajaxResult =  null;						
+			let verbo = "POST", url = urlObject.direccionWeb+"/registrar" /*"/registrar"*/, user = {}, ajaxResult =  null;						
 			user  = generarUsuario("alta");					
 			ajaxResult = ajaxStart(verbo, url, user);			
 
@@ -896,12 +938,12 @@
 			console.log("DATOS de HOST\n", 
 				"DireccionFront=", urlObject.direccionFront+"/usuario/",
 				"Puerto Back=",urlObject.puertoBack,
-				"Direccion Back=", urlObject.direccionBack+"/usuario/"
+				"Direccion Back=", urlObject.direccionWeb+"/usuario/"
 			);
 
 			//Declaracion de variables
 			// URL = usuario/{login}
-			let url_getUsuarioByLogin = urlObject.direccionBack+"/usuario/"; 
+			let url_getUsuarioByLogin = urlObject.direccionWeb+"/usuario/"; 
 			let idUsuario = $("#modif-login-buscador").val().trim();
 
 			if (idUsuario == undefined || idUsuario === "") {
@@ -921,7 +963,13 @@
 				type: "GET",				
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text", //Especifica qcual es el tipo de Data que se espera recibir del Backend
-				url: url_getUsuarioByLogin
+				url: url_getUsuarioByLogin , //url,
+				headers: {
+					//'authorization': authorization
+					'authorization': token,
+					'urlDestino' : 'this.url'
+				}
+				
 				/*
 				ES UN GET, OBVIO NO TIENE BODY
 
@@ -938,6 +986,7 @@
 				console.log("headers: \n" + xhrData.getAllResponseHeaders());
 
 				if (xhrData.status == 204) {
+					console.log("Usuario no encontrado");
 					msjGenerico("Usuario no encontrado", "Favor de buscar otro login (ID).");
 					desactivarBoton("#modif-buscar", false);
 					limpiarFormulario("#formModif", "#modif-login-buscador");
@@ -980,27 +1029,27 @@
 			.fail( function (xhrData, status, error) {
 				desactivarBoton("#modif-buscar", false);
 
-				console.log("fail()");					
-				console.log("status: " + status);
-				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + error);
+				// Accede al estado HTTP de la respuesta
+				console.log("modif-buscar.fail() -> status: " + status + " - HTTP Status: " + xhrData.status);
+				//console.log("Response Text: \n" + xhrData.responseText);
+				//console.log("All Headers: \n" + xhrData.getAllResponseHeaders());
+				//console.log("Error Thrown: \n" + error);
 
-				msjGenerico("Datos no encontrados", "No se pudo encontrar datos sobre el login (ID) dado");
+				msjGenerico("Datos no encontrados", "No se pudo encontrar datos sobre el login (ID) dado", xhrData);
 				return;
 			});//
 		});
 	
-		$("#formModif").submit(function(event){			
+		$("#formModif").submit(async function(event){			
 			//Previene el redireccionamiento de página
 			event.preventDefault();
 
 			desactivarBoton("#modif-submit", true);			
 
 			//Hacer la petición AJAX
-			let verbo = "PUT", url = urlObject.direccionBack+"/actualizar" /*"/actualizar"*/, user = {}, ajaxResult =  null;
+			let verbo = "PUT", url = urlObject.direccionWeb+"/actualizar" /*"/actualizar"*/, user = {}, ajaxResult =  null;
 			user  = generarUsuario("modif");			
-			ajaxResult = ajaxStart(verbo, url, user);
+			ajaxResult = await ajaxStart(verbo, url, user);
 			
 			//Limpia los campos del formulario
 			limpiarFormulario("#formModif", "#modif-login-buscador");
@@ -1012,7 +1061,7 @@
 			desactivarBoton("#baja-buscar", true);
 
 			//Declaracion de variables
-			let url_getUsuarioByLogin = urlObject.direccionBack+"/usuario/"; // URL = usuario/{login}
+			let url_getUsuarioByLogin = urlObject.direccionWeb+"/usuario/"; // URL = usuario/{login}
 			let idUsuario = $("#baja-login-buscador").val().trim();
 
 			if (idUsuario == undefined || idUsuario === "") {
@@ -1029,7 +1078,12 @@
 				type: "GET",				
 				contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text", //Especifica qcual es el tipo de Data que se espera recibir del Backend
-				url: url_getUsuarioByLogin
+				url: url_getUsuarioByLogin, //url,
+				headers: {
+					//'authorization': authorization
+					'authorization': token,
+					'urlDestino' : 'this.url'
+				}
 				/*
 				ES UN GET, OBVIO NO TIENE BODY
 
@@ -1089,18 +1143,18 @@
 			.fail( function (xhrData, status, error) {
 				desactivarBoton("#baja-buscar", false);
 
-				console.log("fail()");					
-				console.log("status: " + status);
-				console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
-				console.log("Headers: \n" + xhrData.getAllResponseHeaders());
-				console.log("Error Thrown: \n" + error);
+				// Accede al estado HTTP de la respuesta
+				console.log("ajaxStart.fail() -> status: " + status + " - HTTP Status: " + xhrData.status);
+				//console.log("Response Text: \n" + xhrData.responseText);
+				//console.log("All Headers: \n" + xhrData.getAllResponseHeaders());
+				//console.log("Error Thrown: \n" + error);
 
-				msjGenerico("Datos no encontrados", "No se pudo encontrar datos sobre el login (ID) dado.");
+				msjGenerico("Datos no encontrados", "No se pudo encontrar datos sobre el login (ID) dado.", xhrData);
 				return;
 			});//
 		});	
 	
-		$("#formBaja").submit(function(event){	
+		$("#formBaja").submit(async function(event){	
 			//Previene el redireccionamiento de página
 			event.preventDefault();
 
@@ -1109,8 +1163,8 @@
 			//Hacer la petición AJAX
 			let verbo = "DELETE",  user = {}, ajaxResult =  null;
 			let idUsuario = $("#baja-login-buscador").val().trim();
-			let url = urlObject.direccionBack+"/eliminar/" + idUsuario; /* URL = /eliminar/{id} */						
-			ajaxResult = ajaxStart(verbo, url, user);			
+			let url = urlObject.direccionWeb+"/eliminar/" + idUsuario; /* URL = /eliminar/{id} */						
+			ajaxResult = await ajaxStart(verbo, url, user);			
 
 			//Limpia los campos del formulario
 			limpiarFormulario("#formBaja", "#baja-login-buscador");

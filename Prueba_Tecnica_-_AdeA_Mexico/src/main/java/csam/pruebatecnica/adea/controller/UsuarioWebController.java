@@ -185,38 +185,7 @@ public class UsuarioWebController {
 
 	// METODOS DE LOGICA DEL CONTROLLER PARA LAS VISTAS
 	/*-----------------------------------------------------------------------------------*/
-	// METODOS DE PRUEBA DE SERVICO EN FUNCION	
-	@GetMapping(value = "/prueba1") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String prb() {
-		/*
-		 * archivo: login2.html
-		 * ruta: resources/static
-		 * metodo: UsuarioWebController.prb()
-		 */
-		return "__login2";
-	}
-	
-	//@RequestMapping(value = "/prueba2") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	@RequestMapping(value = "/prueba2") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String prb2() {
-		/*
-		 * archivo: index.html
-		 * ruta: resources/static
-		 * metodo: UsuarioWebController.prb()
-		 */
-		return "__index_prb";
-	}
-	
-	@RequestMapping(value = "/prueba3") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String prb3() {
-		/*
-		 * archivo: home.html
-		 * ruta: resources/static
-		 * metodo: UsuarioWebController.prb()
-		 */
-		return "__home";
-	}
-	// METODOS DE PRUEBA DE SERVICO EN FUNCION
-	/*-----------------------------------------------------------------------------------*/
+
+
 
 }
