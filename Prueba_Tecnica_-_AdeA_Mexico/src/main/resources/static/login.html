@@ -517,6 +517,7 @@
 			//urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			//urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
 			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+			urlObject.direccionWeb = urlObject.protocolo + "//" + urlObject.host; //Direccion Web Real del Back (Sin necesidad de cambiar los puertos)
 
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
@@ -532,9 +533,10 @@
 
 			//Console.logs()
 			//urlObject.direccionBackSinPuerto = urlObject.direccionBackSinPuerto + ":10000";
-			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
-			console.log("puerto front:", await getPuertoFront());			
+			//console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
 			//console.log("direccionBack: ", urlObject.direccionBack);
+			console.log("direccionWeb: ", urlObject.direccionWeb);
+			console.log("puerto front:", await getPuertoFront());			
 			console.log("objeto completo: \n", urlObject);
 			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodos aync-await");
 		});		
@@ -583,7 +585,7 @@
 			usuarioCredenciales.pass = $("#passLogin").val();
 			
 			console.log("UsuarioCredenciales \n", usuarioCredenciales);
-			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
+			console.log("direccionWeb: ", urlObject.direccionWeb);
 
 			/*NOTAS DE AJAX
 			A. contentType: 'application/json'
@@ -614,7 +616,7 @@
 			
 			1. Con esta función se convierte el objeto a una cadena JSON. 
 			2. En el back, se espera que el cuerpo de solicitud en formato JSON se mapea 
-			al objeto p+arametro de un método usando la anotación @RequestBody.
+			al objeto parametro de un método usando la anotación @RequestBody.
 			
 			C. Headers en la respuesta HTTP (del BackEnd)
 			
@@ -842,7 +844,7 @@
 				//contentType: 'application/json', // Especifica el tipo de contenido como JSON
 				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend
 				//url: urlObject.direccionBack + "/login1", //url,
-				url: urlObject.direccionBackSinPuerto + "/getUser", //url,
+				url: urlObject.direccionWeb + "/getUser", //url,
 				//------Convierte un objeto JSON a un objeto JavaScript
 				//data: JSON.parse(usuarioCredenciales),
 				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
@@ -855,6 +857,10 @@
 					console.log("status: " + status);
 					console.log("HTTP Status: " + xhrData.status);// Accede al estado HTTP de la respuesta
 					console.log("headers: \n" + xhrData.getAllResponseHeaders());
+					console.log("authorization: \n" + xhrData.getResponseHeader("authorization"));
+					console.log("responseJSON: \n" + xhrData.responseJSON);
+					console.log("responseText: \n" + xhrData.responseText);
+					console.log("responseXML: \n" + xhrData.responseXML);
 					
 			        if (xhrData.status === 200) {
 			        	
@@ -875,6 +881,7 @@
 			        	
 						// Almacena la información del usuario en localStorage
 						sessionStorage.setItem('usuario', JSON.stringify(data));
+						sessionStorage.setItem('authorization', xhrData.getResponseHeader("authorization"));
 			        	
 			            // Usuario encontrado, redirige a "/home" 
 			            //window.location.href = "/sitio/home.html";

@@ -208,6 +208,8 @@
 		//Variables Universales
 		var datos = undefined, datosModificar = {};		
 		var urlObject = {};
+		var token = '';
+		var usuario = '';
 
 		//AL INICIAR EL DOCUMENTO
 		$(document).ready(async function(){
@@ -225,8 +227,8 @@
 			urlObject.direccionFront = urlObject.protocolo + "//" + urlObject.host;// Direccion Web del Front (Protocolo + Host + Puerto)
 			//urlObject.puertoBack = await getPuertoBack(10000);//9010;// Puerto usado por el Servicio del BackEnd
 			//urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname + ":" + urlObject.puertoBack;// Direccion Web del Back (Protocolo + Host + Puerto)
-			//urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
-			urlObject.direccionBack = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+			urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+			urlObject.direccionWeb = urlObject.protocolo + "//" + urlObject.host; //Direccion Web Real del Back (Sin necesidad de cambiar los puertos)
 			
 			//Propiedades personalizadas auxiliares
 			urlObject.customHostname = "www.com";// Host Web "Personalizada" del Back (ej. www.ejemplo.com, 192.168.0.1)
@@ -242,11 +244,19 @@
 
 			//Console.logs()
 			//urlObject.direccionBackSinPuerto = urlObject.direccionBackSinPuerto + ":10000";
-			console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
-			console.log("puerto front:", await getPuertoFront());			
+			//console.log("direccionBackSinPuerto: ", urlObject.direccionBackSinPuerto);
 			//console.log("direccionBack: ", urlObject.direccionBack);
+			console.log("puerto front:", await getPuertoFront());			
+			console.log("direccionWeb: ", urlObject.direccionWeb);
 			console.log("objeto completo: \n", urlObject);
 			console.log("Mensaje dejado a proposto para observar un debuggeo de un metodos aync-await");
+
+			//token del sistema
+			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
+			//var authorization = JSON.parse(sessionStorage.getItem('authorization'));
+			token = sessionStorage.getItem('authorization');
+			console.log("datos del login: ", usuario);
+			console.log("datos del token: ", token);
 		});
 
 		//METODOS
@@ -379,62 +389,79 @@
 				contentType: "application/json",
 				dataType: "json",
 				url: url_,
+				headers: {
+					//'authorization': authorization
+					'authorization': token,
+					'urlDestino' : 'this.url'
+				},
 				//------Convierte el objeto a una cadena JSON
 				//data: JSON.stringify(objeto)
 				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
 				data: objeto
 			})
-			.done( function (data, status, xhrData) {							
-				//headers = xhrData.getAllResponseHeaders();
-				headers = xhrData.getAllResponseHeaders();
+			.then(
+				//ANTES: done()
+				//function (data, status, xhrData) {} // Son iguales
+				function(value, textStatus, jqXHR){
+					// Imprime los encabezados de la respuesta almacenados en "headers"
+					console.log("Encabezados de la respuesta:", headers);
 
-			})
-			.fail( function (xhrData, status, errorThrown){
+					//Imprime el valor de los parametros
+					console.log("Value/Data:", value);
+					console.log("Status:", textStatus);
+					console.log("jqXHR:", jqXHR);
+
+					//Objeto que engloba la data, textStatus y jqXHR.headers
+					let obj = {};
+
+					//En caso de success
+					if(textStatus == "success"){
+						obj.data = value;
+						obj.status = textStatus;
+						obj.headers = headersToObject(jqXHR.getAllResponseHeaders());
+					}
+					//En caso de fail
+					else{
+						//XHRData (jqXHR)
+						obj.headers = headersToObject(value.getAllResponseHeaders()); 
+						//textStatus						
+						obj.status = "fail";
+						//errorThrown
+						obj.data = jqXHR;
+					}
+					//Retorna una respuesta completa (body + headers)
+					return obj;
+				}
+			,
+			//ANTES: fail()
+			function (xhrData, status, errorThrown){
+				// Accede al estado HTTP de la respuesta
+				console.log("ajaxWithBodyExec.fail() -> status: " + status + " - HTTP Status: " + xhrData.status);
+				//console.log("Response Text: \n" + xhrData.responseText);
+				//console.log("All Headers: \n" + xhrData.getAllResponseHeaders());
 				headers = xhrData.getAllResponseHeaders();
-				headers.resultado = "fail";
-			})//;
+				headers.resultado = "fail";				
+				msjGenerico("Token caducado","Ya no tienes permisos para usar el sitio", xhrData);
+
+				return new Promise(function(){});
+			});
 			/* RESUELVE LA PROMESA
-			En este caso, se espera que la promesa se haya resuelto (resolve/success)
-			y no rechazado (reject/fail).
+			.then( successHandler ) sólo se ejecuta si la petición se resuelve 
+			(status HTTP 2xx, es decir, que se ejecutó la función success(). 
+			
+			.fail( errorHandler ) añade un handler para la rama de error, pero 
+			NO “transforma” ese rechazo en un éxito, es decir, then() no se
+			ejecutará después de haber ejecutado fail().
 
-			Lo que hace aquí "then()" es terminar de ejecutar la promesa done o fail,
-			según sea el caso, y recibir los parametros de dicha promesa anterior.
+			Se espera que la promesa se haya resuelto (resolve/success)
+			y no rechazado (reject/fail). Lo que hace aquí "then()" es terminar
+			de ejecutar la promesa success() y 
+			recibir los parametros de dicha promesa anterior.
 			
 			Este método es la cara del return, es decir, genera los valores 
-			que van a ser devueltos por el método de la promesa $.ajax(), 
-			aunque haya fallado o si haya funcionado.
+			que van a ser devueltos por el success() de la promesa $.ajax(), 			
 			*/
-			//.then(doneFilter(value, ...values),failFilter(),progressFilter())
-			.then(function(value, textStatus, jqXHR){
-				// Imprime los encabezados de la respuesta almacenados en "headers"
-				console.log("Encabezados de la respuesta:", headers);
-
-				//Imprime el valor de los parametros
-				console.log("Value/Data:", value);
-				console.log("Status:", textStatus);
-				console.log("jqXHR:", jqXHR);
-
-				//Objeto que engloba la data, textStatus y jqXHR.headers
-				obj = {};
-
-				//En caso de success
-				if(textStatus == "success"){
-					obj.data = value;
-					obj.status = textStatus;
-					obj.headers = headersToObject(jqXHR.getAllResponseHeaders());
-				}
-				//En caso de fail
-				else{
-					//XHRData (jqXHR)
-					obj.headers = headersToObject(value.getAllResponseHeaders()); 
-					//textStatus
-					obj.status = textStatus;
-					//errorThrown
-					obj.data = jqXHR;
-				}
-				//Retorna una respuesta completa (body + headers)
-				return obj;
-			});
+			//.then(doneFilter(value, ...values),failFilter(),progressFilter())			
 		}
 
 		/* Func:
@@ -577,13 +604,13 @@
 		- btnID: String => ID del botón (cuyo formato es "[ID del registro]"+"-eliminar")
 		- url_: String =>  ID del regsitro
 		*/
-		function eliminarRegistroDelBack(btnID, btnValue){
+		async function eliminarRegistroDelBack(btnID, btnValue){
 			console.log("ELIMINAR - Se ha pulsado el boton con ID: " + btnID + " - valor:"+ btnValue);
 
 			//Hacer la petición AJAX
 			//let verbo = "DELETE",  user = {}, ajaxResult =  null;			
 			let ajaxResult =  null, datosEliminar = {};			
-			let url = urlObject.direccionBack+"/eliminar/" + btnValue;
+			let url = urlObject.direccionWeb+"/eliminar/" + btnValue;
 
 			//ajaxResult = ajaxStart(verbo, url, objeto);	
 			ajaxResult = ajax_With_Body_Exec("DELETE", url, undefined)
@@ -603,6 +630,15 @@
 				})
 				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
 				.finally(function onfinally(){
+					if(datosEliminar == undefined){
+						msjGenerico("Error","Fallo el eliminar el registro en el Servidor");
+						return;
+					}
+
+					if(datosEliminar.statusText == "error"){						
+						return;
+					}
+
 					//Se comprueba si se asignaron correctamente
 					console.log("Datos finales", datosEliminar);			
 
@@ -624,12 +660,12 @@
 		- id: String => ID del botón (cuyo formato es "[ID del registro]"+"-eliminar")
 		- value: String =>  ID del regsitro
 		*/
-		function modificarRegistroDelBack(id, value){
+		async function modificarRegistroDelBack(id, value){
 			console.log("MODIFICAR - Se ha pulsado el boton con ID:" + id + " - valor:"+ value);
 
 			//Agregar ajax para recuperar los datos
 			//Declaracion de variables
-			let url_getUsuarioByLogin = urlObject.direccionBack+"/usuario/"; 
+			let url_getUsuarioByLogin = urlObject.direccionWeb+"/usuario/"; 
 			//let datosModificar = {};
 
 			// URL = usuario/{login}
@@ -650,17 +686,32 @@
 			//reason == MOTIVO del RECHAZO de la Promesa
 			.catch(function onrejected(reason){				
 				console.log("Razon de falla del servicio", reason);
+				if(datosModificar == undefined){
+					datosModificar = {};
+				}
 				datosModificar.headers["resultado"] = "fail";
+				datosModificar.status = "fail";
 			})
 			//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
 			.finally(function onfinally(){
 				//Se comprueba si se asignaron correctamente
 				console.log("Datos finales > GET-Usuario ", datosModificar);
+				if(datosModificar == undefined){
+					msjGenerico("Error","Fallo el encontrar el registro en el Servidor");
+					return;
+				}
+
+				if(datosModificar.headers.resultado == "fail" 
+					|| datosModificar.status == 'fail'){
+					datosModificar.data = null;
+					return;
+				}
+				
 				if (datosModificar.headers.resultado == "success") {
 					//agregar el form
 					generarFormParaModificar(datosModificar);
 				} else {					
-					msjGenerico("Error","Fallo el modificar el registro en el Servidor");
+					msjGenerico("Error","Fallo el encontrar el registro en el Servidor");
 				}
 			});			
 			//agregar el form
@@ -879,14 +930,14 @@
 		Param:
 			N/A
 		*/
-		function generarTabla(){
+		async function generarTabla(){
 			//Obtiene el cuerpo de los filtros a buscar
 			let filtros = generarFiltros();			
 			//console.log("filtros-JSON:\n",JSON.stringify(filtros),
 			//	"\nfiltros-QueryString\n", $.param(filtros));
 
 			//Peticion AJAX
-			let verbo = "GET", url = urlObject.direccionBack+"/filtro";
+			let verbo = "GET", url = urlObject.direccionWeb+"/filtro";
 			console.log("URL" ,url);
 			console.log("URL OBJECT" ,url);
 
@@ -905,9 +956,27 @@
 				//reason == MOTIVO del RECHAZO de la Promesa
 				.catch(function onrejected(reason){				
 					console.log("Razon de falla del servicio", reason);
+					datos.status = "fail";
+					datos.headers.resultado = "fail";
 				})
 				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
 				.finally(function onfinally(){
+
+					if(datos == undefined){
+						msjGenerico("Error","Fallo el encontrar el registro en el Servidor");
+						return;
+					}
+
+					if(datos.headers.resultado == "fail"){
+						datos.data = null;
+					}
+
+					if(datos.headers.resultado == "fail" 
+						|| datos.status == 'fail'){
+						datos.data = null;
+						return;
+					}
+
 					//Se comprueba si se asignaron correctamente
 					console.log("Datos finales", datos);
 
@@ -949,13 +1018,35 @@
 		- titulo: String => Titulo de la ventana Modal
 		- msj: String => Mensaje de la ventana Modal
 		*/
-		function msjGenerico(titulo, msj){
+		function msjGenerico(titulo, msj, xhrData){
 			//Editando el Modal			
 			$("#modal-Tablero-Msj .modal-title").html(titulo);
 			$("#modal-Tablero-body").html(msj);
 
 			//Mostrar el mensaje
-			$("#modal-Tablero-Msj").modal("show");			
+			$("#modal-Tablero-Msj").modal("show");
+			
+			if(xhrData != null){
+				let redirect = '';
+				switch(xhrData.status){
+					case 401:
+						redirect = "/errores/sinAutorizacion.html";
+						break;
+					case 403:
+						redirect = "/errores/sinPermisos.html";
+						break;
+					case 405:
+					default:
+						redirect = "/errores/error.html";
+						break;
+				};
+			
+				$("#modal-Tablero-Msj")
+					.one('hidden.bs.modal', function () {
+						// redirección a las págas de error
+						window.location.href = redirect;						
+				});													
+			}
 		}
 
 		/* Func:
@@ -1032,7 +1123,7 @@
 			let usuario = generarUsuario();
 			
 			//Hacer la petición AJAX
-			let verbo = "PUT", url = urlObject.direccionBack+"/actualizar";
+			let verbo = "PUT", url = urlObject.direccionWeb+"/actualizar";
 			
 			//Ejecuta el Ajax
 			ajax_With_Body_Exec(verbo, url, usuario)
@@ -1058,6 +1149,15 @@
 				})
 				//Funcion que se ejecuta sin importar si se rechazo o resolvio la promesa
 				.finally(function onfinally(){
+					if(datosModificar == undefined){
+						return;
+					}
+
+					if(datosModificar.headers.resultado == "fail"){
+						datosModificar.data = null;
+						return;
+					}
+
 					//Se comprueba si se asignaron correctamente
 					console.log("Datos finales de ModificarForm", datosModificar);
 		

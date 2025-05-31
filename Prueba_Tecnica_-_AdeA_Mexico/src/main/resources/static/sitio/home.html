@@ -99,10 +99,20 @@
 	
 	<!-- SCRIPT NECESARIOS PARA CUANDO SE CARGA LA PÁGINA -->
 	<script type="text/javascript">
-		$(document).ready(function(){
-			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
-			console.log("datos del login: ", usuario);
+		//Variables con info de la URL
+		var urlObject = {};
+		urlObject.protocolo = window.location.protocol;// "http:" o "https:"
+		urlObject.host = window.location.host;// Nombre del Host + Puerto
+		urlObject.direccionWeb = urlObject.protocolo + "//" + urlObject.host; //Direccion Web Real del Back (Sin necesidad de cambiar los puertos)
+		//var authorization = null;
 
+		$(document).ready(async function(){
+			var usuario = JSON.parse(sessionStorage.getItem('usuario'));
+			//var authorization = JSON.parse(sessionStorage.getItem('authorization'));
+			var authorization = sessionStorage.getItem('authorization');
+			console.log("datos del login: ", usuario);
+			console.log("datos del token: ", authorization);
+			await tokenTest(authorization);
 			/*
 			if(usuario != undefined){				
 				$('#div-Msj-Home').text("Bienvenido, " + usuario.nombre);
@@ -111,6 +121,61 @@
 		});
 
 		//METODOS
+		async function tokenTest(token){
+			//token = "Bearer C";
+			console.log("token is: " + token);
+			await $.ajax({
+				type: "POST",
+				contentType: 'application/json; charset=utf-8', // Especifica el tipo de contenido como JSON
+				dataType: "json",//"text",	//Especifica qcual es el tipo de Data que se espera recibir del Backend				
+				url: urlObject.direccionWeb + "/token", //url,
+				headers: {
+					//'authorization': authorization
+					'authorization': token,
+					'urlDestino' : this.url
+				},
+				//------Convierte un objeto JSON a un objeto JavaScript
+				//data: JSON.parse(usuarioCredenciales),
+				
+				//------jQuery convertirá este objeto a una cadena de consulta (o sea, lo serializará)
+				//data: usuarioCredenciales, 
+				
+				//------Convierte el objeto a una cadena JSON
+				data: JSON.stringify({"authorization" : token}),  
+				success: function (data, status, xhrData) {
+					console.log("success");
+					console.log("data:\n", data); // Accede al cuerpo de la respuesta
+					console.log("status: " , status);					
+					console.log("headers: \n", xhrData.getAllResponseHeaders());
+					
+			        if (xhrData.status === 200) {
+			        	
+						console.log("Entro y regreso del back, iniciando redireccionamiento...");
+			        	/* ALMACEN DE DATOS ENTRE DIFERENTES PAGINAS
+						- localStorage: Es persistente entre sesiones del navegador, lo que significa que la 
+						información del usuario se mantendrá incluso después de cerrar y volver a abrir el navegador. 
+						- sessionStorage: Se usa si se prefiere que la información del usuario se borre después 
+						de cerrar el navegador.
+
+						NOTA: localStorage.setItem('clave', valor);*/
+			        	
+						// Almacena la información del usuario en localStorage
+						sessionStorage.setItem('usuario', JSON.stringify(data));
+			        } else {
+						console.log("data", data, "\n xhrData:", xhrData);
+			            // Usuario no encontrado, muestra mensaje de error
+			            alert("Usuario no encontrado");
+			        }
+				},
+				error: function (xhrData, status, error) {
+					console.log("error()");					
+					console.log("headers: \n" + xhrData.getAllResponseHeaders());
+
+					// Usuario no encontrado, muestra mensaje de error
+			        alert("Error al ejecutar petición", error);
+				}
+			});
+		}
 
 		//FORMULARIO
 		$("#btn-gestion").click(function() {

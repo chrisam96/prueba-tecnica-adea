@@ -1,10 +1,6 @@
 package csam.pruebatecnica.adea.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,21 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import csam.pruebatecnica.adea.model.Usuario;
 import csam.pruebatecnica.adea.model.UsuarioCredenciales;
+import csam.pruebatecnica.adea.seguridad.jwt.JWTUtil;
 import csam.pruebatecnica.adea.service.UsuarioService;
 import csam.pruebatecnica.adea.utils.UsuarioConstantes;;
 
@@ -55,18 +54,16 @@ public class UsuarioController {
 	@Value("${server.port}")
 	public int serverPort;
 	
-	@GetMapping(value = "correo/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Usuario getUsuarioByEmail(@PathVariable("email") String email) {
-		return usuarioService.getUsuarioByEmail(email);
-	}
-	
-	@GetMapping(value = "usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<Usuario> getAllUsuario() {
-		return usuarioService.getAllUsuario();
-	}
+	//Bean del JWTUtil
+	@Autowired
+	public JWTUtil jwtUtil;
 	
 	/*-----------------------------------------------------------------------------------*/
-	// METODOS DE PRUEBA DE SERVICO EN FUNCION
+	
+
+	
+	/*-----------------------------------------------------------------------------------*/
+	// METODOS DE PRUEBA DE FUNCIONAMIENTO DEL REST-CONTROLLER
 	@GetMapping(value = "prueba/{s}", produces = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public String prueba(@PathVariable("s") String s) {
 		return "prueba" + s ;
@@ -74,67 +71,92 @@ public class UsuarioController {
 	
 	//ALT + SHIFT + X, B
 	
-	//PRUEBA DE QUE EL SERVICIO SIRVE CON DIFERENTES URL O RECURSOS
-	
 	@GetMapping(value = "/prb1") // @GetMapping	(value) == @RequestMapping(path="/foo").
 	public String prb() {
 		//return "login2";
 		return "Prueba - /prb";
 	}
+	// METODOS DE PRUEBA DE FUNCIONAMIENTO DEL REST-CONTROLLER
 	
+	/*-----------------------------------------------------------------------------------*/
+	// METODOS SIN USO PERO SON UTILIDADES (NO SE DEBEN BORRAR)
+	
+	@GetMapping(value = "usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Usuario> getAllUsuario() {
+		return usuarioService.getAllUsuario();
+	}
+
+	@GetMapping(value = "correo/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Usuario getUsuarioByEmail(@PathVariable("email") String email) {
+		return usuarioService.getUsuarioByEmail(email);
+	}
+	
+	@GetMapping(value = "usuario/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Usuario> getUsuarioByLogin(@PathVariable("login") String login) {
+	//public Usuario getUsuarioByLogin(@PathVariable("login") String login) {
+		
+		Usuario recuperado = usuarioService.getUsuarioByLogin(login);
+		if (recuperado == null) {
+			return new ResponseEntity<Usuario>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<Usuario>(recuperado, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/login2/{login}/{pass}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public Usuario findUsuarioByLoginAndPass(@PathVariable("login") String login, @PathVariable("pass") String pass) {
+		Usuario encontrado = usuarioService.findUsuarioByLoginAndPass(login, pass);
+		
+		//Si es diferente de NULL es porque lo encontro
+		if (encontrado != null) {
+			return encontrado;
+		}
+		return new Usuario();
+	}
+	
+	// METODOS SIN USO PERO SON UTILIDADES (NO SE DEBEN BORRAR)
+	/*-----------------------------------------------------------------------------------*/
 	
 	// PRUEBAS PARA SABER QUE FRONT Y BACK SE COMUNICABAN CORRECTAMENTE
 	
 	@PostMapping(value = { "/login1", "/get-{login}-{pass}" },
 			consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE},
 			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
-		public ResponseEntity<Usuario> getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) {
-		//public Usuario getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) { // USADO SOLO PARA TESTEO DE UN EXPERIMENTO
-				//try {
-					System.out.println("Entro a /login1: " + uc.toString());
-					//return usuarioService.getUsuarioByCredenciales(uc);
-					Usuario user = usuarioService.getUsuarioByCredenciales(uc);
-					/*
-					ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>(user, HttpStatus.OK);				
-					return resp;
-					*/
-					ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>(user, HttpStatus.OK);
-					ResponseEntity<Usuario> resp2 = new ResponseEntity<Usuario>(null, null, HttpStatus.OK);
-					//resp2.of
-					
-					if (user != null) {
-			            return new ResponseEntity<>(user, HttpStatus.OK);
-			            //return user;// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
-			        } else {
-			            // Si el usuario no se encuentra, puedes devolver un error
-			            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			            //return null; // USADO SOLO PARA TESTEO DE UN EXPERIMENTO
-			        }
-					
-				/*} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					// Crear un objeto JSON con un mensaje de error
-			        String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";
-			        HttpHeaders headers = new HttpHeaders();
-			        return new ResponseEntity<Usurio>(errorJson, HttpStatus.INTERNAL_SERVER_ERROR);
-				}*/
-		}
-		
-		@GetMapping(value = "/login2/{login}/{pass}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-		public Usuario findUsuarioByLoginAndPass(@PathVariable("login") String login, @PathVariable("pass") String pass) {
-			Usuario encontrado = usuarioService.findUsuarioByLoginAndPass(login, pass);
-			
-			//Si es diferente de NULL es porque lo encontro
-			if (encontrado != null) {
-				return encontrado;
-			}
-			return new Usuario();
-		}	
-		
-		@GetMapping(value = { "/login3/{login}/{pass}" }
-		, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
-		public ResponseEntity<Usuario> getUsuarioByCredenciales2(@PathVariable("login") String login, @PathVariable("pass") String pass) {
+	public ResponseEntity<Usuario> getUsuarioByCredenciales3(@RequestBody UsuarioCredenciales uc) {
+	//public Usuario getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) { // USADO SOLO PARA TESTEO DE UN EXPERIMENTO
+			//try {
+				System.out.println("Entro a /login1: " + uc.toString());
+				//return usuarioService.getUsuarioByCredenciales(uc);
+				Usuario user = usuarioService.getUsuarioByCredenciales(uc);
+				/*
+				ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>(user, HttpStatus.OK);				
+				return resp;
+				*/
+				ResponseEntity<Usuario> resp = new ResponseEntity<Usuario>(user, HttpStatus.OK);
+				ResponseEntity<Usuario> resp2 = new ResponseEntity<Usuario>(null, null, HttpStatus.OK);
+				//resp2.of
+				
+				if (user != null) {
+		            return new ResponseEntity<>(user, HttpStatus.OK);
+		            //return user;// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
+		        } else {
+		            // Si el usuario no se encuentra, puedes devolver un error
+		            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		            //return null; // USADO SOLO PARA TESTEO DE UN EXPERIMENTO
+		        }
+				
+			/*} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				// Crear un objeto JSON con un mensaje de error
+		        String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";
+		        HttpHeaders headers = new HttpHeaders();
+		        return new ResponseEntity<Usurio>(errorJson, HttpStatus.INTERNAL_SERVER_ERROR);
+			}*/
+	}	
+	
+	@GetMapping(value = { "/login3/{login}/{pass}" }
+	, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
+	public ResponseEntity<Usuario> getUsuarioByCredenciales2(@PathVariable("login") String login, @PathVariable("pass") String pass) {
 			//try {	
 				ResponseEntity<Usuario> re;
 				HttpHeaders headers = new HttpHeaders();
@@ -181,13 +203,16 @@ public class UsuarioController {
 			*/
 		}
 
+	// PRUEBAS PARA SABER QUE FRONT Y BACK SE COMUNICABAN CORRECTAMENTE
 	
 	/*-----------------------------------------------------------------------------------*/
+	// METODOS DE APLICATIVO
+	
 	@PostMapping(value = { "/getUser"},
 			consumes = { MediaType.APPLICATION_JSON_VALUE},
-			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE  })
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_XML_VALUE  })
 	@ResponseBody
-	public ResponseEntity<Usuario> getUsuarioByCredencialesTesting(@RequestBody UsuarioCredenciales uc) {
+	public ResponseEntity<Usuario> getUsuarioByCredenciales(@RequestBody UsuarioCredenciales uc) {
 				System.out.println("ENTRO: Login:" + uc.getLogin() + " - Pass:" + uc.getPass());
 				
 				//Instancia de los HttpHeaders
@@ -202,7 +227,7 @@ public class UsuarioController {
 				 */
 				List<MediaType> listaMT = new ArrayList<MediaType>();
 				listaMT.add(MediaType.APPLICATION_JSON);
-				listaMT.add(MediaType.TEXT_PLAIN);
+			 	listaMT.add(MediaType.TEXT_PLAIN);
 				listaMT.add(MediaType.APPLICATION_XML);
 				headers.setAccept(listaMT);
 
@@ -236,9 +261,11 @@ public class UsuarioController {
 				Usuario user = usuarioService.getUsuarioByCredenciales(uc);
 				
 				if (user != null) {
-					//CODIGO PARA REDIRECCIONAR A LA VISTA "/Home"			
+					//CODIGO PARA REDIRECCIONAR A LA VISTA "/Home"
+					String token = JWTUtil.generarToken(user.getLogin());
+					System.out.println("FECHA DE CREACION DEL TOKEN: " + JWTUtil.getElement(token, "fecha_creacion"));
+					headers.add("authorization", token);
 					headers.add("encontrado","si");
-					headers.add("redireccion","/home");
 					headers.add("mensaje","USUARIO ENCONTRADO");
 					headers.add("mensaje","TEST-HEADER");
 					
@@ -263,19 +290,49 @@ public class UsuarioController {
 
 		        }
 	}
-	/*-----------------------------------------------------------------------------------*/
-	// METODOS DE APLICATIVO
-
 	
-	@GetMapping(value = "usuario/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Usuario> getUsuarioByLogin(@PathVariable("login") String login) {
-	//public Usuario getUsuarioByLogin(@PathVariable("login") String login) {
+	
+	@PostMapping(value= "/token", consumes = { MediaType.APPLICATION_JSON_VALUE}, 
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> testOfToken(@RequestHeader(value = "authorization") String auth, @RequestBody HashMap<String, Object> datos){
 		
-		Usuario recuperado = usuarioService.getUsuarioByLogin(login);
-		if (recuperado == null) {
-			return new ResponseEntity<Usuario>(HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<Usuario>(recuperado, HttpStatus.OK);
+		System.out.println("Header authorization: " + auth);
+		System.out.println("Body authorization: " + datos);
+		
+		//Obtener el token
+		String token = (String) datos.get("authorization");
+		
+		//Validar el token
+		//boolean tokenBool = JWTUtil.validateToken(token);
+		//boolean tokenBool = jwtUtil.validateToken(token);
+		//System.out.println("El estatus del token es: " + tokenBool);
+		
+		//Validar la obtencion de elementos (claims) del token
+		/*
+		System.out.println();
+
+		System.out.println("claim1: " + JWTUtil.getElement(token, "claim1"));
+		System.out.println("claim2: " + JWTUtil.getElement(token, "claim2"));
+		System.out.println("Map1: " + JWTUtil.getElement(token, "Map1"));
+		System.out.println("Map2: " + JWTUtil.getElement(token, "Map2"));
+		System.out.println("Claim No Registrado: " + JWTUtil.getElement(token, "NADA"));
+		
+		System.out.println();
+		System.out.println("Subject: " + JWTUtil.getElement(token, "sub"));
+		*/System.out.println("Expiration: " + JWTUtil.getElement(token, "exp"));
+		/*System.out.println("Editor (Issuer): " + JWTUtil.getElement(token, "iss"));
+				
+		System.out.println();
+		*/
+		
+		//Decidir el valor HttoStatusCode en un encabezado de header
+		HttpHeaders headers = new HttpHeaders();
+		//headers.add("tokenValido", String.valueOf(tokenBool));
+		headers.add("tokenValido", String.valueOf(true));
+		headers.add("token", token);
+		
+		
+		return new ResponseEntity<HashMap<String, Object>>(datos, headers, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/registrar", consumes = { MediaType.APPLICATION_JSON_VALUE }, 
@@ -284,7 +341,7 @@ public class UsuarioController {
 	//public ResponseEntity<HashMap<String, ?>> saveUsuario(@RequestBody Usuario u) {
 	public ResponseEntity<HashMap<String, Object>> saveUsuario(@RequestBody Usuario u) {
 	//public String saveUsuario(@RequestBody Usuario u) {// USADO SOLO PARA TESTEO DE UN EXPERIMENTO
-		
+
 		//Body de la rspuesta
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		

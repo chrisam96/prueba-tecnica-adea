@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.WebRequest;
 
@@ -21,6 +22,7 @@ public class PagsErrorConfiguration {
 	private final static Logger log = LoggerFactory.getLogger(PagsErrorConfiguration.class);
 
 	@Bean
+	@Order(2)
 	public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer() {
 		return factory -> {
 
