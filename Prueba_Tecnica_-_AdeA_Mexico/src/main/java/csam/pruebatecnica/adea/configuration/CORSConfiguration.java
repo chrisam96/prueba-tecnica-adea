@@ -1,23 +1,52 @@
 package csam.pruebatecnica.adea.configuration;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
-public class CORSConfiguration {
-
-	@Bean
-	public RestTemplate restTemplateBasico() {
-		return new RestTemplate();
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class CORSConfiguration implements WebMvcConfigurer{
+	
+	//Configuración de CORS con WebMvcConfigurer
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		//WebMvcConfigurer.super.addCorsMappings(registry);
+		
+		//Habilita el manejo CORS para el patron de ruta URI especificada
+		registry.addMapping("/**")
+		//EstableCE los orígenes URL para los cuales se permiten 
+		//solicitudes CORS desde un navegador.
+			.allowedOrigins("*")
+		//Establece los métodos HTTP permitidos
+			.allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
+		//Establece los headers que una solicitud (pre-flight) 
+		//puede incluir como permitidos para su uso
+			// Permite cualquier encabezado en las solicitudes.
+			.allowedHeaders("*")					
+		//Se admite el acceso a la red privada
+			//.allowPrivateNetwork(true)
+		//Configurear durante cuánto tiempo en segundos los clientes 
+		//pueden almacenar en caché la respuesta de una solicitud
+			.maxAge(3600)
+			.exposedHeaders("*");
 	}
 	
+	/*
+	//Configuración de Recursos estáticos para errores
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/errores/**")
+                .addResourceLocations("classpath:/static/errores/")
+                .setCachePeriod(0);
+    }
+    */
+	
+	/*
 	//Configuración de CORS con WebMvcConfigurer
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -40,10 +69,12 @@ public class CORSConfiguration {
 					//.allowPrivateNetwork(true)
 				//Configurear durante cuánto tiempo en segundos los clientes 
 				//pueden almacenar en caché la respuesta de una solicitud
-					.maxAge(3600);
+					.maxAge(3600)
+					.exposedHeaders("*");
 			}
 		};
 	}
+	*/
 
 
 	//Configuración de CORS con CorsFilter

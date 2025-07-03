@@ -2,7 +2,7 @@ package csam.pruebatecnica.adea.seguridad.jwt;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,6 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		//Carpetas de Recursos Estaticos
 		"/asset/**", "/errores/**", "/js/**",
 		"/.well-known/**", // ====>> /.well-known/appspecific/com.chrome.devtools.json 
+		"/h2-console/**",
 		
 		//extensiones de archivos
 		"/**/*.js",
@@ -48,19 +50,12 @@ public class JWTFilter extends OncePerRequestFilter {
 	);
 		
 	
-	//NO TENGO FORMA DE SABER CUANDO FILTRAR UNA URL QUE NO EXISTE
-	//ANTES DE QUE PASE EL JWTFILTER AL MENOS QUE LO HAGA UN BEAN
-	//CON UN ORDEN DE MAYOR PRESCEDENCIA
-	private final List<String> URL_POR_FILTRAR = List.of(
-		""
-	);
-	
 	@Autowired
 	private RequestMappingHandlerMapping visualizadorPath;
 	
 	private final AntPathMatcher matcher = new AntPathMatcher();
 	
-	
+	//Filtra URLs existentes. Si existe => TRUE; Si NO existe => FALSE
 	private boolean rutaExiste(HttpServletRequest request) {
 		try {
 			HandlerExecutionChain chain = visualizadorPath.getHandler(request);
@@ -81,7 +76,10 @@ public class JWTFilter extends OncePerRequestFilter {
 		String metodo = request.getMethod();
 		String tipoDispatcher = request.getDispatcherType().name();
 		System.out.println("=> shouldNotFilter: metodo='" + metodo 
-			+ "' , URL(path)='" + path + "' , DispatcherType='" + tipoDispatcher + "'");		
+			+ "' , URL(path)='" + path + "' , DispatcherType='" + tipoDispatcher + "'"
+			+ "\nFull URL: '" + request.getRequestURL().toString()+ "'");
+		
+		
 		
 		/*StringBuilder sr = new StringBuilder("Headers are: '");
 		for (Iterator iterator = request.getHeaderNames().asIterator(); iterator.hasNext();) {
@@ -89,24 +87,27 @@ public class JWTFilter extends OncePerRequestFilter {
 		} 
 		System.out.println(sr.toString());*/
 		
+		// Sepa que hace -> Añade esta condición PRIMERO
+        /*if (request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI) != null) {
+            return true;
+        }*/
+		
 		//Indicamos que el filtro IGNORE si el método HTTP es un OPTIONS
 		//Que sería una solicitud PREFLIGHT
 		if(request.getMethod().equalsIgnoreCase("OPTIONS") ) {
+			System.out.println("Peticion viene de un Method: OPTIONS");
 			return true;
 		}
 		
 		//Indicamos que el filtro se IGNORE las peticiones tipo ERROR, FORWARD 		
 		if(request.getDispatcherType() == DispatcherType.ERROR 
-				|| request.getDispatcherType() == DispatcherType.FORWARD) {
+				|| 
+			request.getDispatcherType() == DispatcherType.FORWARD) {
+			System.out.println("Peticion viene de un DispatcherType de ERROR o FORWARD");
 			return true;
-		}
+		}				
 		
-		
-		//Si la ruta NO existe => ignora el JWTFilter (deja que el ErrorController maneje el 404)
-        if (!rutaExiste(request)) {
-            return true;
-        }
-		
+		//Busqueda entre URLs que deben descartarse
 		boolean encontrado =
 		ELEMENTOS_DESCARTADOS.stream()
 			.anyMatch(str -> {
@@ -115,10 +116,21 @@ public class JWTFilter extends OncePerRequestFilter {
 			}
 		);
 		
-		if(!encontrado){
+		if(encontrado){
+			//return true;
+			return encontrado;//true
+		}else {
 			System.out.println("No hay ruta descartada");
 		}
-		return encontrado;
+		
+		//Si la ruta NO existe => ignora el JWTFilter (deja que el PagsErrorConfiguration maneje el 404)
+        if (!rutaExiste(request)) {
+        	System.out.println("ruta no existe");
+            return true;
+        }
+        
+		System.out.println("pero la ruta existe.");
+        return false;
 	}
 	
 	//// Lógica del filtro (validar JWT)
@@ -132,29 +144,37 @@ public class JWTFilter extends OncePerRequestFilter {
 		String tipoDispatcher = request.getDispatcherType().name();
 		
 		System.out.println("==>> doFilterInternal: metodo='"+ metodo 
-				+ "' , URL(path)='" + path + "' , DispatcherType='" + tipoDispatcher + "'");
-		System.out.println("URLDestino:"+request.getHeader("urlDestino"));
+				+ "' , URL(path)='" + path + "' , DispatcherType='" + tipoDispatcher + "'"
+				+ "\nFull URL: '" + request.getRequestURL().toString()+ "'");		
+		//System.out.println("URLDestino: "+request.getHeader("urlDestino"));
 		
-		//Exclusión de rutas para evitar baneos de URLs		
-		Enumeration<String> headers = request.getHeaderNames();
+		StringBuilder sr = new StringBuilder("Headers are: '");
+		for (Iterator iterator = request.getHeaderNames().asIterator(); iterator.hasNext();) {
+			sr.append((String) iterator.next() + "', '");
+		} 
+		System.out.println(sr.toString());
 		
 		String auth = request.getHeader(jwtUtil.HEADER_TOKEN);
 		
 		//Validar que exista Header authorization
 		if(auth == null || auth.isBlank()) {			
-			System.out.println("token vacio");
-			response.sendError(response.SC_FORBIDDEN, "No hay token; No hay permisos");
+			System.out.println("ERROR: token vacio");
+			response.setStatus(response.SC_FORBIDDEN);
+			//response.sendError(response.SC_FORBIDDEN, "No hay token; No hay permisos");
 			//response.sendRedirect(contextPath + "/errores/sinPermisos.html"); 
-			//request.getRequestDispatcher("/errores/sinPermisos.html").forward(request, response); 
+			request.getRequestDispatcher("/errores/sinPermisos.html")
+				.forward(request, response); 
 			return;
 		}
 				
 		//Validar que empiece con "Bearer "
 		if(!auth.startsWith(jwtUtil.PREFIJO_TOKEN)) {
-			System.out.println("token sin prefijo");
-			response.sendError(response.SC_FORBIDDEN, "No empieza por 'Bearer '");
+			System.out.println("ERROR: token sin prefijo");
+			response.setStatus(response.SC_FORBIDDEN);
+			//response.sendError(response.SC_FORBIDDEN, "No empieza por 'Bearer '");
 			//response.sendRedirect(contextPath + "/errores/sinPermisos.html");
-			//request.getRequestDispatcher("/errores/sinPermisos.html").forward(request, response); 
+			request.getRequestDispatcher("/errores/sinPermisos.html")
+				.forward(request, response); 
 			return;
 		}
 		
@@ -163,24 +183,31 @@ public class JWTFilter extends OncePerRequestFilter {
 		Date expToken = (Date) jwtUtil.getElement(auth, jwtUtil.EXPIRATION_TOKEN);
 		
 		if( expToken == null){
-			System.out.println("token sin fecha de expiracion disponible");
-			response.sendError(response.SC_UNAUTHORIZED, "Token sin fecha de expiracion");
+			System.out.println("ERROR: token sin fecha de expiracion disponible");
+			response.setStatus(response.SC_UNAUTHORIZED);
+			//response.sendError(response.SC_UNAUTHORIZED, "Token sin fecha de expiracion");
+			request.getRequestDispatcher("/errores/sinAutorizacion.html")
+				.forward(request, response);
 			return;
 		}
 		else if( ahora.after(expToken)){
-			System.out.println("token expirado");
-			response.sendError(response.SC_UNAUTHORIZED, "Token expirado");			
+			System.out.println("ERROR: token expirado");
+			response.setStatus(response.SC_UNAUTHORIZED);
+			//response.sendError(response.SC_UNAUTHORIZED, "Token expirado");			
 			//response.sendRedirect(contextPath + "/errores/sinAutorizacion.html");
-			//request.getRequestDispatcher("/errores/sinAutorizacion.html").forward(request, response); 
+			request.getRequestDispatcher("/errores/sinAutorizacion.html")
+				.forward(request, response); 
 			return;
 		}
 		
 		//Validar que sea un JWT válido 
 		if (!jwtUtil.validateToken(auth)) {
-			System.out.println("token no valido");
-			response.sendError(response.SC_UNAUTHORIZED, "No es un token válido");
+			System.out.println("ERROR: token no valido");
+			response.setStatus(response.SC_UNAUTHORIZED);
+			//response.sendError(response.SC_UNAUTHORIZED, "No es un token válido");
 			//response.sendRedirect(contextPath + "/errores/sinAutorizacion.html");
-			//request.getRequestDispatcher("/errores/sinAutorizacion.html").forward(request, response); 
+			request.getRequestDispatcher("/errores/sinAutorizacion.html")
+				.forward(request, response); 
 			return;
 		}
 		

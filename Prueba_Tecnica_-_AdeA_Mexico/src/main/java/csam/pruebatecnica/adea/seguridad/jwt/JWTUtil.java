@@ -25,8 +25,8 @@ import io.jsonwebtoken.security.Keys;
 public class JWTUtil {
 
 	private static final long DURACION_TOKEN 
-						//minutos x seg x milseg
-		= Long.parseLong(String.valueOf(1 * 60 * 1000));
+		//minutos x seg x milseg
+		= 2 * 60 * 1000L;
 	
 	private static final String SECRET_KEY = "Llave de prueba para el test del JWT";
 	
@@ -155,7 +155,7 @@ public class JWTUtil {
 			System.out.println(".getClaims():ExpiredJwtException ===Aprox. Cant. Milisec del crasheo: " + (fechaEvento - claims.getExpiration().toInstant().toEpochMilli()) );
 			System.out.println(".getClaims():ExpiredJwtException ===Cant. Milisec del crasheo: " + (uI - claims.getExpiration().toInstant().toEpochMilli()) );
 			
-			System.out.println("ERROR at " + new Date().toString() + "Description:\n" + e.getMessage());
+			System.out.println("ERROR at " + new Date().toString() + "\nDescription:\n" + e.getMessage());
 			return null;
 		}
 		catch(IllegalArgumentException | JwtException j) {

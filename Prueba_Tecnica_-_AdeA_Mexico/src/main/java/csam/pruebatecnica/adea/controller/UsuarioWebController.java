@@ -3,29 +3,19 @@ package csam.pruebatecnica.adea.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import csam.pruebatecnica.adea.model.Usuario;
-import csam.pruebatecnica.adea.model.UsuarioCredenciales;
 import csam.pruebatecnica.adea.service.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 
 /*Notacion @CrossOrigin
  * 
@@ -84,24 +74,38 @@ public class UsuarioWebController {
 	*/
 	
 	@GetMapping(value = "/home") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String home() {
+	public String home(HttpServletRequest request) {
 		/*
 		 * archivo: home.html
 		 * ruta: resources/static
 		 * metodo: UsuarioWebController.home()
 		 */
-		return "home";
+		
+		StringBuilder sr = new StringBuilder("Headers are: '");
+		for (Iterator iterator = request.getHeaderNames().asIterator(); iterator.hasNext();) {
+			sr.append((String) iterator.next() + "', '");
+		} 
+		System.out.println(sr.toString());
+		return "redirect:/sitio/home.html";
 	}
 	
 	//@GetMapping(value = "/sitio/home") // @GetMapping	(value) == @RequestMapping(path="/foo").
 	@GetMapping(value = "/dashboard") // @GetMapping	(value) == @RequestMapping(path="/foo").
-	public String sitio_home() {
+	public String sitio_home(HttpServletRequest request) {
 		/*
 		 * archivo: home.html
 		 * ruta: resources/static/sitio
 		 * metodo: UsuarioWebController.sitio_home()
 		 */
-		return "/sitio/home";
+		//return "/sitio/home";
+		StringBuilder sr = new StringBuilder("Headers are: '");
+		for (Iterator iterator = request.getHeaderNames().asIterator(); iterator.hasNext();) {
+			sr.append((String) iterator.next() + "', '");
+		}
+		
+		System.out.println(sr.toString());
+		
+		return "sitio/home";
 	}
 	
 	// Para "@GetMapping" es igual a:: (value) == @RequestMapping(path="/foo", method = RequestMethod.GET)	
@@ -174,7 +178,8 @@ public class UsuarioWebController {
 	    	e.printStackTrace();
 	    	
 	    	//Si sucede un error, retorna hacia "Home"
-	    	return sitio_home();
+	    	//return sitio_home();
+	    	return null;
 	    }	    
 	}
 	

@@ -101,9 +101,13 @@
 	<script type="text/javascript">
 		//Variables con info de la URL
 		var urlObject = {};
+		//Variables con info de la URL						
 		urlObject.protocolo = window.location.protocol;// "http:" o "https:"
 		urlObject.host = window.location.host;// Nombre del Host + Puerto
+		urlObject.hostname = window.location.hostname;// Nombre del Host (ej. www.ejemplo.com)
 		urlObject.direccionWeb = urlObject.protocolo + "//" + urlObject.host; //Direccion Web Real del Back (Sin necesidad de cambiar los puertos)
+		urlObject.direccionBackSinPuerto = urlObject.protocolo + "//" + urlObject.hostname;// Direccion Web del Back (Protocolo + Host)
+		//urlObject.direccionWeb = urlObject.direccionBackSinPuerto + ":10000";
 		//var authorization = null;
 
 		$(document).ready(async function(){
@@ -172,7 +176,30 @@
 					console.log("headers: \n" + xhrData.getAllResponseHeaders());
 
 					// Usuario no encontrado, muestra mensaje de error
-			        alert("Error al ejecutar petición", error);
+			        //alert("Error al ejecutar petición", error);					
+					let redirect = xhrData.getResponseHeader("location");
+					if(redirect != null){
+						window.location.href = redirect;
+						return;
+					}			
+					
+					switch(xhrData.status){
+						case 401:
+							redirect = "/errores/sinAutorizacion.html";
+							break;
+						case 403:
+							redirect = "/errores/sinPermisos.html";
+							break;
+						case 200:
+						case 405:
+						default:
+							redirect = "/errores/error.html";
+							break;
+					};
+					
+					// redirección a las págas de error
+					window.location.href = redirect;
+					return;
 				}
 			});
 		}

@@ -264,6 +264,7 @@ public class UsuarioController {
 					//CODIGO PARA REDIRECCIONAR A LA VISTA "/Home"
 					String token = JWTUtil.generarToken(user.getLogin());
 					System.out.println("FECHA DE CREACION DEL TOKEN: " + JWTUtil.getElement(token, "fecha_creacion"));
+					System.out.println("=== UsuarioController./getUser token es:\n\r" + token);
 					headers.add("authorization", token);
 					headers.add("encontrado","si");
 					headers.add("mensaje","USUARIO ENCONTRADO");
